@@ -1,0 +1,6 @@
+[mysql]
+host = 35.201.153.17
+user = gae252g1usr
+password = 
+database = gae252g1_db
+port = 3306
