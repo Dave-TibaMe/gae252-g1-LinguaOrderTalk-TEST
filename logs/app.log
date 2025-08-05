@@ -1,0 +1,1244 @@
+2025-08-02 08:42:04,534 - main - ERROR - 程式執行失敗: 'REVIEW_LIMIT'
+2025-08-02 08:45:58,659 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-02 08:45:59,001 - database - INFO - 資料庫連接成功
+2025-08-02 08:45:59,023 - database - INFO - 取得 1 家店家資訊
+2025-08-02 08:45:59,027 - main - INFO - 開始處理 1 家店家
+2025-08-02 08:45:59,082 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 1)
+2025-08-02 08:45:59,082 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-02 08:45:59,467 - crawler - ERROR - API請求失敗，狀態碼: 401
+2025-08-02 08:45:59,472 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 沒有新評論
+2025-08-02 08:45:59,594 - database - INFO - 更新店家 1 爬蟲日誌
+2025-08-02 08:46:00,759 - main - INFO - === 所有店家處理完成 ===
+2025-08-02 08:46:00,781 - database - INFO - 資料庫連接已關閉
+2025-08-02 08:49:18,702 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-02 08:49:18,925 - database - INFO - 資料庫連接成功
+2025-08-02 08:49:18,994 - database - INFO - 取得 1 家店家資訊
+2025-08-02 08:49:19,028 - main - INFO - 開始處理 1 家店家
+2025-08-02 08:49:19,029 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 1)
+2025-08-02 08:49:19,029 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-02 08:49:20,011 - crawler - ERROR - API請求失敗，狀態碼: 401
+2025-08-02 08:49:20,015 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 沒有新評論
+2025-08-02 08:49:20,248 - database - INFO - 更新店家 1 爬蟲日誌
+2025-08-02 08:49:22,251 - main - INFO - === 所有店家處理完成 ===
+2025-08-02 08:49:22,268 - database - INFO - 資料庫連接已關閉
+2025-08-02 08:52:39,405 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-02 08:52:39,733 - database - INFO - 資料庫連接成功
+2025-08-02 08:52:39,922 - database - INFO - 取得 1 家店家資訊
+2025-08-02 08:52:39,929 - main - INFO - 開始處理 1 家店家
+2025-08-02 08:52:39,930 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 1)
+2025-08-02 08:52:39,931 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-02 08:52:42,218 - crawler - ERROR - API請求失敗，狀態碼: 401
+2025-08-02 08:52:42,223 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 沒有新評論
+2025-08-02 08:52:42,342 - database - INFO - 更新店家 1 爬蟲日誌
+2025-08-02 08:52:45,386 - main - INFO - === 所有店家處理完成 ===
+2025-08-02 08:52:45,415 - database - INFO - 資料庫連接已關閉
+2025-08-02 08:56:01,520 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-02 08:56:01,625 - database - INFO - 資料庫連接成功
+2025-08-02 08:56:01,652 - database - INFO - 取得 1 家店家資訊
+2025-08-02 08:56:01,676 - main - INFO - 開始處理 1 家店家
+2025-08-02 08:56:01,681 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 1)
+2025-08-02 08:56:01,685 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-02 08:56:01,687 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-02 08:56:02,660 - crawler - INFO - 過濾後取得 0 則新評論
+2025-08-02 08:56:02,662 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 沒有新評論
+2025-08-02 08:56:02,708 - database - INFO - 更新店家 1 爬蟲日誌
+2025-08-02 08:56:03,726 - main - INFO - === 所有店家處理完成 ===
+2025-08-02 08:56:03,759 - database - INFO - 資料庫連接已關閉
+2025-08-02 09:00:14,841 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-02 09:00:15,437 - database - INFO - 資料庫連接成功
+2025-08-02 09:00:15,567 - database - INFO - 取得 1 家店家資訊
+2025-08-02 09:00:15,570 - main - INFO - 開始處理 1 家店家
+2025-08-02 09:00:15,571 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 1)
+2025-08-02 09:00:15,571 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-02 09:00:15,572 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-02 09:00:15,838 - crawler - INFO - 過濾後取得 0 則新評論
+2025-08-02 09:00:15,841 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 沒有新評論
+2025-08-02 09:00:15,936 - database - INFO - 更新店家 1 爬蟲日誌
+2025-08-02 09:00:18,491 - main - INFO - === 所有店家處理完成 ===
+2025-08-02 09:00:18,537 - database - INFO - 資料庫連接已關閉
+2025-08-02 09:08:36,076 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-02 09:08:36,318 - database - INFO - 資料庫連接成功
+2025-08-02 09:08:36,386 - database - INFO - 取得 1 家店家資訊
+2025-08-02 09:08:36,542 - main - INFO - 開始處理 1 家店家
+2025-08-02 09:08:36,543 - main - ERROR - 處理店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 時發生錯誤: 'ReviewAnalysisSystem' object has no attribute 'process_store'
+2025-08-02 09:08:36,548 - main - INFO - === 所有店家處理完成 ===
+2025-08-02 09:08:36,565 - database - INFO - 資料庫連接已關閉
+2025-08-02 09:10:07,973 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-02 09:10:07,974 - main - INFO - === 開始測試API連接 ===
+2025-08-02 09:10:10,428 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-02 09:10:10,429 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-02 09:10:10,431 - main - INFO - 所有API連接測試通過
+2025-08-02 09:10:11,530 - database - INFO - 資料庫連接成功
+2025-08-02 09:10:11,552 - database - INFO - 取得 1 家店家資訊
+2025-08-02 09:10:11,556 - main - INFO - 開始處理 1 家店家
+2025-08-02 09:10:11,557 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 1)
+2025-08-02 09:10:11,557 - main - INFO - 從上次爬取時間開始：2020-01-01 00:00:00
+2025-08-02 09:10:11,558 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-02 09:10:11,560 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-02 09:10:11,568 - crawler - INFO - 上次爬取時間: 2020-01-01 00:00:00
+2025-08-02 09:10:11,672 - crawler - INFO - API返回 8 則評論
+2025-08-02 09:10:11,742 - crawler - INFO - 過濾後取得 8 則新評論
+2025-08-02 09:10:12,283 - database - ERROR - 儲存評論失敗: 1292 (22007): Incorrect datetime value: '4 天前' for column 'review_time' at row 1
+2025-08-02 09:10:13,063 - database - INFO - 更新店家 1 爬蟲日誌
+2025-08-02 09:10:13,196 - database - INFO - 取得店家 1 的 0 則評論
+2025-08-02 09:10:13,196 - main - WARNING - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 沒有評論資料可供分析
+2025-08-02 09:10:14,414 - main - INFO - === 所有店家處理完成 ===
+2025-08-02 09:10:14,423 - database - INFO - 資料庫連接已關閉
+2025-08-02 09:13:53,103 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-02 09:13:53,105 - main - INFO - === 開始測試API連接 ===
+2025-08-02 09:13:53,335 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-02 09:13:53,337 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-02 09:13:53,340 - main - INFO - 所有API連接測試通過
+2025-08-02 09:13:53,342 - main - ERROR - 系統執行時發生錯誤: 'database'
+2025-08-02 09:19:32,683 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk
+2025-08-02 09:19:32,685 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\config.ini
+2025-08-02 09:19:32,688 - main - ERROR - 系統初始化失敗: 設定檔缺少以下區塊: database, serpapi, gemini, google_translate
+2025-08-02 09:19:32,690 - main - ERROR - 程式執行失敗: 設定檔缺少以下區塊: database, serpapi, gemini, google_translate
+2025-08-02 09:19:32,710 - main - ERROR - 詳細錯誤資訊: Traceback (most recent call last):
+  File "C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\main.py", line 220, in main
+    system = ReviewAnalysisSystem()
+  File "C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\main.py", line 35, in __init__
+    raise ValueError(f"設定檔缺少以下區塊: {', '.join(missing_sections)}")
+ValueError: 設定檔缺少以下區塊: database, serpapi, gemini, google_translate
+
+2025-08-02 09:22:27,341 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk
+2025-08-02 09:22:27,347 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\config.ini
+2025-08-02 09:22:27,351 - main - ERROR - 系統初始化失敗: 設定檔缺少以下區塊: database, serpapi, gemini, google_translate
+2025-08-02 09:22:27,352 - main - ERROR - 程式執行失敗: 設定檔缺少以下區塊: database, serpapi, gemini, google_translate
+2025-08-02 09:22:27,367 - main - ERROR - 詳細錯誤資訊: Traceback (most recent call last):
+  File "C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\main.py", line 220, in main
+    system = ReviewAnalysisSystem()
+  File "C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\main.py", line 35, in __init__
+    raise ValueError(f"設定檔缺少以下區塊: {', '.join(missing_sections)}")
+ValueError: 設定檔缺少以下區塊: database, serpapi, gemini, google_translate
+
+2025-08-02 09:23:57,768 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk
+2025-08-02 09:23:57,769 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\config.ini
+2025-08-02 09:23:57,772 - main - ERROR - 系統初始化失敗: 資料庫設定缺少以下項目: DB_HOST, DB_NAME, DB_USER, DB_PASSWORD, DB_PORT
+2025-08-02 09:23:57,773 - main - ERROR - 程式執行失敗: 資料庫設定缺少以下項目: DB_HOST, DB_NAME, DB_USER, DB_PASSWORD, DB_PORT
+2025-08-02 09:23:57,776 - main - ERROR - 詳細錯誤資訊: Traceback (most recent call last):
+  File "C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\main.py", line 220, in main
+    system = ReviewAnalysisSystem()
+  File "C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\main.py", line 46, in __init__
+    raise ValueError(f"資料庫設定缺少以下項目: {', '.join(missing_db_keys)}")
+ValueError: 資料庫設定缺少以下項目: DB_HOST, DB_NAME, DB_USER, DB_PASSWORD, DB_PORT
+
+2025-08-02 09:24:41,561 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk
+2025-08-02 09:24:41,562 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\config.ini
+2025-08-02 09:24:41,563 - main - ERROR - 系統初始化失敗: 資料庫設定缺少以下項目: host, database, user, password, port
+2025-08-02 09:24:41,564 - main - ERROR - 程式執行失敗: 資料庫設定缺少以下項目: host, database, user, password, port
+2025-08-02 09:24:41,566 - main - ERROR - 詳細錯誤資訊: Traceback (most recent call last):
+  File "C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\main.py", line 220, in main
+    system = ReviewAnalysisSystem()
+  File "C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\main.py", line 46, in __init__
+    raise ValueError(f"資料庫設定缺少以下項目: {', '.join(missing_db_keys)}")
+ValueError: 資料庫設定缺少以下項目: host, database, user, password, port
+
+2025-08-02 09:25:58,940 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-02 09:25:58,940 - main - INFO - === 開始測試API連接 ===
+2025-08-02 09:25:59,309 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-02 09:25:59,310 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-02 09:25:59,314 - main - INFO - 所有API連接測試通過
+2025-08-02 09:25:59,315 - main - ERROR - 系統執行時發生錯誤: 'database'
+2025-08-02 09:33:34,606 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk
+2025-08-02 09:33:34,620 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\config.ini
+2025-08-02 09:33:34,621 - main - INFO - 設定檔是否存在: True
+2025-08-02 09:33:34,698 - main - ERROR - 系統初始化失敗: 設定檔缺少以下區塊: serpapi, gemini, google_translate
+2025-08-02 09:33:34,716 - main - ERROR - 詳細錯誤: Traceback (most recent call last):
+  File "C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\main.py", line 36, in __init__
+    raise ValueError(f"設定檔缺少以下區塊: {', '.join(missing_sections)}")
+ValueError: 設定檔缺少以下區塊: serpapi, gemini, google_translate
+
+2025-08-02 09:33:34,727 - main - ERROR - 程式執行失敗: 設定檔缺少以下區塊: serpapi, gemini, google_translate
+2025-08-02 09:33:34,730 - main - ERROR - 詳細錯誤資訊: Traceback (most recent call last):
+  File "C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\main.py", line 253, in main
+    system = ReviewAnalysisSystem()
+  File "C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\main.py", line 36, in __init__
+    raise ValueError(f"設定檔缺少以下區塊: {', '.join(missing_sections)}")
+ValueError: 設定檔缺少以下區塊: serpapi, gemini, google_translate
+
+2025-08-02 09:35:18,096 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk
+2025-08-02 09:35:18,105 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\config.ini
+2025-08-02 09:35:18,182 - main - INFO - 設定檔是否存在: True
+2025-08-02 09:35:18,184 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-02 09:35:18,185 - main - INFO - 資料庫主機: 35.201.153.17
+2025-08-02 09:35:18,185 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-02 09:35:18,185 - main - INFO - 正在初始化系統模組...
+2025-08-02 09:35:18,185 - database - INFO - DatabaseManager 初始化成功
+2025-08-02 09:35:18,186 - main - INFO - 系統模組初始化完成
+2025-08-02 09:35:18,188 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-02 09:35:18,199 - main - INFO - === 開始測試API連接 ===
+2025-08-02 09:35:18,498 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-02 09:35:18,501 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-02 09:35:18,502 - main - INFO - 所有API連接測試通過
+2025-08-02 09:35:18,505 - database - INFO - 正在連接資料庫...
+2025-08-02 09:35:18,814 - database - INFO - 資料庫連接成功，MySQL 版本: 8.0.41-google
+2025-08-02 09:35:18,828 - database - ERROR - 取得店家資料失敗: 1054 (42S22): Unknown column 'last_crawl_time' in 'field list'
+2025-08-02 09:35:18,978 - main - WARNING - 沒有找到店家資料
+2025-08-02 09:35:18,988 - database - INFO - 資料庫連接已關閉
+2025-08-02 10:00:05,074 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk
+2025-08-02 10:00:05,078 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\config.ini
+2025-08-02 10:00:05,079 - main - INFO - 設定檔是否存在: True
+2025-08-02 10:00:05,081 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-02 10:00:05,082 - main - INFO - 資料庫主機: 35.201.153.17
+2025-08-02 10:00:05,083 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-02 10:00:05,083 - main - INFO - 正在初始化系統模組...
+2025-08-02 10:00:05,084 - database - INFO - DatabaseManager 初始化成功
+2025-08-02 10:00:05,085 - main - INFO - 系統模組初始化完成
+2025-08-02 10:00:05,086 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-02 10:00:05,086 - main - INFO - === 開始測試API連接 ===
+2025-08-02 10:00:05,376 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-02 10:00:05,377 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-02 10:00:05,379 - main - INFO - 所有API連接測試通過
+2025-08-02 10:00:05,380 - database - INFO - 正在連接資料庫...
+2025-08-02 10:00:05,968 - database - INFO - 資料庫連接成功，MySQL 版本: 8.0.41-google
+2025-08-02 10:00:06,127 - database - INFO - 取得 1 家店家資訊
+2025-08-02 10:00:06,168 - main - INFO - 開始處理 1 家店家
+2025-08-02 10:00:06,178 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 1)
+2025-08-02 10:00:06,228 - main - INFO - 從上次爬取時間開始：2025-08-02 09:10:13
+2025-08-02 10:00:06,234 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-02 10:00:06,241 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-02 10:00:06,249 - crawler - INFO - 上次爬取時間: 2025-08-02 09:10:13
+2025-08-02 10:00:07,325 - crawler - INFO - API返回 8 則評論
+2025-08-02 10:00:07,336 - crawler - INFO - 過濾後取得 0 則新評論
+2025-08-02 10:00:07,343 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 沒有符合條件的評論
+2025-08-02 10:00:07,427 - database - INFO - 更新店家 1 爬蟲日誌
+2025-08-02 10:00:07,569 - main - INFO - 嘗試分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的現有評論
+2025-08-02 10:00:07,588 - database - INFO - 取得店家 1 的 0 則評論
+2025-08-02 10:00:09,277 - main - INFO - === 所有店家處理完成 ===
+2025-08-02 10:00:09,337 - database - INFO - 資料庫連接已關閉
+2025-08-02 10:00:33,947 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk
+2025-08-02 10:00:33,948 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\config.ini
+2025-08-02 10:00:33,949 - main - INFO - 設定檔是否存在: True
+2025-08-02 10:00:33,950 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-02 10:00:33,950 - main - INFO - 資料庫主機: 35.201.153.17
+2025-08-02 10:00:33,953 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-02 10:00:33,953 - main - INFO - 正在初始化系統模組...
+2025-08-02 10:00:33,955 - database - INFO - DatabaseManager 初始化成功
+2025-08-02 10:00:33,958 - main - INFO - 系統模組初始化完成
+2025-08-02 10:00:33,993 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-02 10:00:33,994 - main - INFO - === 開始測試API連接 ===
+2025-08-02 10:00:34,119 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-02 10:00:34,120 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-02 10:00:34,121 - main - INFO - 所有API連接測試通過
+2025-08-02 10:00:34,121 - database - INFO - 正在連接資料庫...
+2025-08-02 10:00:34,232 - database - INFO - 資料庫連接成功，MySQL 版本: 8.0.41-google
+2025-08-02 10:00:34,272 - database - INFO - 取得 1 家店家資訊
+2025-08-02 10:00:34,274 - main - INFO - 開始處理 1 家店家
+2025-08-02 10:00:34,274 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 1)
+2025-08-02 10:00:34,274 - main - INFO - 首次爬取該店家：將從365天前開始抓取評論
+2025-08-02 10:00:34,274 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-02 10:00:34,274 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-02 10:00:34,275 - crawler - INFO - 首次爬取該店家，將抓取 2024-08-02 10:00:34 之後的評論
+2025-08-02 10:00:34,321 - crawler - INFO - API返回 8 則評論
+2025-08-02 10:00:34,331 - crawler - INFO - 首次爬取，過濾後取得 8 則評論（365天內）
+2025-08-02 10:00:34,527 - database - INFO - 成功儲存 8 則評論
+2025-08-02 10:00:34,553 - database - INFO - 更新店家 1 爬蟲日誌
+2025-08-02 10:00:34,619 - database - INFO - 取得店家 1 的 8 則評論
+2025-08-02 10:00:34,621 - main - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-02 10:00:34,621 - analyzer - WARNING - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 沒有可分析的評論文字
+2025-08-02 10:00:34,621 - main - WARNING - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 評論分析失敗
+2025-08-02 10:00:34,622 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 處理完成
+2025-08-02 10:00:35,669 - main - INFO - === 所有店家處理完成 ===
+2025-08-02 10:00:35,677 - database - INFO - 資料庫連接已關閉
+2025-08-04 00:31:28,192 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk
+2025-08-04 00:31:28,195 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\config.ini
+2025-08-04 00:31:28,196 - main - INFO - 設定檔是否存在: True
+2025-08-04 00:31:28,197 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-04 00:31:28,197 - main - INFO - 資料庫主機: 35.201.153.17
+2025-08-04 00:31:28,197 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-04 00:31:28,198 - main - INFO - 正在初始化系統模組...
+2025-08-04 00:31:28,198 - database - INFO - DatabaseManager 初始化成功
+2025-08-04 00:31:28,199 - main - INFO - 系統模組初始化完成
+2025-08-04 00:31:28,199 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-04 00:31:28,199 - main - INFO - === 開始測試API連接 ===
+2025-08-04 00:31:29,340 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-04 00:31:29,340 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-04 00:31:29,341 - main - INFO - 所有API連接測試通過
+2025-08-04 00:31:29,341 - database - INFO - 正在連接資料庫...
+2025-08-04 00:31:29,511 - database - INFO - 資料庫連接成功，MySQL 版本: 8.0.41-google
+2025-08-04 00:31:29,563 - database - INFO - 創建 store_translations 表
+2025-08-04 00:31:29,569 - database - INFO - 取得 1 家店家資訊
+2025-08-04 00:31:29,569 - main - INFO - 開始處理 1 家店家
+2025-08-04 00:31:29,569 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 1)
+2025-08-04 00:31:29,569 - main - INFO - 從上次爬取時間開始：2025-08-02 01:57:22
+2025-08-04 00:31:29,570 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-04 00:31:29,571 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-04 00:31:29,571 - crawler - INFO - 上次爬取時間: 2025-08-02 01:57:22
+2025-08-04 00:31:30,374 - crawler - INFO - API返回 8 則評論
+2025-08-04 00:31:30,375 - crawler - INFO - 過濾後取得 1 則新評論
+2025-08-04 00:31:30,396 - database - INFO - 成功儲存 1 則評論
+2025-08-04 00:31:30,420 - database - INFO - 更新店家 1 爬蟲日誌
+2025-08-04 00:31:30,437 - database - INFO - 取得店家 1 的 9 則評論
+2025-08-04 00:31:30,456 - main - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 00:31:30,456 - analyzer - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 找到 8 則可分析的評論
+2025-08-04 00:31:30,456 - analyzer - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 00:31:30,779 - analyzer - ERROR - 分析評論時發生錯誤: 404 models/gemini-pro is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2025-08-04 00:31:30,779 - main - WARNING - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 評論分析失敗
+2025-08-04 00:31:30,779 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 處理完成
+2025-08-04 00:31:31,942 - main - INFO - === 所有店家處理完成 ===
+2025-08-04 00:31:31,949 - database - INFO - 資料庫連接已關閉
+2025-08-04 00:49:08,426 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk
+2025-08-04 00:49:08,427 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\config.ini
+2025-08-04 00:49:08,427 - main - INFO - 設定檔是否存在: True
+2025-08-04 00:49:08,430 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-04 00:49:08,430 - main - INFO - 資料庫主機: 35.201.153.17
+2025-08-04 00:49:08,430 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-04 00:49:08,431 - main - INFO - 正在初始化系統模組...
+2025-08-04 00:49:08,432 - database - INFO - DatabaseManager 初始化成功
+2025-08-04 00:49:08,433 - main - INFO - 系統模組初始化完成
+2025-08-04 00:49:08,434 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-04 00:49:08,436 - main - INFO - === 開始測試API連接 ===
+2025-08-04 00:49:08,584 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-04 00:49:08,585 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-04 00:49:08,586 - main - INFO - 所有API連接測試通過
+2025-08-04 00:49:08,586 - database - INFO - 正在連接資料庫...
+2025-08-04 00:49:08,803 - database - INFO - 資料庫連接成功，MySQL 版本: 8.0.41-google
+2025-08-04 00:49:08,833 - database - INFO - 取得 1 家店家資訊
+2025-08-04 00:49:08,836 - main - INFO - 開始處理 1 家店家
+2025-08-04 00:49:08,836 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 1)
+2025-08-04 00:49:08,837 - main - INFO - 從上次爬取時間開始：2025-08-03 16:32:14
+2025-08-04 00:49:08,837 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-04 00:49:08,837 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-04 00:49:08,837 - crawler - INFO - 上次爬取時間: 2025-08-03 16:32:14
+2025-08-04 00:49:08,869 - crawler - INFO - API返回 8 則評論
+2025-08-04 00:49:08,870 - crawler - INFO - 過濾後取得 1 則新評論
+2025-08-04 00:49:08,906 - database - INFO - 成功儲存 1 則評論
+2025-08-04 00:49:08,953 - database - INFO - 更新店家 1 爬蟲日誌
+2025-08-04 00:49:08,981 - database - INFO - 取得店家 1 的 10 則評論
+2025-08-04 00:49:09,002 - main - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 00:49:09,002 - analyzer - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 找到 9 則可分析的評論
+2025-08-04 00:49:09,003 - analyzer - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 00:49:38,923 - analyzer - INFO - 成功分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 00:49:38,949 - database - INFO - 更新店家 1 評論摘要
+2025-08-04 00:49:38,961 - database - ERROR - 取得語言資料失敗: 1054 (42S22): Unknown column 'language_code' in 'field list'
+2025-08-04 00:49:38,972 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 分析和翻譯完成
+2025-08-04 00:49:38,975 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 處理完成
+2025-08-04 00:49:40,859 - main - INFO - === 所有店家處理完成 ===
+2025-08-04 00:49:40,880 - database - INFO - 資料庫連接已關閉
+2025-08-04 00:53:46,197 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk
+2025-08-04 00:53:46,202 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\config.ini
+2025-08-04 00:53:46,202 - main - INFO - 設定檔是否存在: True
+2025-08-04 00:53:46,204 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-04 00:53:46,205 - main - INFO - 資料庫主機: 35.201.153.17
+2025-08-04 00:53:46,206 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-04 00:53:46,206 - main - INFO - 正在初始化系統模組...
+2025-08-04 00:53:46,206 - database - INFO - DatabaseManager 初始化成功
+2025-08-04 00:53:46,207 - main - INFO - 系統模組初始化完成
+2025-08-04 00:53:46,207 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-04 00:53:46,207 - main - INFO - === 開始測試API連接 ===
+2025-08-04 00:53:46,438 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-04 00:53:46,439 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-04 00:53:46,440 - main - INFO - 所有API連接測試通過
+2025-08-04 00:53:46,441 - database - INFO - 正在連接資料庫...
+2025-08-04 00:53:46,715 - database - INFO - 資料庫連接成功，MySQL 版本: 8.0.41-google
+2025-08-04 00:53:46,753 - database - INFO - 取得 1 家店家資訊
+2025-08-04 00:53:46,762 - main - INFO - 開始處理 1 家店家
+2025-08-04 00:53:46,764 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 1)
+2025-08-04 00:53:46,796 - main - INFO - 從上次爬取時間開始：2025-08-03 16:49:39
+2025-08-04 00:53:46,797 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-04 00:53:46,797 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-04 00:53:46,804 - crawler - INFO - 上次爬取時間: 2025-08-03 16:49:39
+2025-08-04 00:53:46,869 - crawler - INFO - API返回 8 則評論
+2025-08-04 00:53:46,874 - crawler - INFO - 過濾後取得 1 則新評論
+2025-08-04 00:53:46,920 - database - INFO - 成功儲存 1 則評論
+2025-08-04 00:53:46,976 - database - INFO - 更新店家 1 爬蟲日誌
+2025-08-04 00:53:47,043 - database - INFO - 取得店家 1 的 11 則評論
+2025-08-04 00:53:47,045 - main - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 00:53:47,046 - analyzer - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 找到 10 則可分析的評論
+2025-08-04 00:53:47,046 - analyzer - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 00:54:28,594 - analyzer - INFO - 成功分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 00:54:28,623 - database - INFO - 更新店家 1 評論摘要
+2025-08-04 00:54:28,635 - database - ERROR - 取得語言資料失敗: 1054 (42S22): Unknown column 'language_code' in 'field list'
+2025-08-04 00:54:28,645 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 分析和翻譯完成
+2025-08-04 00:54:28,646 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 處理完成
+2025-08-04 00:54:30,835 - main - INFO - === 所有店家處理完成 ===
+2025-08-04 00:54:30,850 - database - INFO - 資料庫連接已關閉
+2025-08-04 00:57:43,125 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk
+2025-08-04 00:57:43,128 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\config.ini
+2025-08-04 00:57:43,128 - main - INFO - 設定檔是否存在: True
+2025-08-04 00:57:43,130 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-04 00:57:43,130 - main - INFO - 資料庫主機: 35.201.153.17
+2025-08-04 00:57:43,131 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-04 00:57:43,131 - main - INFO - 正在初始化系統模組...
+2025-08-04 00:57:43,131 - database - INFO - DatabaseManager 初始化成功
+2025-08-04 00:57:43,132 - main - INFO - 系統模組初始化完成
+2025-08-04 00:57:43,132 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-04 00:57:43,133 - main - INFO - === 開始測試API連接 ===
+2025-08-04 00:57:43,278 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-04 00:57:43,292 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-04 00:57:43,293 - main - INFO - 所有API連接測試通過
+2025-08-04 00:57:43,293 - database - INFO - 正在連接資料庫...
+2025-08-04 00:57:43,825 - database - INFO - 資料庫連接成功，MySQL 版本: 8.0.41-google
+2025-08-04 00:57:43,887 - database - INFO - 取得 1 家店家資訊
+2025-08-04 00:57:43,906 - main - INFO - 開始處理 1 家店家
+2025-08-04 00:57:43,907 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 1)
+2025-08-04 00:57:43,923 - main - INFO - 從上次爬取時間開始：2025-08-03 16:54:43
+2025-08-04 00:57:43,924 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-04 00:57:43,925 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-04 00:57:43,925 - crawler - INFO - 上次爬取時間: 2025-08-03 16:54:43
+2025-08-04 00:57:44,072 - crawler - INFO - API返回 8 則評論
+2025-08-04 00:57:44,073 - crawler - INFO - 過濾後取得 1 則新評論
+2025-08-04 00:57:44,145 - database - INFO - 成功儲存 1 則評論
+2025-08-04 00:57:44,232 - database - INFO - 更新店家 1 爬蟲日誌
+2025-08-04 00:57:44,283 - database - INFO - 取得店家 1 的 12 則評論
+2025-08-04 00:57:44,284 - main - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 00:57:44,285 - analyzer - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 找到 11 則可分析的評論
+2025-08-04 00:57:44,287 - analyzer - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 00:58:36,974 - analyzer - INFO - 成功分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 00:58:37,186 - database - INFO - 更新店家 1 評論摘要
+2025-08-04 00:58:37,198 - database - ERROR - 取得語言資料失敗: 1054 (42S22): Unknown column 'is_active' in 'where clause'
+2025-08-04 00:58:37,199 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 分析和翻譯完成
+2025-08-04 00:58:37,199 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 處理完成
+2025-08-04 00:58:39,901 - main - INFO - === 所有店家處理完成 ===
+2025-08-04 00:58:39,920 - database - INFO - 資料庫連接已關閉
+2025-08-04 01:00:15,072 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk
+2025-08-04 01:00:15,072 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\config.ini
+2025-08-04 01:00:15,073 - main - INFO - 設定檔是否存在: True
+2025-08-04 01:00:15,073 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-04 01:00:15,073 - main - INFO - 資料庫主機: 35.201.153.17
+2025-08-04 01:00:15,074 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-04 01:00:15,074 - main - INFO - 正在初始化系統模組...
+2025-08-04 01:00:15,074 - database - INFO - DatabaseManager 初始化成功
+2025-08-04 01:00:15,074 - main - INFO - 系統模組初始化完成
+2025-08-04 01:00:15,074 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-04 01:00:15,074 - main - INFO - === 開始測試API連接 ===
+2025-08-04 01:00:15,172 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-04 01:00:15,173 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-04 01:00:15,174 - main - INFO - 所有API連接測試通過
+2025-08-04 01:00:15,175 - database - INFO - 正在連接資料庫...
+2025-08-04 01:00:15,314 - database - INFO - 資料庫連接成功，MySQL 版本: 8.0.41-google
+2025-08-04 01:00:15,334 - database - INFO - 取得 1 家店家資訊
+2025-08-04 01:00:15,348 - main - INFO - 開始處理 1 家店家
+2025-08-04 01:00:15,348 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 1)
+2025-08-04 01:00:15,348 - main - INFO - 從上次爬取時間開始：2025-08-03 16:58:17
+2025-08-04 01:00:15,348 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-04 01:00:15,349 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-04 01:00:15,349 - crawler - INFO - 上次爬取時間: 2025-08-03 16:58:17
+2025-08-04 01:00:15,383 - crawler - INFO - API返回 8 則評論
+2025-08-04 01:00:15,414 - crawler - INFO - 過濾後取得 1 則新評論
+2025-08-04 01:00:15,493 - database - INFO - 成功儲存 1 則評論
+2025-08-04 01:00:15,540 - database - INFO - 更新店家 1 爬蟲日誌
+2025-08-04 01:00:15,580 - database - INFO - 取得店家 1 的 13 則評論
+2025-08-04 01:00:15,596 - main - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 01:00:15,597 - analyzer - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 找到 12 則可分析的評論
+2025-08-04 01:00:15,602 - analyzer - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 01:00:39,846 - analyzer - INFO - 成功分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 01:00:39,888 - database - INFO - 更新店家 1 評論摘要
+2025-08-04 01:00:39,899 - database - INFO - 取得 4 種語言
+2025-08-04 01:00:39,905 - main - INFO - 開始翻譯店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論摘要
+2025-08-04 01:00:39,908 - translator - INFO - 翻譯到 英文 (en)
+2025-08-04 01:00:39,908 - translator - INFO - 開始翻譯評論摘要到 English
+2025-08-04 01:01:07,038 - translator - INFO - 成功翻譯評論摘要到 English
+2025-08-04 01:01:07,041 - translator - INFO - 翻譯到 日文 (ja)
+2025-08-04 01:01:07,043 - translator - INFO - 開始翻譯評論摘要到 ja
+2025-08-04 01:02:06,393 - translator - INFO - 成功翻譯評論摘要到 ja
+2025-08-04 01:02:06,395 - translator - INFO - 翻譯到 韓文 (ko)
+2025-08-04 01:02:06,395 - translator - INFO - 開始翻譯評論摘要到 韓文
+2025-08-04 01:02:48,476 - translator - INFO - 成功翻譯評論摘要到 韓文
+2025-08-04 01:02:48,476 - translator - INFO - 翻譯到 繁體中文 (台灣) (zh-TW)
+2025-08-04 01:02:48,483 - database - ERROR - 更新翻譯失敗: 1054 (42S22): Unknown column 'lang_code' in 'where clause'
+2025-08-04 01:02:48,510 - database - ERROR - 更新翻譯失敗: 1054 (42S22): Unknown column 'lang_code' in 'where clause'
+2025-08-04 01:02:48,536 - database - ERROR - 更新翻譯失敗: 1054 (42S22): Unknown column 'lang_code' in 'where clause'
+2025-08-04 01:02:48,555 - database - ERROR - 更新翻譯失敗: 1054 (42S22): Unknown column 'lang_code' in 'where clause'
+2025-08-04 01:02:48,583 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 分析和翻譯完成
+2025-08-04 01:02:48,593 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 處理完成
+2025-08-04 01:02:49,958 - main - INFO - === 所有店家處理完成 ===
+2025-08-04 01:02:49,966 - database - INFO - 資料庫連接已關閉
+2025-08-04 09:13:04,869 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk
+2025-08-04 09:13:04,872 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\config.ini
+2025-08-04 09:13:04,872 - main - INFO - 設定檔是否存在: True
+2025-08-04 09:13:04,875 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-04 09:13:04,876 - main - INFO - 資料庫主機: 35.201.153.17
+2025-08-04 09:13:04,877 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-04 09:13:04,877 - main - INFO - 正在初始化系統模組...
+2025-08-04 09:13:04,877 - database - INFO - DatabaseManager 初始化成功
+2025-08-04 09:13:04,878 - main - INFO - 系統模組初始化完成
+2025-08-04 09:13:04,879 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-04 09:13:04,879 - main - INFO - === 開始測試API連接 ===
+2025-08-04 09:13:08,366 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-04 09:13:08,368 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-04 09:13:08,370 - main - INFO - 所有API連接測試通過
+2025-08-04 09:13:08,372 - database - INFO - 正在連接資料庫...
+2025-08-04 09:13:09,659 - database - INFO - 資料庫連接成功，MySQL 版本: 8.0.41-google
+2025-08-04 09:13:09,865 - database - INFO - 取得 1 家店家資訊
+2025-08-04 09:13:09,865 - main - INFO - 開始處理 1 家店家
+2025-08-04 09:13:09,865 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 1)
+2025-08-04 09:13:09,866 - main - INFO - 從上次爬取時間開始：2025-08-03 17:00:56
+2025-08-04 09:13:09,866 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-04 09:13:09,866 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-04 09:13:09,866 - crawler - INFO - 上次爬取時間: 2025-08-03 17:00:56
+2025-08-04 09:13:11,194 - crawler - INFO - API返回 8 則評論
+2025-08-04 09:13:11,196 - crawler - INFO - 過濾後取得 1 則新評論
+2025-08-04 09:13:11,363 - database - INFO - 成功儲存 1 則評論
+2025-08-04 09:13:11,596 - database - INFO - 更新店家 1 爬蟲日誌
+2025-08-04 09:13:11,823 - database - INFO - 取得店家 1 的 14 則評論
+2025-08-04 09:13:11,823 - main - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 09:13:11,824 - analyzer - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 找到 13 則可分析的評論
+2025-08-04 09:13:11,824 - analyzer - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 09:13:50,768 - analyzer - INFO - 成功分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 09:13:50,870 - database - INFO - 更新店家 1 評論摘要
+2025-08-04 09:13:50,922 - database - INFO - 取得 4 種語言
+2025-08-04 09:13:50,935 - main - INFO - 開始翻譯店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論摘要
+2025-08-04 09:13:50,935 - translator - INFO - 開始批量翻譯到 4 種語言
+2025-08-04 09:13:50,935 - translator - INFO - 正在翻譯到 英文 (en)
+2025-08-04 09:13:50,936 - translator - INFO - 開始翻譯評論摘要到 English (en)
+2025-08-04 09:14:50,025 - translator - INFO - 成功翻譯評論摘要到 English
+2025-08-04 09:14:50,027 - translator - INFO - 成功翻譯到 英文
+2025-08-04 09:14:51,529 - translator - INFO - 正在翻譯到 日文 (ja)
+2025-08-04 09:14:51,530 - translator - INFO - 開始翻譯評論摘要到 Japanese (ja)
+2025-08-04 09:15:39,384 - translator - INFO - 成功翻譯評論摘要到 Japanese
+2025-08-04 09:15:39,385 - translator - INFO - 成功翻譯到 日文
+2025-08-04 09:15:40,887 - translator - INFO - 正在翻譯到 韓文 (ko)
+2025-08-04 09:15:40,889 - translator - INFO - 開始翻譯評論摘要到 Korean (ko)
+2025-08-04 09:15:44,735 - translator - ERROR - 翻譯評論摘要到 ko 時發生錯誤: 500 An internal error has occurred. Please retry or report in https://developers.generativeai.google/guide/troubleshooting
+2025-08-04 09:15:44,736 - translator - WARNING - 翻譯到 韓文 失敗
+2025-08-04 09:15:46,238 - translator - INFO - 正在翻譯到 繁體中文 (台灣) (zh-TW)
+2025-08-04 09:15:46,239 - translator - INFO - 目標語言為繁體中文 (zh-TW)，直接返回原文
+2025-08-04 09:15:46,240 - translator - INFO - 成功翻譯到 繁體中文 (台灣)
+2025-08-04 09:15:47,741 - translator - INFO - 批量翻譯完成，成功翻譯 3 種語言
+2025-08-04 09:15:47,794 - database - ERROR - 更新翻譯失敗: 1054 (42S22): Unknown column 'lang_code' in 'where clause'
+2025-08-04 09:15:47,880 - database - ERROR - 更新翻譯失敗: 1054 (42S22): Unknown column 'lang_code' in 'where clause'
+2025-08-04 09:15:47,991 - database - ERROR - 更新翻譯失敗: 1054 (42S22): Unknown column 'lang_code' in 'where clause'
+2025-08-04 09:15:48,056 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 分析和翻譯完成
+2025-08-04 09:15:48,070 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 處理完成
+2025-08-04 09:15:51,073 - main - INFO - === 所有店家處理完成 ===
+2025-08-04 09:15:51,119 - database - INFO - 資料庫連接已關閉
+2025-08-04 09:22:16,263 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk
+2025-08-04 09:22:16,264 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\config.ini
+2025-08-04 09:22:16,265 - main - INFO - 設定檔是否存在: True
+2025-08-04 09:22:16,266 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-04 09:22:16,266 - main - INFO - 資料庫主機: 35.201.153.17
+2025-08-04 09:22:16,266 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-04 09:22:16,267 - main - INFO - 正在初始化系統模組...
+2025-08-04 09:22:16,267 - database - INFO - DatabaseManager 初始化成功
+2025-08-04 09:22:16,267 - main - INFO - 系統模組初始化完成
+2025-08-04 09:22:16,267 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-04 09:22:16,267 - main - INFO - === 開始測試API連接 ===
+2025-08-04 09:22:16,504 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-04 09:22:16,504 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-04 09:22:16,506 - main - INFO - 所有API連接測試通過
+2025-08-04 09:22:16,506 - database - INFO - 正在連接資料庫...
+2025-08-04 09:22:16,830 - database - INFO - 資料庫連接成功，MySQL 版本: 8.0.41-google
+2025-08-04 09:22:16,926 - database - INFO - 取得 1 家店家資訊
+2025-08-04 09:22:16,927 - main - INFO - 開始處理 1 家店家
+2025-08-04 09:22:16,928 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 1)
+2025-08-04 09:22:16,928 - main - INFO - 從上次爬取時間開始：2025-08-04 01:14:18
+2025-08-04 09:22:16,928 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-04 09:22:16,928 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-04 09:22:16,928 - crawler - INFO - 上次爬取時間: 2025-08-04 01:14:18
+2025-08-04 09:22:17,058 - crawler - INFO - API返回 8 則評論
+2025-08-04 09:22:17,076 - crawler - INFO - 過濾後取得 0 則新評論
+2025-08-04 09:22:17,082 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 沒有符合條件的評論
+2025-08-04 09:22:17,198 - database - INFO - 更新店家 1 爬蟲日誌
+2025-08-04 09:22:17,199 - main - INFO - 嘗試分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的現有評論
+2025-08-04 09:22:17,271 - database - INFO - 取得店家 1 的 14 則評論
+2025-08-04 09:22:17,312 - main - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 09:22:17,318 - analyzer - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 找到 13 則可分析的評論
+2025-08-04 09:22:17,319 - analyzer - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 09:22:44,034 - analyzer - INFO - 成功分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 09:22:44,134 - database - INFO - 更新店家 1 評論摘要
+2025-08-04 09:22:44,188 - database - INFO - 取得 4 種語言
+2025-08-04 09:22:44,214 - main - INFO - 開始翻譯店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論摘要
+2025-08-04 09:22:44,217 - translator - INFO - 開始批量翻譯到 4 種語言
+2025-08-04 09:22:44,217 - translator - INFO - 正在翻譯到 英文 (en)
+2025-08-04 09:22:44,218 - translator - INFO - 開始翻譯評論摘要到 English (en)
+2025-08-04 09:23:13,984 - translator - INFO - 成功翻譯評論摘要到 English
+2025-08-04 09:23:13,985 - translator - INFO - 成功翻譯到 英文
+2025-08-04 09:23:15,413 - translator - INFO - 正在翻譯到 日文 (ja)
+2025-08-04 09:23:15,414 - translator - INFO - 開始翻譯評論摘要到 Japanese (ja)
+2025-08-04 09:24:20,381 - translator - INFO - 成功翻譯評論摘要到 Japanese
+2025-08-04 09:24:20,382 - translator - INFO - 成功翻譯到 日文
+2025-08-04 09:24:21,883 - translator - INFO - 正在翻譯到 韓文 (ko)
+2025-08-04 09:24:21,883 - translator - INFO - 開始翻譯評論摘要到 Korean (ko)
+2025-08-04 09:25:22,618 - translator - INFO - 成功翻譯評論摘要到 Korean
+2025-08-04 09:25:22,619 - translator - INFO - 成功翻譯到 韓文
+2025-08-04 09:25:23,970 - translator - INFO - 正在翻譯到 繁體中文 (台灣) (zh-TW)
+2025-08-04 09:25:23,976 - translator - INFO - 目標語言為繁體中文 (zh-TW)，直接返回原文
+2025-08-04 09:25:23,977 - translator - INFO - 成功翻譯到 繁體中文 (台灣)
+2025-08-04 09:25:25,329 - translator - INFO - 批量翻譯完成，成功翻譯 4 種語言
+2025-08-04 09:25:25,367 - database - ERROR - 更新翻譯失敗: 1054 (42S22): Unknown column 'lang_code' in 'where clause'
+2025-08-04 09:25:25,474 - database - ERROR - 更新翻譯失敗: 1054 (42S22): Unknown column 'lang_code' in 'where clause'
+2025-08-04 09:25:25,582 - database - ERROR - 更新翻譯失敗: 1054 (42S22): Unknown column 'lang_code' in 'where clause'
+2025-08-04 09:25:25,690 - database - ERROR - 更新翻譯失敗: 1054 (42S22): Unknown column 'lang_code' in 'where clause'
+2025-08-04 09:25:25,735 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 分析和翻譯完成
+2025-08-04 09:25:28,495 - main - INFO - === 所有店家處理完成 ===
+2025-08-04 09:25:28,540 - database - INFO - 資料庫連接已關閉
+2025-08-04 09:44:44,230 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk
+2025-08-04 09:44:44,235 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\config.ini
+2025-08-04 09:44:44,235 - main - INFO - 設定檔是否存在: True
+2025-08-04 09:44:44,248 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-04 09:44:44,249 - main - INFO - 資料庫主機: 35.201.153.17
+2025-08-04 09:44:44,249 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-04 09:44:44,250 - main - INFO - 正在初始化系統模組...
+2025-08-04 09:44:44,251 - database - INFO - DatabaseManager 初始化成功
+2025-08-04 09:44:44,252 - main - INFO - 系統模組初始化完成
+2025-08-04 09:44:44,290 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-04 09:44:44,475 - main - INFO - === 開始測試API連接 ===
+2025-08-04 09:44:44,677 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-04 09:44:44,677 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-04 09:44:44,678 - main - INFO - 所有API連接測試通過
+2025-08-04 09:44:44,678 - database - INFO - 正在連接資料庫...
+2025-08-04 09:44:45,004 - database - INFO - 資料庫連接成功，MySQL 版本: 8.0.41-google
+2025-08-04 09:44:45,068 - database - INFO - 取得 1 家店家資訊
+2025-08-04 09:44:45,068 - main - INFO - 開始處理 1 家店家
+2025-08-04 09:44:45,069 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 1)
+2025-08-04 09:44:45,069 - main - INFO - 從上次爬取時間開始：2025-08-04 01:23:36
+2025-08-04 09:44:45,069 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-04 09:44:45,069 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-04 09:44:45,069 - crawler - INFO - 上次爬取時間: 2025-08-04 01:23:36
+2025-08-04 09:44:45,149 - crawler - INFO - API返回 8 則評論
+2025-08-04 09:44:45,151 - crawler - INFO - 過濾後取得 0 則新評論
+2025-08-04 09:44:45,151 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 沒有符合條件的評論
+2025-08-04 09:44:45,210 - database - INFO - 更新店家 1 爬蟲日誌
+2025-08-04 09:44:45,210 - main - INFO - 嘗試分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的現有評論
+2025-08-04 09:44:45,273 - database - INFO - 取得店家 1 的 14 則評論
+2025-08-04 09:44:45,273 - main - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 09:44:45,274 - analyzer - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 找到 13 則可分析的評論
+2025-08-04 09:44:45,274 - analyzer - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 09:45:03,358 - analyzer - INFO - 成功分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 09:45:03,399 - database - INFO - 更新店家 1 評論摘要
+2025-08-04 09:45:03,415 - database - INFO - 取得 4 種語言
+2025-08-04 09:45:03,417 - main - INFO - 開始翻譯店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論摘要
+2025-08-04 09:45:03,418 - translator - INFO - 開始批量翻譯到 4 種語言
+2025-08-04 09:45:03,418 - translator - INFO - 正在翻譯到 英文 (en)
+2025-08-04 09:45:03,419 - translator - INFO - 開始翻譯評論摘要到 English (en)
+2025-08-04 09:45:25,579 - translator - INFO - 成功翻譯評論摘要到 English
+2025-08-04 09:45:25,580 - translator - INFO - 成功翻譯到 英文
+2025-08-04 09:45:26,249 - translator - INFO - 正在翻譯到 日文 (ja)
+2025-08-04 09:45:26,249 - translator - INFO - 開始翻譯評論摘要到 Japanese (ja)
+2025-08-04 09:45:49,096 - translator - INFO - 成功翻譯評論摘要到 Japanese
+2025-08-04 09:45:49,097 - translator - INFO - 成功翻譯到 日文
+2025-08-04 09:45:49,983 - translator - INFO - 正在翻譯到 韓文 (ko)
+2025-08-04 09:45:49,984 - translator - INFO - 開始翻譯評論摘要到 Korean (ko)
+2025-08-04 09:46:35,579 - translator - INFO - 成功翻譯評論摘要到 Korean
+2025-08-04 09:46:35,579 - translator - INFO - 成功翻譯到 韓文
+2025-08-04 09:46:36,877 - translator - INFO - 正在翻譯到 繁體中文 (台灣) (zh-TW)
+2025-08-04 09:46:36,878 - translator - INFO - 目標語言為繁體中文 (zh-TW)，直接返回原文
+2025-08-04 09:46:36,878 - translator - INFO - 成功翻譯到 繁體中文 (台灣)
+2025-08-04 09:46:38,176 - translator - INFO - 批量翻譯完成，成功翻譯 4 種語言
+2025-08-04 09:46:38,177 - main - ERROR - 分析和翻譯店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 時發生錯誤: name 'lanuage_code' is not defined
+2025-08-04 09:46:41,023 - main - INFO - === 所有店家處理完成 ===
+2025-08-04 09:46:41,079 - database - INFO - 資料庫連接已關閉
+2025-08-04 12:15:11,850 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk
+2025-08-04 12:15:11,851 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\config.ini
+2025-08-04 12:15:11,851 - main - INFO - 設定檔是否存在: True
+2025-08-04 12:15:11,853 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-04 12:15:11,854 - main - INFO - 資料庫主機: 35.201.153.17
+2025-08-04 12:15:11,854 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-04 12:15:11,854 - main - INFO - 正在初始化系統模組...
+2025-08-04 12:15:11,855 - database - INFO - DatabaseManager 初始化成功
+2025-08-04 12:15:12,214 - translator - INFO - 翻譯器資料庫連接成功
+2025-08-04 12:15:12,222 - translator - INFO - 成功載入 4 種語言設定
+2025-08-04 12:15:12,223 - main - INFO - 系統模組初始化完成
+2025-08-04 12:15:12,223 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-04 12:15:12,224 - main - INFO - === 開始測試API連接 ===
+2025-08-04 12:15:13,835 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-04 12:15:13,836 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-04 12:15:13,837 - main - INFO - 所有API連接測試通過
+2025-08-04 12:15:13,838 - database - INFO - 正在連接資料庫...
+2025-08-04 12:15:13,933 - database - INFO - 資料庫連接成功，MySQL 版本: 8.0.41-google
+2025-08-04 12:15:13,978 - database - INFO - 取得 1 家店家資訊
+2025-08-04 12:15:13,980 - main - INFO - 開始處理 1 家店家
+2025-08-04 12:15:13,981 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 1)
+2025-08-04 12:15:13,981 - main - INFO - 從上次爬取時間開始：2025-08-04 01:44:56
+2025-08-04 12:15:13,981 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-04 12:15:13,981 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-04 12:15:13,982 - crawler - INFO - 上次爬取時間: 2025-08-04 01:44:56
+2025-08-04 12:15:18,669 - crawler - INFO - API返回 8 則評論
+2025-08-04 12:15:18,672 - crawler - INFO - 過濾後取得 0 則新評論
+2025-08-04 12:15:18,673 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 沒有符合條件的評論
+2025-08-04 12:15:18,708 - database - INFO - 更新店家 1 爬蟲日誌
+2025-08-04 12:15:18,727 - main - INFO - 嘗試分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的現有評論
+2025-08-04 12:15:18,753 - database - INFO - 取得店家 1 的 14 則評論
+2025-08-04 12:15:18,773 - main - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 12:15:18,774 - analyzer - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 找到 13 則可分析的評論
+2025-08-04 12:15:18,775 - analyzer - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 12:15:47,113 - analyzer - INFO - 成功分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 12:15:47,146 - database - INFO - 更新店家 1 評論摘要
+2025-08-04 12:15:47,156 - database - INFO - 取得 4 種語言
+2025-08-04 12:15:47,181 - main - INFO - 開始翻譯店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論摘要
+2025-08-04 12:15:47,182 - main - ERROR - 分析和翻譯店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 時發生錯誤: 'ReviewTranslator' object has no attribute 'batch_translate'
+2025-08-04 12:15:49,183 - main - INFO - === 所有店家處理完成 ===
+2025-08-04 12:15:49,194 - database - INFO - 資料庫連接已關閉
+2025-08-04 12:15:49,206 - translator - INFO - 翻譯器資料庫連接已關閉
+2025-08-04 12:22:37,717 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk
+2025-08-04 12:22:37,720 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\config.ini
+2025-08-04 12:22:37,720 - main - INFO - 設定檔是否存在: True
+2025-08-04 12:22:37,722 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-04 12:22:37,722 - main - INFO - 資料庫主機: 35.201.153.17
+2025-08-04 12:22:37,722 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-04 12:22:37,724 - main - INFO - 正在初始化系統模組...
+2025-08-04 12:22:37,724 - database - INFO - DatabaseManager 初始化成功
+2025-08-04 12:22:37,982 - translator - INFO - 翻譯器資料庫連接成功
+2025-08-04 12:22:37,992 - translator - INFO - 成功載入 4 種語言設定
+2025-08-04 12:22:37,992 - main - INFO - 系統模組初始化完成
+2025-08-04 12:22:37,993 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-04 12:22:37,993 - main - INFO - === 開始測試API連接 ===
+2025-08-04 12:22:38,147 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-04 12:22:38,148 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-04 12:22:38,149 - main - INFO - 所有API連接測試通過
+2025-08-04 12:22:38,150 - database - INFO - 正在連接資料庫...
+2025-08-04 12:22:38,239 - database - INFO - 資料庫連接成功，MySQL 版本: 8.0.41-google
+2025-08-04 12:22:38,268 - database - INFO - 取得 1 家店家資訊
+2025-08-04 12:22:38,270 - main - INFO - 開始處理 1 家店家
+2025-08-04 12:22:38,270 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 1)
+2025-08-04 12:22:38,271 - main - INFO - 從上次爬取時間開始：2025-08-04 04:15:18
+2025-08-04 12:22:38,271 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-04 12:22:38,297 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-04 12:22:38,298 - crawler - INFO - 上次爬取時間: 2025-08-04 04:15:18
+2025-08-04 12:22:38,361 - crawler - INFO - API返回 8 則評論
+2025-08-04 12:22:38,370 - crawler - INFO - 過濾後取得 0 則新評論
+2025-08-04 12:22:38,398 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 沒有符合條件的評論
+2025-08-04 12:22:38,437 - database - INFO - 更新店家 1 爬蟲日誌
+2025-08-04 12:22:38,480 - main - INFO - 嘗試分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的現有評論
+2025-08-04 12:22:38,496 - database - INFO - 取得店家 1 的 14 則評論
+2025-08-04 12:22:38,497 - main - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 12:22:38,500 - analyzer - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 找到 13 則可分析的評論
+2025-08-04 12:22:38,501 - analyzer - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 12:23:08,938 - analyzer - INFO - 成功分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 12:23:08,964 - database - INFO - 更新店家 1 評論摘要
+2025-08-04 12:23:08,976 - database - INFO - 取得 4 種語言
+2025-08-04 12:23:08,983 - main - INFO - 開始翻譯店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論摘要
+2025-08-04 12:23:08,983 - main - ERROR - 分析和翻譯店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 時發生錯誤: ReviewTranslator.batch_translate_and_save() takes 3 positional arguments but 4 were given
+2025-08-04 12:23:10,984 - main - INFO - === 所有店家處理完成 ===
+2025-08-04 12:23:10,993 - database - INFO - 資料庫連接已關閉
+2025-08-04 12:23:11,004 - translator - INFO - 翻譯器資料庫連接已關閉
+2025-08-04 12:26:16,980 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk
+2025-08-04 12:26:16,981 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\config.ini
+2025-08-04 12:26:16,981 - main - INFO - 設定檔是否存在: True
+2025-08-04 12:26:16,983 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-04 12:26:16,983 - main - INFO - 資料庫主機: 35.201.153.17
+2025-08-04 12:26:16,983 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-04 12:26:16,983 - main - INFO - 正在初始化系統模組...
+2025-08-04 12:26:16,983 - database - INFO - DatabaseManager 初始化成功
+2025-08-04 12:26:17,263 - translator - INFO - 翻譯器資料庫連接成功
+2025-08-04 12:26:17,274 - translator - INFO - 成功載入 4 種語言設定
+2025-08-04 12:26:17,274 - main - INFO - 系統模組初始化完成
+2025-08-04 12:26:17,274 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-04 12:26:17,275 - main - INFO - === 開始測試API連接 ===
+2025-08-04 12:26:17,407 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-04 12:26:17,407 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-04 12:26:17,409 - main - INFO - 所有API連接測試通過
+2025-08-04 12:26:17,409 - database - INFO - 正在連接資料庫...
+2025-08-04 12:26:17,495 - database - INFO - 資料庫連接成功，MySQL 版本: 8.0.41-google
+2025-08-04 12:26:17,543 - database - INFO - 取得 1 家店家資訊
+2025-08-04 12:26:17,548 - main - INFO - 開始處理 1 家店家
+2025-08-04 12:26:17,551 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 1)
+2025-08-04 12:26:17,558 - main - INFO - 從上次爬取時間開始：2025-08-04 04:22:38
+2025-08-04 12:26:17,558 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-04 12:26:17,559 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-04 12:26:17,560 - crawler - INFO - 上次爬取時間: 2025-08-04 04:22:38
+2025-08-04 12:26:17,616 - crawler - INFO - API返回 8 則評論
+2025-08-04 12:26:17,617 - crawler - INFO - 過濾後取得 0 則新評論
+2025-08-04 12:26:17,618 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 沒有符合條件的評論
+2025-08-04 12:26:17,663 - database - INFO - 更新店家 1 爬蟲日誌
+2025-08-04 12:26:17,666 - main - INFO - 嘗試分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的現有評論
+2025-08-04 12:26:17,685 - database - INFO - 取得店家 1 的 14 則評論
+2025-08-04 12:26:17,686 - main - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 12:26:17,687 - analyzer - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 找到 13 則可分析的評論
+2025-08-04 12:26:17,687 - analyzer - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 12:26:44,568 - analyzer - INFO - 成功分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 12:26:44,600 - database - INFO - 更新店家 1 評論摘要
+2025-08-04 12:26:44,613 - database - INFO - 取得 4 種語言
+2025-08-04 12:26:44,615 - main - INFO - 開始翻譯店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論摘要
+2025-08-04 12:26:44,616 - translator - INFO - 開始批量翻譯店家 1 到 3 種語言
+2025-08-04 12:26:44,616 - translator - INFO - 正在翻譯到 English (en)
+2025-08-04 12:26:44,616 - translator - INFO - 開始翻譯評論摘要到 English (en)
+2025-08-04 12:27:20,092 - translator - INFO - 成功翻譯評論摘要到 English
+2025-08-04 12:27:20,105 - translator - ERROR - 儲存翻譯到資料庫失敗: 1054 (42S22): Unknown column 'store_translation_id' in 'field list'
+2025-08-04 12:27:20,114 - translator - WARNING - 翻譯成功但儲存失敗: English
+2025-08-04 12:27:21,116 - translator - INFO - 正在翻譯到 Japanese (ja)
+2025-08-04 12:27:21,117 - translator - INFO - 開始翻譯評論摘要到 Japanese (ja)
+2025-08-04 12:27:58,989 - translator - INFO - 成功翻譯評論摘要到 Japanese
+2025-08-04 12:27:58,999 - translator - ERROR - 儲存翻譯到資料庫失敗: 1054 (42S22): Unknown column 'store_translation_id' in 'field list'
+2025-08-04 12:27:59,006 - translator - WARNING - 翻譯成功但儲存失敗: Japanese
+2025-08-04 12:28:00,008 - translator - INFO - 正在翻譯到 Korean (ko)
+2025-08-04 12:28:00,011 - translator - INFO - 開始翻譯評論摘要到 Korean (ko)
+2025-08-04 12:28:50,276 - translator - INFO - 成功翻譯評論摘要到 Korean
+2025-08-04 12:28:50,285 - translator - ERROR - 儲存翻譯到資料庫失敗: 1054 (42S22): Unknown column 'store_translation_id' in 'field list'
+2025-08-04 12:28:50,295 - translator - WARNING - 翻譯成功但儲存失敗: Korean
+2025-08-04 12:28:51,304 - translator - ERROR - 儲存翻譯到資料庫失敗: 1054 (42S22): Unknown column 'store_translation_id' in 'field list'
+2025-08-04 12:28:51,313 - translator - INFO - 批量翻譯完成，成功翻譯 0 種語言
+2025-08-04 12:28:51,314 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 分析和翻譯完成
+2025-08-04 12:28:53,317 - main - INFO - === 所有店家處理完成 ===
+2025-08-04 12:28:53,331 - database - INFO - 資料庫連接已關閉
+2025-08-04 12:28:53,347 - translator - INFO - 翻譯器資料庫連接已關閉
+2025-08-04 12:30:24,953 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk
+2025-08-04 12:30:24,955 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\config.ini
+2025-08-04 12:30:24,956 - main - INFO - 設定檔是否存在: True
+2025-08-04 12:30:24,957 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-04 12:30:24,958 - main - INFO - 資料庫主機: 35.201.153.17
+2025-08-04 12:30:24,959 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-04 12:30:24,959 - main - INFO - 正在初始化系統模組...
+2025-08-04 12:30:24,960 - database - INFO - DatabaseManager 初始化成功
+2025-08-04 12:30:25,120 - translator - INFO - 翻譯器資料庫連接成功
+2025-08-04 12:30:25,134 - translator - INFO - 成功載入 4 種語言設定
+2025-08-04 12:30:25,135 - main - INFO - 系統模組初始化完成
+2025-08-04 12:30:25,136 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-04 12:30:25,150 - main - INFO - === 開始測試API連接 ===
+2025-08-04 12:30:25,250 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-04 12:30:25,251 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-04 12:30:25,252 - main - INFO - 所有API連接測試通過
+2025-08-04 12:30:25,252 - database - INFO - 正在連接資料庫...
+2025-08-04 12:30:25,360 - database - INFO - 資料庫連接成功，MySQL 版本: 8.0.41-google
+2025-08-04 12:30:25,399 - database - INFO - 取得 1 家店家資訊
+2025-08-04 12:30:25,406 - main - INFO - 開始處理 1 家店家
+2025-08-04 12:30:25,407 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 1)
+2025-08-04 12:30:25,407 - main - INFO - 從上次爬取時間開始：2025-08-04 04:26:17
+2025-08-04 12:30:25,408 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-04 12:30:25,408 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-04 12:30:25,410 - crawler - INFO - 上次爬取時間: 2025-08-04 04:26:17
+2025-08-04 12:30:25,475 - crawler - INFO - API返回 8 則評論
+2025-08-04 12:30:25,496 - crawler - INFO - 過濾後取得 0 則新評論
+2025-08-04 12:30:25,496 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 沒有符合條件的評論
+2025-08-04 12:30:25,549 - database - INFO - 更新店家 1 爬蟲日誌
+2025-08-04 12:30:25,560 - main - INFO - 嘗試分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的現有評論
+2025-08-04 12:30:25,599 - database - INFO - 取得店家 1 的 14 則評論
+2025-08-04 12:30:25,601 - main - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 12:30:25,614 - analyzer - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 找到 13 則可分析的評論
+2025-08-04 12:30:25,615 - analyzer - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 12:30:56,527 - analyzer - INFO - 成功分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 12:30:56,559 - database - INFO - 更新店家 1 評論摘要
+2025-08-04 12:30:56,573 - database - INFO - 取得 4 種語言
+2025-08-04 12:30:56,573 - main - INFO - 開始翻譯店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論摘要
+2025-08-04 12:30:56,573 - translator - INFO - 開始批量翻譯店家 1 到 3 種語言
+2025-08-04 12:30:56,573 - translator - INFO - 正在翻譯到 English (en)
+2025-08-04 12:30:56,574 - translator - INFO - 開始翻譯評論摘要到 English (en)
+2025-08-04 12:31:32,166 - translator - INFO - 成功翻譯評論摘要到 English
+2025-08-04 12:31:32,174 - translator - ERROR - 儲存翻譯到資料庫失敗: 1054 (42S22): Unknown column 'lang_code' in 'where clause'
+2025-08-04 12:31:32,184 - translator - WARNING - 翻譯成功但儲存失敗: English
+2025-08-04 12:31:33,197 - translator - INFO - 正在翻譯到 Japanese (ja)
+2025-08-04 12:31:33,198 - translator - INFO - 開始翻譯評論摘要到 Japanese (ja)
+2025-08-04 12:32:09,115 - translator - INFO - 成功翻譯評論摘要到 Japanese
+2025-08-04 12:32:09,125 - translator - ERROR - 儲存翻譯到資料庫失敗: 1054 (42S22): Unknown column 'lang_code' in 'where clause'
+2025-08-04 12:32:09,138 - translator - WARNING - 翻譯成功但儲存失敗: Japanese
+2025-08-04 12:32:10,141 - translator - INFO - 正在翻譯到 Korean (ko)
+2025-08-04 12:32:10,142 - translator - INFO - 開始翻譯評論摘要到 Korean (ko)
+2025-08-04 12:32:49,907 - translator - INFO - 成功翻譯評論摘要到 Korean
+2025-08-04 12:32:49,915 - translator - ERROR - 儲存翻譯到資料庫失敗: 1054 (42S22): Unknown column 'lang_code' in 'where clause'
+2025-08-04 12:32:49,923 - translator - WARNING - 翻譯成功但儲存失敗: Korean
+2025-08-04 12:32:50,939 - translator - ERROR - 儲存翻譯到資料庫失敗: 1054 (42S22): Unknown column 'lang_code' in 'where clause'
+2025-08-04 12:32:50,961 - translator - INFO - 批量翻譯完成，成功翻譯 0 種語言
+2025-08-04 12:32:50,965 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 分析和翻譯完成
+2025-08-04 12:32:52,967 - main - INFO - === 所有店家處理完成 ===
+2025-08-04 12:32:52,974 - database - INFO - 資料庫連接已關閉
+2025-08-04 12:32:52,984 - translator - INFO - 翻譯器資料庫連接已關閉
+2025-08-04 12:40:30,864 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk
+2025-08-04 12:40:30,866 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\config.ini
+2025-08-04 12:40:30,867 - main - INFO - 設定檔是否存在: True
+2025-08-04 12:40:30,868 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-04 12:40:30,868 - main - INFO - 資料庫主機: 35.201.153.17
+2025-08-04 12:40:30,869 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-04 12:40:30,869 - main - INFO - 正在初始化系統模組...
+2025-08-04 12:40:30,870 - database - INFO - DatabaseManager 初始化成功
+2025-08-04 12:40:31,128 - translator - INFO - 翻譯器資料庫連接成功
+2025-08-04 12:40:31,139 - translator - INFO - 成功載入 4 種語言設定
+2025-08-04 12:40:31,140 - main - INFO - 系統模組初始化完成
+2025-08-04 12:40:31,140 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-04 12:40:31,140 - main - INFO - === 開始測試API連接 ===
+2025-08-04 12:40:31,251 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-04 12:40:31,251 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-04 12:40:31,253 - main - INFO - 所有API連接測試通過
+2025-08-04 12:40:31,253 - database - INFO - 正在連接資料庫...
+2025-08-04 12:40:31,348 - database - INFO - 資料庫連接成功，MySQL 版本: 8.0.41-google
+2025-08-04 12:40:31,378 - database - INFO - 取得 1 家店家資訊
+2025-08-04 12:40:31,389 - main - INFO - 開始處理 1 家店家
+2025-08-04 12:40:31,390 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 1)
+2025-08-04 12:40:31,390 - main - INFO - 從上次爬取時間開始：2025-08-04 04:30:25
+2025-08-04 12:40:31,391 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-04 12:40:31,391 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-04 12:40:31,392 - crawler - INFO - 上次爬取時間: 2025-08-04 04:30:25
+2025-08-04 12:40:31,444 - crawler - INFO - API返回 8 則評論
+2025-08-04 12:40:31,446 - crawler - INFO - 過濾後取得 0 則新評論
+2025-08-04 12:40:31,475 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 沒有符合條件的評論
+2025-08-04 12:40:31,534 - database - INFO - 更新店家 1 爬蟲日誌
+2025-08-04 12:40:31,551 - main - INFO - 嘗試分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的現有評論
+2025-08-04 12:40:31,631 - database - INFO - 取得店家 1 的 14 則評論
+2025-08-04 12:40:31,655 - main - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 12:40:31,662 - analyzer - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 找到 13 則可分析的評論
+2025-08-04 12:40:31,677 - analyzer - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 12:41:00,865 - analyzer - INFO - 成功分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 12:41:00,895 - database - INFO - 更新店家 1 評論摘要
+2025-08-04 12:41:00,905 - database - INFO - 取得 4 種語言
+2025-08-04 12:41:00,905 - main - INFO - 開始翻譯店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論摘要
+2025-08-04 12:41:00,906 - translator - INFO - 開始批量翻譯店家 1 到 3 種語言
+2025-08-04 12:41:00,906 - translator - INFO - 正在翻譯到 English (en)
+2025-08-04 12:41:00,906 - translator - INFO - 開始翻譯評論摘要到 English (en)
+2025-08-04 12:41:50,417 - translator - INFO - 成功翻譯評論摘要到 English
+2025-08-04 12:41:50,439 - translator - ERROR - 儲存翻譯到資料庫失敗: 1054 (42S22): Unknown column 'reviews' in 'field list'
+2025-08-04 12:41:50,451 - translator - WARNING - 翻譯成功但儲存失敗: English
+2025-08-04 12:41:51,462 - translator - INFO - 正在翻譯到 Japanese (ja)
+2025-08-04 12:41:51,463 - translator - INFO - 開始翻譯評論摘要到 Japanese (ja)
+2025-08-04 12:42:37,086 - translator - INFO - 成功翻譯評論摘要到 Japanese
+2025-08-04 12:42:37,108 - translator - ERROR - 儲存翻譯到資料庫失敗: 1054 (42S22): Unknown column 'reviews' in 'field list'
+2025-08-04 12:42:37,134 - translator - WARNING - 翻譯成功但儲存失敗: Japanese
+2025-08-04 12:42:38,189 - translator - INFO - 正在翻譯到 Korean (ko)
+2025-08-04 12:42:38,190 - translator - INFO - 開始翻譯評論摘要到 Korean (ko)
+2025-08-04 12:42:48,555 - translator - ERROR - 翻譯評論摘要到 ko 時發生錯誤: 500 An internal error has occurred. Please retry or report in https://developers.generativeai.google/guide/troubleshooting
+2025-08-04 12:42:48,555 - translator - WARNING - 翻譯到 Korean 失敗
+2025-08-04 12:42:49,572 - translator - ERROR - 儲存翻譯到資料庫失敗: 1054 (42S22): Unknown column 'reviews' in 'field list'
+2025-08-04 12:42:49,583 - translator - INFO - 批量翻譯完成，成功翻譯 0 種語言
+2025-08-04 12:42:49,589 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 分析和翻譯完成
+2025-08-04 12:42:51,591 - main - INFO - === 所有店家處理完成 ===
+2025-08-04 12:42:51,612 - database - INFO - 資料庫連接已關閉
+2025-08-04 12:50:13,392 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk
+2025-08-04 12:50:13,393 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\config.ini
+2025-08-04 12:50:13,393 - main - INFO - 設定檔是否存在: True
+2025-08-04 12:50:13,395 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-04 12:50:13,396 - main - INFO - 資料庫主機: 35.201.153.17
+2025-08-04 12:50:13,396 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-04 12:50:13,396 - main - INFO - 正在初始化系統模組...
+2025-08-04 12:50:13,397 - database - INFO - DatabaseManager 初始化成功
+2025-08-04 12:50:13,556 - translator - INFO - 翻譯器資料庫連接成功
+2025-08-04 12:50:13,565 - translator - INFO - 成功載入 4 種語言設定
+2025-08-04 12:50:13,574 - main - INFO - 系統模組初始化完成
+2025-08-04 12:50:13,592 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-04 12:50:13,596 - main - INFO - === 開始測試API連接 ===
+2025-08-04 12:50:13,722 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-04 12:50:13,723 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-04 12:50:13,723 - main - INFO - 所有API連接測試通過
+2025-08-04 12:50:13,724 - database - INFO - 正在連接資料庫...
+2025-08-04 12:50:13,810 - database - INFO - 資料庫連接成功，MySQL 版本: 8.0.41-google
+2025-08-04 12:50:13,840 - database - INFO - 取得 1 家店家資訊
+2025-08-04 12:50:13,840 - main - INFO - 開始處理 1 家店家
+2025-08-04 12:50:13,841 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 1)
+2025-08-04 12:50:13,841 - main - INFO - 從上次爬取時間開始：2025-08-04 04:40:31
+2025-08-04 12:50:13,841 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-04 12:50:13,842 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-04 12:50:13,842 - crawler - INFO - 上次爬取時間: 2025-08-04 04:40:31
+2025-08-04 12:50:13,894 - crawler - INFO - API返回 8 則評論
+2025-08-04 12:50:13,900 - crawler - INFO - 過濾後取得 0 則新評論
+2025-08-04 12:50:13,901 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 沒有符合條件的評論
+2025-08-04 12:50:13,956 - database - INFO - 更新店家 1 爬蟲日誌
+2025-08-04 12:50:13,963 - main - INFO - 嘗試分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的現有評論
+2025-08-04 12:50:13,988 - database - INFO - 取得店家 1 的 14 則評論
+2025-08-04 12:50:14,018 - main - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 12:50:14,019 - analyzer - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 找到 13 則可分析的評論
+2025-08-04 12:50:14,020 - analyzer - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 12:50:39,679 - analyzer - INFO - 成功分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 12:50:39,711 - database - INFO - 更新店家 1 評論摘要
+2025-08-04 12:50:39,732 - database - INFO - 取得 4 種語言
+2025-08-04 12:50:39,736 - main - INFO - 開始翻譯店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論摘要
+2025-08-04 12:50:39,743 - translator - INFO - 開始批量翻譯店家 1 到 3 種語言
+2025-08-04 12:50:39,755 - translator - INFO - 正在翻譯到 English (en)
+2025-08-04 12:50:39,757 - translator - INFO - 開始翻譯評論摘要到 English (en)
+2025-08-04 12:51:09,689 - translator - INFO - 成功翻譯評論摘要到 English
+2025-08-04 12:51:09,758 - translator - INFO - 成功翻譯並儲存到 English
+2025-08-04 12:51:10,950 - translator - INFO - 正在翻譯到 Japanese (ja)
+2025-08-04 12:51:11,006 - translator - INFO - 開始翻譯評論摘要到 Japanese (ja)
+2025-08-04 12:51:52,357 - translator - INFO - 成功翻譯評論摘要到 Japanese
+2025-08-04 12:51:52,392 - translator - INFO - 成功翻譯並儲存到 Japanese
+2025-08-04 12:51:53,393 - translator - INFO - 正在翻譯到 Korean (ko)
+2025-08-04 12:51:53,393 - translator - INFO - 開始翻譯評論摘要到 Korean (ko)
+2025-08-04 12:52:31,217 - translator - INFO - 成功翻譯評論摘要到 Korean
+2025-08-04 12:52:31,250 - translator - INFO - 成功翻譯並儲存到 Korean
+2025-08-04 12:52:32,285 - translator - INFO - 成功儲存原文（繁體中文）
+2025-08-04 12:52:32,287 - translator - INFO - 批量翻譯完成，成功翻譯 4 種語言
+2025-08-04 12:52:32,301 - database - ERROR - 更新翻譯失敗: 1054 (42S22): Unknown column 'store_translation_id' in 'field list'
+2025-08-04 12:52:32,318 - database - ERROR - 更新翻譯失敗: 1054 (42S22): Unknown column 'store_translation_id' in 'field list'
+2025-08-04 12:52:32,338 - database - ERROR - 更新翻譯失敗: 1054 (42S22): Unknown column 'store_translation_id' in 'field list'
+2025-08-04 12:52:32,355 - database - ERROR - 更新翻譯失敗: 1054 (42S22): Unknown column 'store_translation_id' in 'field list'
+2025-08-04 12:52:32,363 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 分析和翻譯完成
+2025-08-04 12:52:34,365 - main - INFO - === 所有店家處理完成 ===
+2025-08-04 12:52:34,382 - database - INFO - 資料庫連接已關閉
+2025-08-04 12:52:34,399 - translator - INFO - 翻譯器資料庫連接已關閉
+2025-08-04 12:57:25,233 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk
+2025-08-04 12:57:25,234 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\config.ini
+2025-08-04 12:57:25,234 - main - INFO - 設定檔是否存在: True
+2025-08-04 12:57:25,235 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-04 12:57:25,236 - main - INFO - 資料庫主機: 35.201.153.17
+2025-08-04 12:57:25,236 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-04 12:57:25,236 - main - INFO - 正在初始化系統模組...
+2025-08-04 12:57:25,237 - database - INFO - DatabaseManager 初始化成功
+2025-08-04 12:57:25,344 - translator - INFO - 翻譯器資料庫連接成功
+2025-08-04 12:57:25,353 - translator - INFO - 成功載入 4 種語言設定
+2025-08-04 12:57:25,354 - main - INFO - 系統模組初始化完成
+2025-08-04 12:57:25,354 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-04 12:57:25,354 - main - INFO - === 開始測試API連接 ===
+2025-08-04 12:57:25,467 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-04 12:57:25,467 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-04 12:57:25,468 - main - INFO - 所有API連接測試通過
+2025-08-04 12:57:25,468 - database - INFO - 正在連接資料庫...
+2025-08-04 12:57:25,579 - database - INFO - 資料庫連接成功，MySQL 版本: 8.0.41-google
+2025-08-04 12:57:25,622 - database - INFO - 取得 1 家店家資訊
+2025-08-04 12:57:25,623 - main - INFO - 開始處理 1 家店家
+2025-08-04 12:57:25,623 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 1)
+2025-08-04 12:57:25,624 - main - INFO - 從上次爬取時間開始：2025-08-04 04:50:14
+2025-08-04 12:57:25,624 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-04 12:57:25,624 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-04 12:57:25,627 - crawler - INFO - 上次爬取時間: 2025-08-04 04:50:14
+2025-08-04 12:57:25,677 - crawler - INFO - API返回 8 則評論
+2025-08-04 12:57:25,678 - crawler - INFO - 過濾後取得 0 則新評論
+2025-08-04 12:57:25,678 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 沒有符合條件的評論
+2025-08-04 12:57:25,716 - database - INFO - 更新店家 1 爬蟲日誌
+2025-08-04 12:57:25,717 - main - INFO - 嘗試分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的現有評論
+2025-08-04 12:57:25,738 - database - INFO - 取得店家 1 的 14 則評論
+2025-08-04 12:57:25,739 - main - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 12:57:25,740 - analyzer - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 找到 13 則可分析的評論
+2025-08-04 12:57:25,740 - analyzer - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 12:57:56,781 - analyzer - INFO - 成功分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 12:57:56,816 - database - INFO - 更新店家 1 評論摘要
+2025-08-04 12:57:56,829 - database - INFO - 取得 4 種語言
+2025-08-04 12:57:56,830 - main - INFO - 開始翻譯店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論摘要
+2025-08-04 12:57:56,830 - translator - INFO - 開始批量翻譯店家 1 到 3 種語言
+2025-08-04 12:57:56,831 - translator - INFO - 正在翻譯到 English (en)
+2025-08-04 12:57:56,832 - translator - INFO - 開始翻譯評論摘要到 English (en)
+2025-08-04 12:58:30,014 - translator - INFO - 成功翻譯評論摘要到 English
+2025-08-04 12:58:30,047 - translator - INFO - 成功翻譯並儲存到 English
+2025-08-04 12:58:31,048 - translator - INFO - 正在翻譯到 Japanese (ja)
+2025-08-04 12:58:31,048 - translator - INFO - 開始翻譯評論摘要到 Japanese (ja)
+2025-08-04 12:58:33,279 - translator - ERROR - 翻譯評論摘要到 ja 時發生錯誤: 500 An internal error has occurred. Please retry or report in https://developers.generativeai.google/guide/troubleshooting
+2025-08-04 12:58:33,280 - translator - WARNING - 翻譯到 Japanese 失敗
+2025-08-04 12:58:34,281 - translator - INFO - 正在翻譯到 Korean (ko)
+2025-08-04 12:58:34,282 - translator - INFO - 開始翻譯評論摘要到 Korean (ko)
+2025-08-04 12:59:17,139 - translator - INFO - 成功翻譯評論摘要到 Korean
+2025-08-04 12:59:17,175 - translator - INFO - 成功翻譯並儲存到 Korean
+2025-08-04 12:59:18,212 - translator - INFO - 成功儲存原文（繁體中文）
+2025-08-04 12:59:18,213 - translator - INFO - 批量翻譯完成，成功翻譯 3 種語言
+2025-08-04 12:59:18,224 - database - ERROR - 更新翻譯失敗: 1054 (42S22): Unknown column 'lang_code' in 'where clause'
+2025-08-04 12:59:18,241 - database - ERROR - 更新翻譯失敗: 1054 (42S22): Unknown column 'lang_code' in 'where clause'
+2025-08-04 12:59:18,261 - database - ERROR - 更新翻譯失敗: 1054 (42S22): Unknown column 'lang_code' in 'where clause'
+2025-08-04 12:59:18,269 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 分析和翻譯完成
+2025-08-04 12:59:20,272 - main - INFO - === 所有店家處理完成 ===
+2025-08-04 12:59:20,283 - database - INFO - 資料庫連接已關閉
+2025-08-04 13:26:39,169 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk
+2025-08-04 13:26:39,171 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\config.ini
+2025-08-04 13:26:39,171 - main - INFO - 設定檔是否存在: True
+2025-08-04 13:26:39,173 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-04 13:26:39,174 - main - INFO - 資料庫主機: 35.201.153.17
+2025-08-04 13:26:39,174 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-04 13:26:39,174 - main - INFO - 正在初始化系統模組...
+2025-08-04 13:26:39,174 - database - INFO - DatabaseManager 初始化成功
+2025-08-04 13:26:39,519 - translator - INFO - 翻譯器資料庫連接成功
+2025-08-04 13:26:39,528 - translator - INFO - 成功載入 4 種語言設定
+2025-08-04 13:26:39,529 - main - INFO - 系統模組初始化完成
+2025-08-04 13:26:39,529 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-04 13:26:39,529 - main - INFO - === 開始測試API連接 ===
+2025-08-04 13:26:43,231 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-04 13:26:43,231 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-04 13:26:43,232 - main - INFO - 所有API連接測試通過
+2025-08-04 13:26:43,232 - database - INFO - 正在連接資料庫...
+2025-08-04 13:26:43,322 - database - INFO - 資料庫連接成功，MySQL 版本: 8.0.41-google
+2025-08-04 13:26:43,350 - database - INFO - 取得 1 家店家資訊
+2025-08-04 13:26:43,351 - main - INFO - 開始處理 1 家店家
+2025-08-04 13:26:43,351 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 1)
+2025-08-04 13:26:43,352 - main - INFO - 從上次爬取時間開始：2025-08-04 04:57:26
+2025-08-04 13:26:43,352 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-04 13:26:43,353 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-04 13:26:43,353 - crawler - INFO - 上次爬取時間: 2025-08-04 04:57:26
+2025-08-04 13:26:44,729 - crawler - INFO - API返回 8 則評論
+2025-08-04 13:26:44,731 - crawler - INFO - 過濾後取得 0 則新評論
+2025-08-04 13:26:44,732 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 沒有符合條件的評論
+2025-08-04 13:26:44,767 - database - INFO - 更新店家 1 爬蟲日誌
+2025-08-04 13:26:44,768 - main - INFO - 嘗試分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的現有評論
+2025-08-04 13:26:44,794 - database - INFO - 取得店家 1 的 14 則評論
+2025-08-04 13:26:44,795 - main - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 13:26:44,795 - analyzer - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 找到 13 則可分析的評論
+2025-08-04 13:26:44,796 - analyzer - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 13:27:18,001 - analyzer - INFO - 成功分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 13:27:18,035 - database - INFO - 更新店家 1 評論摘要
+2025-08-04 13:27:18,047 - database - INFO - 取得 4 種語言
+2025-08-04 13:27:18,048 - main - INFO - 開始翻譯店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論摘要
+2025-08-04 13:27:18,048 - translator - INFO - 開始批量翻譯店家 1 到 3 種語言
+2025-08-04 13:27:18,049 - translator - INFO - 正在翻譯到 English (en)
+2025-08-04 13:27:18,049 - translator - INFO - 開始翻譯評論摘要到 English (en)
+2025-08-04 13:27:48,869 - translator - INFO - 成功翻譯評論摘要到 English
+2025-08-04 13:27:48,907 - translator - INFO - 成功翻譯並儲存到 English
+2025-08-04 13:27:49,909 - translator - INFO - 正在翻譯到 Japanese (ja)
+2025-08-04 13:27:49,909 - translator - INFO - 開始翻譯評論摘要到 Japanese (ja)
+2025-08-04 13:28:45,172 - translator - INFO - 成功翻譯評論摘要到 Japanese
+2025-08-04 13:28:45,208 - translator - INFO - 成功翻譯並儲存到 Japanese
+2025-08-04 13:28:46,213 - translator - INFO - 正在翻譯到 Korean (ko)
+2025-08-04 13:28:46,214 - translator - INFO - 開始翻譯評論摘要到 Korean (ko)
+2025-08-04 13:29:39,433 - translator - INFO - 成功翻譯評論摘要到 Korean
+2025-08-04 13:29:39,466 - translator - INFO - 成功翻譯並儲存到 Korean
+2025-08-04 13:29:40,500 - translator - INFO - 成功儲存原文（繁體中文）
+2025-08-04 13:29:40,500 - translator - INFO - 批量翻譯完成，成功翻譯 4 種語言
+2025-08-04 13:29:40,522 - database - INFO - 更新店家 1 的 en 翻譯
+2025-08-04 13:29:40,544 - database - INFO - 更新店家 1 的 ja 翻譯
+2025-08-04 13:29:40,573 - database - INFO - 更新店家 1 的 ko 翻譯
+2025-08-04 13:29:40,605 - database - INFO - 更新店家 1 的 zh-TW 翻譯
+2025-08-04 13:29:40,606 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 分析和翻譯完成
+2025-08-04 13:29:42,607 - main - INFO - === 所有店家處理完成 ===
+2025-08-04 13:29:42,616 - database - INFO - 資料庫連接已關閉
+2025-08-04 13:29:42,626 - translator - INFO - 翻譯器資料庫連接已關閉
+2025-08-04 15:32:34,919 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk
+2025-08-04 15:32:34,921 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\config.ini
+2025-08-04 15:32:34,922 - main - INFO - 設定檔是否存在: True
+2025-08-04 15:32:34,924 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-04 15:32:34,924 - main - INFO - 資料庫主機: 35.201.153.17
+2025-08-04 15:32:34,924 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-04 15:32:34,925 - main - INFO - 正在初始化系統模組...
+2025-08-04 15:32:34,925 - database - INFO - DatabaseManager 初始化成功
+2025-08-04 15:32:35,423 - translator - INFO - 翻譯器資料庫連接成功
+2025-08-04 15:32:35,452 - translator - INFO - 成功載入 4 種語言設定
+2025-08-04 15:32:35,453 - main - INFO - 系統模組初始化完成
+2025-08-04 15:32:35,454 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-04 15:32:35,455 - main - INFO - === 開始測試API連接 ===
+2025-08-04 15:32:40,132 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-04 15:32:40,132 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-04 15:32:40,134 - main - INFO - 所有API連接測試通過
+2025-08-04 15:32:40,135 - database - INFO - 正在連接資料庫...
+2025-08-04 15:32:40,415 - database - INFO - 資料庫連接成功，MySQL 版本: 8.0.41-google
+2025-08-04 15:32:40,520 - database - INFO - 取得 1 家店家資訊
+2025-08-04 15:32:40,520 - main - INFO - 開始處理 1 家店家
+2025-08-04 15:32:40,521 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 1)
+2025-08-04 15:32:40,521 - main - INFO - 從上次爬取時間開始：2025-08-04 05:26:45
+2025-08-04 15:32:40,521 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-04 15:32:40,521 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-04 15:32:40,521 - crawler - INFO - 上次爬取時間: 2025-08-04 05:26:45
+2025-08-04 15:32:42,063 - crawler - INFO - API返回 8 則評論
+2025-08-04 15:32:42,064 - crawler - INFO - 過濾後取得 0 則新評論
+2025-08-04 15:32:42,064 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 沒有符合條件的評論
+2025-08-04 15:32:42,169 - database - INFO - 更新店家 1 爬蟲日誌
+2025-08-04 15:32:42,169 - main - INFO - 嘗試分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的現有評論
+2025-08-04 15:32:42,285 - database - INFO - 取得店家 1 的 14 則評論
+2025-08-04 15:32:42,286 - main - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 15:32:42,286 - analyzer - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 找到 13 則可分析的評論
+2025-08-04 15:32:42,286 - analyzer - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 15:33:15,940 - analyzer - INFO - 成功分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 15:33:16,020 - database - INFO - 更新店家 1 評論摘要
+2025-08-04 15:33:16,057 - database - INFO - 取得 4 種語言
+2025-08-04 15:33:16,058 - main - INFO - 開始翻譯店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論摘要
+2025-08-04 15:33:16,058 - translator - INFO - 開始批量翻譯店家 1 到 3 種語言
+2025-08-04 15:33:16,059 - translator - INFO - 正在翻譯到 English (en)
+2025-08-04 15:33:16,059 - translator - INFO - 開始翻譯評論摘要到 English (en)
+2025-08-04 15:33:52,127 - translator - INFO - 成功翻譯評論摘要到 English
+2025-08-04 15:33:52,237 - translator - INFO - 成功翻譯並儲存到 English
+2025-08-04 15:33:53,238 - translator - INFO - 正在翻譯到 Japanese (ja)
+2025-08-04 15:33:53,239 - translator - INFO - 開始翻譯評論摘要到 Japanese (ja)
+2025-08-04 15:34:31,975 - translator - INFO - 成功翻譯評論摘要到 Japanese
+2025-08-04 15:34:32,085 - translator - INFO - 成功翻譯並儲存到 Japanese
+2025-08-04 15:34:33,087 - translator - INFO - 正在翻譯到 Korean (ko)
+2025-08-04 15:34:33,087 - translator - INFO - 開始翻譯評論摘要到 Korean (ko)
+2025-08-04 15:35:22,455 - translator - INFO - 成功翻譯評論摘要到 Korean
+2025-08-04 15:35:22,561 - translator - INFO - 成功翻譯並儲存到 Korean
+2025-08-04 15:35:23,562 - translator - INFO - 批量翻譯完成，成功翻譯 3 種語言
+2025-08-04 15:35:23,645 - database - ERROR - 更新翻譯失敗: 1062 (23000): Duplicate entry '1-en' for key 'store_translations.uk_store_language'
+2025-08-04 15:35:23,777 - database - INFO - 更新店家 1 的 ja 翻譯
+2025-08-04 15:35:23,867 - database - INFO - 更新店家 1 的 ko 翻譯
+2025-08-04 15:35:23,867 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 分析和翻譯完成
+2025-08-04 15:35:25,868 - main - INFO - === 所有店家處理完成 ===
+2025-08-04 15:35:25,921 - database - INFO - 資料庫連接已關閉
+2025-08-04 15:35:25,954 - translator - INFO - 翻譯器資料庫連接已關閉
+2025-08-04 15:37:34,102 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk
+2025-08-04 15:37:34,103 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\config.ini
+2025-08-04 15:37:34,103 - main - INFO - 設定檔是否存在: True
+2025-08-04 15:37:34,105 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-04 15:37:34,105 - main - INFO - 資料庫主機: 35.201.153.17
+2025-08-04 15:37:34,105 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-04 15:37:34,105 - main - INFO - 正在初始化系統模組...
+2025-08-04 15:37:34,106 - database - INFO - DatabaseManager 初始化成功
+2025-08-04 15:37:34,390 - translator - INFO - 翻譯器資料庫連接成功
+2025-08-04 15:37:34,422 - translator - INFO - 成功載入 4 種語言設定
+2025-08-04 15:37:34,429 - main - INFO - 系統模組初始化完成
+2025-08-04 15:37:34,430 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-04 15:37:34,436 - main - INFO - === 開始測試API連接 ===
+2025-08-04 15:37:34,554 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-04 15:37:34,555 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-04 15:37:34,556 - main - INFO - 所有API連接測試通過
+2025-08-04 15:37:34,557 - database - INFO - 正在連接資料庫...
+2025-08-04 15:37:34,813 - database - INFO - 資料庫連接成功，MySQL 版本: 8.0.41-google
+2025-08-04 15:37:34,902 - database - INFO - 取得 1 家店家資訊
+2025-08-04 15:37:34,902 - main - INFO - 開始處理 1 家店家
+2025-08-04 15:37:34,903 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 1)
+2025-08-04 15:37:34,903 - main - INFO - 從上次爬取時間開始：2025-08-04 07:32:42
+2025-08-04 15:37:34,903 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-04 15:37:34,903 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-04 15:37:34,904 - crawler - INFO - 上次爬取時間: 2025-08-04 07:32:42
+2025-08-04 15:37:35,002 - crawler - INFO - API返回 8 則評論
+2025-08-04 15:37:35,003 - crawler - INFO - 過濾後取得 0 則新評論
+2025-08-04 15:37:35,004 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 沒有符合條件的評論
+2025-08-04 15:37:35,108 - database - INFO - 更新店家 1 爬蟲日誌
+2025-08-04 15:37:35,108 - main - INFO - 嘗試分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的現有評論
+2025-08-04 15:37:35,174 - database - INFO - 取得店家 1 的 14 則評論
+2025-08-04 15:37:35,179 - main - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 15:37:35,180 - analyzer - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 找到 13 則可分析的評論
+2025-08-04 15:37:35,183 - analyzer - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 15:38:11,400 - analyzer - INFO - 成功分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-04 15:38:11,474 - database - INFO - 更新店家 1 評論摘要
+2025-08-04 15:38:11,504 - database - INFO - 取得 4 種語言
+2025-08-04 15:38:11,509 - main - INFO - 開始翻譯店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論摘要
+2025-08-04 15:38:11,510 - translator - INFO - 開始批量翻譯店家 1 到 3 種語言
+2025-08-04 15:38:11,510 - translator - INFO - 正在翻譯到 English (en)
+2025-08-04 15:38:11,510 - translator - INFO - 開始翻譯評論摘要到 English (en)
+2025-08-04 15:38:44,356 - translator - INFO - 成功翻譯評論摘要到 English
+2025-08-04 15:38:44,469 - translator - INFO - 成功翻譯並儲存到 English
+2025-08-04 15:38:45,471 - translator - INFO - 正在翻譯到 Japanese (ja)
+2025-08-04 15:38:45,471 - translator - INFO - 開始翻譯評論摘要到 Japanese (ja)
+2025-08-04 15:39:24,561 - translator - INFO - 成功翻譯評論摘要到 Japanese
+2025-08-04 15:39:24,677 - translator - INFO - 成功翻譯並儲存到 Japanese
+2025-08-04 15:39:25,678 - translator - INFO - 正在翻譯到 Korean (ko)
+2025-08-04 15:39:25,678 - translator - INFO - 開始翻譯評論摘要到 Korean (ko)
+2025-08-04 15:40:02,043 - translator - INFO - 成功翻譯評論摘要到 Korean
+2025-08-04 15:40:02,153 - translator - INFO - 成功翻譯並儲存到 Korean
+2025-08-04 15:40:03,159 - translator - INFO - 批量翻譯完成，成功翻譯 3 種語言
+2025-08-04 15:40:03,296 - database - INFO - 更新店家 1 的 en 翻譯
+2025-08-04 15:40:03,399 - database - INFO - 更新店家 1 的 ja 翻譯
+2025-08-04 15:40:03,510 - database - INFO - 更新店家 1 的 ko 翻譯
+2025-08-04 15:40:03,510 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 分析和翻譯完成
+2025-08-04 15:40:05,511 - main - INFO - === 所有店家處理完成 ===
+2025-08-04 15:40:05,555 - database - INFO - 資料庫連接已關閉
+2025-08-04 15:40:05,599 - translator - INFO - 翻譯器資料庫連接已關閉
+2025-08-05 11:59:41,154 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk
+2025-08-05 11:59:41,159 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk\config.ini
+2025-08-05 11:59:41,159 - main - INFO - 設定檔是否存在: True
+2025-08-05 11:59:41,174 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-05 11:59:41,174 - main - INFO - 資料庫主機: 35.201.153.17
+2025-08-05 11:59:41,175 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-05 11:59:41,176 - main - INFO - 正在初始化系統模組...
+2025-08-05 11:59:41,176 - database - INFO - DatabaseManager 初始化成功
+2025-08-05 11:59:41,509 - translator - INFO - 翻譯器資料庫連接成功
+2025-08-05 11:59:41,521 - translator - INFO - 成功載入 4 種語言設定
+2025-08-05 11:59:41,521 - main - INFO - 系統模組初始化完成
+2025-08-05 11:59:41,527 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-05 11:59:41,545 - main - INFO - === 開始測試API連接 ===
+2025-08-05 11:59:43,534 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-05 11:59:43,535 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-05 11:59:43,536 - main - INFO - 所有API連接測試通過
+2025-08-05 11:59:43,537 - database - INFO - 正在連接資料庫...
+2025-08-05 11:59:43,620 - database - INFO - 資料庫連接成功，MySQL 版本: 8.0.41-google
+2025-08-05 11:59:43,653 - database - INFO - 取得 1 家店家資訊
+2025-08-05 11:59:43,661 - main - INFO - 開始處理 1 家店家
+2025-08-05 11:59:43,661 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 1)
+2025-08-05 11:59:43,662 - main - INFO - 從上次爬取時間開始：2025-08-04 07:37:35
+2025-08-05 11:59:43,662 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-05 11:59:43,664 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-05 11:59:43,664 - crawler - INFO - 上次爬取時間: 2025-08-04 07:37:35
+2025-08-05 11:59:44,565 - crawler - INFO - API返回 8 則評論
+2025-08-05 11:59:44,566 - crawler - INFO - 過濾後取得 1 則新評論
+2025-08-05 11:59:44,604 - database - INFO - 成功儲存 1 則評論
+2025-08-05 11:59:44,648 - database - INFO - 更新店家 1 爬蟲日誌
+2025-08-05 11:59:44,686 - database - INFO - 取得店家 1 的 15 則評論
+2025-08-05 11:59:44,687 - main - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-05 11:59:44,687 - analyzer - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 找到 14 則可分析的評論
+2025-08-05 11:59:44,687 - analyzer - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-05 12:00:10,540 - analyzer - INFO - 成功分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-05 12:00:10,588 - database - INFO - 更新店家 1 評論摘要
+2025-08-05 12:00:10,603 - database - INFO - 取得 4 種語言
+2025-08-05 12:00:10,606 - main - INFO - 開始翻譯店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論摘要
+2025-08-05 12:00:10,607 - translator - INFO - 開始批量翻譯店家 1 到 3 種語言
+2025-08-05 12:00:10,608 - translator - INFO - 正在翻譯到 English (en)
+2025-08-05 12:00:10,608 - translator - INFO - 開始翻譯評論摘要到 English (en)
+2025-08-05 12:00:46,815 - translator - INFO - 成功翻譯評論摘要到 English
+2025-08-05 12:00:46,853 - translator - INFO - 成功翻譯並儲存到 English
+2025-08-05 12:00:47,856 - translator - INFO - 正在翻譯到 Japanese (ja)
+2025-08-05 12:00:47,856 - translator - INFO - 開始翻譯評論摘要到 Japanese (ja)
+2025-08-05 12:02:09,260 - translator - INFO - 成功翻譯評論摘要到 Japanese
+2025-08-05 12:02:09,300 - translator - INFO - 成功翻譯並儲存到 Japanese
+2025-08-05 12:02:10,321 - translator - INFO - 正在翻譯到 Korean (ko)
+2025-08-05 12:02:10,322 - translator - INFO - 開始翻譯評論摘要到 Korean (ko)
+2025-08-05 12:02:51,550 - translator - INFO - 成功翻譯評論摘要到 Korean
+2025-08-05 12:02:51,597 - translator - INFO - 成功翻譯並儲存到 Korean
+2025-08-05 12:02:52,646 - translator - INFO - 成功儲存原文（繁體中文）
+2025-08-05 12:02:52,647 - translator - INFO - 批量翻譯完成，成功翻譯 4 種語言
+2025-08-05 12:02:52,675 - database - INFO - 更新店家 1 的 en 翻譯
+2025-08-05 12:02:52,705 - database - INFO - 更新店家 1 的 ja 翻譯
+2025-08-05 12:02:52,737 - database - INFO - 更新店家 1 的 ko 翻譯
+2025-08-05 12:02:52,769 - database - INFO - 更新店家 1 的 zh-TW 翻譯
+2025-08-05 12:02:52,796 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 分析和翻譯完成
+2025-08-05 12:02:52,798 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 處理完成
+2025-08-05 12:02:54,799 - main - INFO - === 所有店家處理完成 ===
+2025-08-05 12:02:54,810 - database - INFO - 資料庫連接已關閉
+2025-08-05 12:02:54,826 - translator - INFO - 翻譯器資料庫連接已關閉

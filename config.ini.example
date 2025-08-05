@@ -4,3 +4,14 @@ user = gae252g1usr
 password = 
 database = gae252g1_db
 port = 3306
+
+
+[api_keys]
+REVIEW_GEMINI_API_KEY = AIzaSyCeLDiib6Nf6t
+
+[serp]
+SERP_API_KEY = 564836803163409d83d50b
+SERP_ENGINE = google_maps_reviews
+SERP_H1 = zh-tW
+SERP_SORT_BY = newestFirst
+SERP_REVIEW_LIMIT = 5

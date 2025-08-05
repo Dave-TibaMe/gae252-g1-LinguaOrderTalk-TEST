@@ -71,7 +71,9 @@ def execute_sql_from_file(sql_file_path, db_config):
             'users',
             'stores',
             'menu_templates',
-            'languages'
+            'languages',
+            'crawl_logs',
+            'reviews'
         ]
 
         print("正在嘗試刪除所有現有表格 (如果存在)...")

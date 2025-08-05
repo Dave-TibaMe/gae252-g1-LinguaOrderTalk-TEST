@@ -131,6 +131,32 @@ CREATE TABLE `user_actions` (
   `details` json DEFAULT NULL COMMENT '行為細節，JSON 格式'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='使用者操作行為紀錄表，用於行為分析與優化';
 
+-- 建立reviews表 added by Davis
+CREATE TABLE `reviews` (
+  `review_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '評論 ID',
+  `store_id` int(11) NOT NULL COMMENT '對應店家 ID',
+  `place_id` varchar(100) COLLATE utf8mb4_bin NOT NULL COMMENT 'Google Place ID',
+  `review_data` json NOT NULL COMMENT 'Google評論完整JSON資料',
+  `review_time` datetime NOT NULL COMMENT '評論時間',
+  `rating` int(1) DEFAULT NULL COMMENT '評分 1-5',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '資料建立時間',
+  PRIMARY KEY (`review_id`),
+  KEY `idx_store_id` (`store_id`),
+  KEY `idx_place_id` (`place_id`),
+  KEY `idx_review_time` (`review_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='Google評論資料表';
+
+-- 建立crawl_logs表 added by Davis
+CREATE TABLE `crawl_logs` (
+  `log_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '日誌 ID',
+  `store_id` int(11) NOT NULL COMMENT '對應店家 ID',
+  `last_crawl_time` datetime NOT NULL COMMENT '最後抓取時間',
+  `reviews_count` int(11) DEFAULT 0 COMMENT '本次抓取評論數量',
+  `status` varchar(20) DEFAULT 'success' COMMENT '抓取狀態',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '建立時間',
+  PRIMARY KEY (`log_id`),
+  UNIQUE KEY `uk_store_id` (`store_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='爬蟲抓取日誌表';
 
 ALTER TABLE `languages`
   ADD PRIMARY KEY (`lang_code`);
