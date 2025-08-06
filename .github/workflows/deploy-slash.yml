@@ -1,33 +1,27 @@
-# .github/workflows/deploy-slash.yml 202508061145
-# 完整 CI/CD 流程: 使用服務帳戶金鑰認證，建置 Docker 鏡像，推送到 Artifact Registry，並部署到 GCP VM
+# .github/workflows/deploy-slash.yml 1152
+# [修正版] 解決了 env 變數解析錯誤的問題
 
 name: 'Build, Push, and Deploy: Slash'
 
 on:
   push:
     branches:
-      - main # 當 main 分支有更新時觸發
+      - main
     paths:
-      - 'deployment/Slash/**' # 只在 Slash 目錄有變動時觸發
-      - '.github/workflows/deploy-slash.yml' # 當 workflow 本身變動時也觸發
-  workflow_dispatch: # 允許手動觸發
+      - 'deployment/Slash/**'
+      - '.github/workflows/deploy-slash.yml'
+  workflow_dispatch:
 
+# --- 全域環境變數 (靜態值或 Secrets) ---
 env:
-  # --- GCP & Artifact Registry 設定 ---
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   GCP_VM_ZONE: ${{ secrets.GCP_VM_ZONE }}
   GCP_ARTIFACT_LOCATION: 'asia-east1'
   GCP_ARTIFACT_REPO: 'docker-repo-store-backend'
-  
-  # --- VM & 應用程式設定 ---
   GCP_VM_NAME: ${{ secrets.GCP_VM_NAME }}
   GCP_VM_USER: ${{ secrets.GCP_VM_USER }}
-  APP_NAME: 'slash-app' # Docker 容器的名稱
-  APP_DIR: 'deployment/Slash' # 您專案中包含 Dockerfile 的目錄
-  
-  # --- 鏡像路徑與標籤 ---
-  IMAGE_PATH: ${{ secrets.GCP_PROJECT_ID }}/${{ env.GCP_ARTIFACT_REPO }}/${{ env.APP_NAME }}
-  IMAGE_TAG: ${{ github.sha }}
+  APP_NAME: 'slash-app'
+  APP_DIR: 'deployment/Slash'
 
 jobs:
   build-push-and-deploy:
@@ -37,6 +31,11 @@ jobs:
     permissions:
       contents: 'read'
       id-token: 'write'
+
+    # --- [修正] 工作層級的環境變數 ---
+    # 在這裡我們可以安全地引用頂層的 env 變數來組合出新的變數
+    env:
+      IMAGE_NAME: ${{ env.GCP_ARTIFACT_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.GCP_ARTIFACT_REPO }}/${{ env.APP_NAME }}:${{ github.sha }}
 
     steps:
       - name: '1. Checkout code'
@@ -55,9 +54,10 @@ jobs:
         run: gcloud auth configure-docker ${{ env.GCP_ARTIFACT_LOCATION }}-docker.pkg.dev
 
       - name: '5. Build and Push Docker Image'
+        # [變更] 使用組合好的 IMAGE_NAME 變數
         run: |
-          docker build -t ${{ env.GCP_ARTIFACT_LOCATION }}-docker.pkg.dev/${{ env.IMAGE_PATH }}:${{ env.IMAGE_TAG }} ${{ env.APP_DIR }}
-          docker push ${{ env.GCP_ARTIFACT_LOCATION }}-docker.pkg.dev/${{ env.IMAGE_PATH }}:${{ env.IMAGE_TAG }}
+          docker build -t ${{ env.IMAGE_NAME }} ${{ env.APP_DIR }}
+          docker push ${{ env.IMAGE_NAME }}
 
       - name: '6. Deploy to Google Compute Engine'
         run: |
@@ -68,20 +68,22 @@ jobs:
             gcloud auth configure-docker ${{ env.GCP_ARTIFACT_LOCATION }}-docker.pkg.dev
 
             echo "--- 2. Pulling the latest Docker image ---"
-            docker pull ${{ env.GCP_ARTIFACT_LOCATION }}-docker.pkg.dev/${{ env.IMAGE_PATH }}:${{ env.IMAGE_TAG }}
+            # [變更] 使用組合好的 IMAGE_NAME 變數
+            docker pull ${{ env.IMAGE_NAME }}
 
             echo "--- 3. Stopping and removing the old container (if it exists) ---"
             docker stop ${{ env.APP_NAME }} || true
             docker rm ${{ env.APP_NAME }} || true
 
             echo "--- 4. Starting the new container ---"
+            # [變更] 使用組合好的 IMAGE_NAME 變數
             docker run -d --name ${{ env.APP_NAME }} -p 80:5000 --restart always \
               -e DB_TYPE='${{ secrets.DB_TYPE }}' \
               -e DB_HOST='${{ secrets.DB_HOST }}' \
               -e DB_USER='${{ secrets.DB_USER }}' \
               -e DB_PASSWORD='${{ secrets.DB_PASSWORD }}' \
               -e DB_DATABASE='${{ secrets.DB_DATABASE }}' \
-              ${{ env.GCP_ARTIFACT_LOCATION }}-docker.pkg.dev/${{ env.IMAGE_PATH }}:${{ env.IMAGE_TAG }}
+              ${{ env.IMAGE_NAME }}
 
             echo "--- 5. Cleaning up old Docker images ---"
             docker image prune -af
