@@ -1,6 +1,7 @@
 # .github/workflows/deploy-slash.yml 1228
 # [修正版] 使用 gcloud scp 將特定子目錄部署到指定 VM 路徑
 # 並透過 Nginx + Gunicorn 運行
+# 修正了使用 printf 生成設定檔以避免 here-document 的縮排和變數擴展問題
 
 name: 'Deploy to VM with Nginx: Slash (Subdirectory)'
 
@@ -82,7 +83,6 @@ jobs:
             cd ${REMOTE_APP_DIR}
 
             echo "--- 3. Creating/Activating Python virtual environment ---"
-            # 如果 venv 不存在，則建立它
             if [ ! -d "venv" ]; then
               python3 -m venv venv
             fi
@@ -91,31 +91,32 @@ jobs:
             echo "--- 4. Installing Python dependencies ---"
             pip install -r requirements.txt
 
-            echo "--- 5. Creating .env file with secrets ---"
-            cat > .env << EOT
-            DB_TYPE='${{ secrets.DB_TYPE }}'
-            DB_HOST='${{ secrets.DB_HOST }}'
-            DB_USER='${{ secrets.DB_USER }}'
-            DB_PASSWORD='${{ secrets.DB_PASSWORD }}'
-            DB_DATABASE='${{ secrets.DB_DATABASE }}'
-            EOT
+            echo "--- 5. Creating .env file with secrets (Robust Method) ---"
+            # 使用 printf 來安全地建立 .env 檔案，避免 here-document 的縮排問題
+            printf '%s\n' \
+              "DB_TYPE='${{ secrets.DB_TYPE }}'" \
+              "DB_HOST='${{ secrets.DB_HOST }}'" \
+              "DB_USER='${{ secrets.DB_USER }}'" \
+              "DB_PASSWORD='${{ secrets.DB_PASSWORD }}'" \
+              "DB_DATABASE='${{ secrets.DB_DATABASE }}'" > .env
 
-            echo "--- 6. Creating Nginx configuration file ---"
-            sudo tee /etc/nginx/sites-available/${NGINX_APP_NAME} > /dev/null << EOT_NGINX
-            server {
-                listen 80;
-                listen [::]:80;
-                server_name ${{ secrets.GCP_VM_IP }};
-
-                location / {
-                    proxy_pass http://127.0.0.1:${GUNICORN_PORT};
-                    proxy_set_header Host $host;
-                    proxy_set_header X-Real-IP $remote_addr;
-                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                    proxy_set_header X-Forwarded-Proto $scheme;
-                }
-            }
-            EOT_NGINX
+            echo "--- 6. Creating Nginx configuration file (Robust Method) ---"
+            # 同樣使用 printf 建立 Nginx 設定檔
+            # 並且使用反斜線 (\$) 來跳脫 Nginx 變數，防止 shell 試圖擴展它們
+            sudo printf '%s\n' \
+              "server {" \
+              "    listen 80;" \
+              "    listen [::]:80;" \
+              "    server_name ${{ secrets.GCP_VM_IP }};" \
+              "" \
+              "    location / {" \
+              "        proxy_pass http://127.0.0.1:${GUNICORN_PORT};" \
+              "        proxy_set_header Host \$host;" \
+              "        proxy_set_header X-Real-IP \$remote_addr;" \
+              "        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;" \
+              "        proxy_set_header X-Forwarded-Proto \$scheme;" \
+              "    }" \
+              "}" > /etc/nginx/sites-available/${NGINX_APP_NAME}
 
             echo "--- 7. Enabling the Nginx site and restarting Nginx ---"
             sudo ln -sf /etc/nginx/sites-available/${NGINX_APP_NAME} /etc/nginx/sites-enabled/
@@ -124,10 +125,7 @@ jobs:
             sudo systemctl restart nginx
 
             echo "--- 8. Stopping old Gunicorn and starting new one ---"
-            # 使用 pkill 精準地停止與此應用相關的 Gunicorn 進程
             pkill -f "gunicorn.*--bind 127.0.0.1:${GUNICORN_PORT} app:app" || echo "Gunicorn not running, which is fine."
-
-            # 使用 Gunicorn 啟動應用，'app:app' 指的是 app.py 檔案中的 app 物件
             nohup gunicorn --workers 3 --bind 127.0.0.1:${GUNICORN_PORT} app:app > ~/gunicorn-slash.log 2>&1 &
 
             deactivate
