@@ -1,7 +1,7 @@
-# .github/workflows/deploy-slash.yml 1152
-# [修正版] 解決了 env 變數解析錯誤的問題
+# .github/workflows/deploy-slash.yml 20250806 1205
+# [非 Docker 版本] 直接部署到 VM，拉取程式碼並重新啟動 Python 應用
 
-name: 'Build, Push, and Deploy: Slash'
+name: 'Deploy to VM: Slash'
 
 on:
   push:
@@ -12,30 +12,20 @@ on:
       - '.github/workflows/deploy-slash.yml'
   workflow_dispatch:
 
-# --- 全域環境變數 (靜態值或 Secrets) ---
 env:
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   GCP_VM_ZONE: ${{ secrets.GCP_VM_ZONE }}
-  GCP_ARTIFACT_LOCATION: 'asia-east1'
-  GCP_ARTIFACT_REPO: 'docker-repo-store-backend'
   GCP_VM_NAME: ${{ secrets.GCP_VM_NAME }}
   GCP_VM_USER: ${{ secrets.GCP_VM_USER }}
-  APP_NAME: 'slash-app'
-  APP_DIR: 'deployment/Slash'
 
 jobs:
-  build-push-and-deploy:
-    name: 'Build, Push Docker and Deploy to VM'
+  deploy-to-vm:
+    name: 'Deploy Python App to VM'
     runs-on: ubuntu-latest
 
     permissions:
       contents: 'read'
       id-token: 'write'
-
-    # --- [修正] 工作層級的環境變數 ---
-    # 在這裡我們可以安全地引用頂層的 env 變數來組合出新的變數
-    env:
-      IMAGE_NAME: ${{ env.GCP_ARTIFACT_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.GCP_ARTIFACT_REPO }}/${{ env.APP_NAME }}:${{ github.sha }}
 
     steps:
       - name: '1. Checkout code'
@@ -50,43 +40,49 @@ jobs:
       - name: '3. Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v2'
 
-      - name: '4. Configure Docker for Artifact Registry'
-        run: gcloud auth configure-docker ${{ env.GCP_ARTIFACT_LOCATION }}-docker.pkg.dev
-
-      - name: '5. Build and Push Docker Image'
-        # [變更] 使用組合好的 IMAGE_NAME 變數
-        run: |
-          docker build -t ${{ env.IMAGE_NAME }} ${{ env.APP_DIR }}
-          docker push ${{ env.IMAGE_NAME }}
-
-      - name: '6. Deploy to Google Compute Engine'
+      - name: '4. Deploy to Google Compute Engine'
         run: |
           gcloud compute ssh ${{ env.GCP_VM_USER }}@${{ env.GCP_VM_NAME }} --zone ${{ env.GCP_VM_ZONE }} --project ${{ env.GCP_PROJECT_ID }} -- << EOF
+            # 如果任何指令失敗，則立即停止腳本
             set -e
 
-            echo "--- 1. Authenticating Docker on VM ---"
-            gcloud auth configure-docker ${{ env.GCP_ARTIFACT_LOCATION }}-docker.pkg.dev
+            # 在 VM 上的專案路徑和應用程式進入點
+            PROJECT_DIR="/home/${{ env.GCP_VM_USER }}/lingua-order-talk-backend"
+            APP_ENTRYPOINT="deployment/Slash/app.py"
 
-            echo "--- 2. Pulling the latest Docker image ---"
-            # [變更] 使用組合好的 IMAGE_NAME 變數
-            docker pull ${{ env.IMAGE_NAME }}
+            echo "--- 1. Navigating to project directory: \${PROJECT_DIR} ---"
+            cd \${PROJECT_DIR}
 
-            echo "--- 3. Stopping and removing the old container (if it exists) ---"
-            docker stop ${{ env.APP_NAME }} || true
-            docker rm ${{ env.APP_NAME }} || true
+            echo "--- 2. Pulling latest code from main branch ---"
+            git pull origin main
 
-            echo "--- 4. Starting the new container ---"
-            # [變更] 使用組合好的 IMAGE_NAME 變數
-            docker run -d --name ${{ env.APP_NAME }} -p 80:5000 --restart always \
-              -e DB_TYPE='${{ secrets.DB_TYPE }}' \
-              -e DB_HOST='${{ secrets.DB_HOST }}' \
-              -e DB_USER='${{ secrets.DB_USER }}' \
-              -e DB_PASSWORD='${{ secrets.DB_PASSWORD }}' \
-              -e DB_DATABASE='${{ secrets.DB_DATABASE }}' \
-              ${{ env.IMAGE_NAME }}
+            echo "--- 3. Activating Python virtual environment ---"
+            source venv/bin/activate
 
-            echo "--- 5. Cleaning up old Docker images ---"
-            docker image prune -af
+            echo "--- 4. Installing/updating Python dependencies ---"
+            pip install -r deployment/Slash/requirements.txt
+
+            echo "--- 5. Creating .env file with secrets ---"
+            # 這個 .env 檔案會被 Python 的 dotenv 函式庫讀取
+            cat > deployment/Slash/.env << EOT
+            DB_TYPE='${{ secrets.DB_TYPE }}'
+            DB_HOST='${{ secrets.DB_HOST }}'
+            DB_USER='${{ secrets.DB_USER }}'
+            DB_PASSWORD='${{ secrets.DB_PASSWORD }}'
+            DB_DATABASE='${{ secrets.DB_DATABASE }}'
+            EOT
+
+            echo "--- 6. Stopping the old application process (if running) ---"
+            # 使用 pkill 來尋找並停止正在運行的 app.py 進程
+            # [a]pp.py 寫法是為了防止 pkill 指令找到自己
+            pkill -f "python3 \${PROJECT_DIR}/${APP_ENTRYPOINT}" || echo "Application not running, which is fine."
+
+            echo "--- 7. Starting the new application process in the background ---"
+            # 使用 nohup 讓程式在 SSH 登出後繼續運行，並將日誌寫入 app.log
+            nohup python3 \${APP_ENTRYPOINT} > \${PROJECT_DIR}/app.log 2>&1 &
+
+            # 停用虛擬環境
+            deactivate
 
             echo "--- Deployment to VM completed successfully! ---"
           EOF
