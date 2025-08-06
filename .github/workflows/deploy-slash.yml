@@ -1,7 +1,7 @@
-# .github/workflows/deploy-slash.yml 1228
-# [偵錯模式 v1] 捕獲並顯示 Nginx 和 Gunicorn 的詳細日誌，以找出根本原因
+# .github/workflows/deploy-slash.yml (修正版) 1542
+# [修正版] 僅部署應用程式並啟動 Gunicorn，Nginx 設定由外部統一管理
 
-name: 'Deploy to VM with Nginx: Slash (Subdirectory)'
+name: 'Deploy to VM: Slash (Bare Metal)'
 
 on:
   push:
@@ -17,17 +17,14 @@ env:
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   GCP_VM_ZONE: ${{ secrets.GCP_VM_ZONE }}
   GCP_VM_NAME: ${{ secrets.GCP_VM_NAME }}
-  GCP_VM_USER: 'tibame20250527' # 直接指定 VM 上的使用者名稱
+  GCP_VM_USER: 'tibame20250527'
   
   # --- 部署路徑設定 ---
-  # 來源: GitHub Repo 中的子目錄
   LOCAL_APP_PATH: 'deployment/Slash' 
-  # 目標: VM 上的絕對路徑
   REMOTE_APP_DIR: '/home/tibame20250527/Slash' 
   
   # --- 服務設定 ---
-  NGINX_APP_NAME: 'slash-app'
-  GUNICORN_PORT: 5002
+  GUNICORN_PORT: 5002 # Slash App 使用 5002 Port
 
 jobs:
   deploy-to-vm:
@@ -51,79 +48,57 @@ jobs:
       - name: '3. Set up Google Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v2'
 
-      - name: '4. Create Remote Directory and Set Permissions'
+      - name: '4. Create Remote Directory'
         run: |
-          gcloud compute ssh ${{ env.GCP_VM_USER }}@${{ env.GCP_VM_NAME }} --zone ${{ env.GCP_VM_ZONE }} --project ${{ env.GCP_PROJECT_ID }} -- << EOF
-            mkdir -p ${{ env.REMOTE_APP_DIR }}
-            sudo chown -R ${{ env.GCP_VM_USER }}:${{ env.GCP_VM_USER }} ${{ env.REMOTE_APP_DIR }}
-          EOF
+          gcloud compute ssh ${{ env.GCP_VM_USER }}@${{ env.GCP_VM_NAME }} --zone ${{ env.GCP_VM_ZONE }} --project ${{ env.GCP_PROJECT_ID }} --command="mkdir -p ${{ env.REMOTE_APP_DIR }}"
 
       - name: '5. Copy Application Files to VM'
         run: |
           gcloud compute scp --recurse ./${{ env.LOCAL_APP_PATH }}/ ${{ env.GCP_VM_USER }}@${{ env.GCP_VM_NAME }}:${{ env.REMOTE_APP_DIR }} --zone ${{ env.GCP_VM_ZONE }} --project ${{ env.GCP_PROJECT_ID }}
       
-      - name: '6. Install, Configure, and Restart Services on VM'
+      - name: '6. Install Dependencies and Restart Gunicorn on VM'
         run: |
           gcloud compute ssh ${{ env.GCP_VM_USER }}@${{ env.GCP_VM_NAME }} --zone ${{ env.GCP_VM_ZONE }} --project ${{ env.GCP_PROJECT_ID }} -- << 'EOF'
+            # 如果任何指令失敗，則立即停止腳本
             set -e
 
+            # 從 GitHub Actions 傳入的環境變數
             REMOTE_APP_DIR="${{ env.REMOTE_APP_DIR }}"
-            NGINX_APP_NAME="${{ env.NGINX_APP_NAME }}"
             GUNICORN_PORT="${{ env.GUNICORN_PORT }}"
             
-            echo "--- 1-4. Installing dependencies and activating venv ---"
-            sudo apt-get update
-            sudo apt-get install -y nginx python3-pip python3-venv
+            echo "--- 1. Navigating to application directory: ${REMOTE_APP_DIR} ---"
             cd ${REMOTE_APP_DIR}
+
+            echo "--- 2. Updating system packages and installing Python tools ---"
+            sudo apt-get update
+            sudo apt-get install -y python3-pip python3-venv
+
+            echo "--- 3. Creating/Activating Python virtual environment ---"
             if [ ! -d "venv" ]; then
               python3 -m venv venv
             fi
             source venv/bin/activate
+
+            echo "--- 4. Installing Python dependencies ---"
+            pip install --upgrade pip
             pip install -r requirements.txt
 
-            echo "--- 5. Creating .env file ---"
-            printf '%s\n' \
-              "DB_TYPE='${{ secrets.DB_TYPE }}'" \
-              "DB_HOST='${{ secrets.DB_HOST }}'" \
-              "DB_USER='${{ secrets.DB_USER }}'" \
-              "DB_PASSWORD='${{ secrets.DB_PASSWORD }}'" \
-              "DB_DATABASE='${{ secrets.DB_DATABASE }}'" > .env
+            echo "--- 5. Creating .env file with secrets ---"
+            cat > .env << EOT
+            DB_TYPE='${{ secrets.DB_TYPE }}'
+            DB_HOST='${{ secrets.DB_HOST }}'
+            DB_USER='${{ secrets.DB_USER }}'
+            DB_PASSWORD='${{ secrets.DB_PASSWORD }}'
+            DB_DATABASE='${{ secrets.DB_DATABASE }}'
+            EOT
 
-            echo "--- 6. Creating Nginx configuration ---"
-            printf '%s\n' \
-              "server {" \
-              "    listen 80;" \
-              "    server_name ${{ secrets.GCP_VM_IP }};" \
-              "    location / { proxy_pass http://127.0.0.1:${GUNICORN_PORT}; proxy_set_header Host \$host; }" \
-              "}" | sudo tee /etc/nginx/sites-available/${NGINX_APP_NAME} > /dev/null
-
-            echo "--- 7. Starting Gunicorn in background ---"
+            echo "--- 6. Stopping old Gunicorn and starting new one ---"
+            # 使用 pkill 精準地停止與此應用相關的 Gunicorn 進程
             pkill -f "gunicorn.*--bind 127.0.0.1:${GUNICORN_PORT} app:app" || echo "Gunicorn not running, which is fine."
-            nohup gunicorn --workers 3 --bind 127.0.0.1:${GUNICORN_PORT} app:app > ~/gunicorn-slash.log 2>&1 &
-            
-            echo "--- Waiting 5 seconds for Gunicorn to start up... ---"
-            sleep 5
 
-            echo "--- 8. Enabling Nginx site and attempting to restart Nginx ---"
-            sudo ln -sf /etc/nginx/sites-available/${NGINX_APP_NAME} /etc/nginx/sites-enabled/
-            sudo rm -f /etc/nginx/sites-enabled/default
-            sudo nginx -t
-            
-            # --- 關鍵偵錯：如果 Nginx 重啟失敗，就顯示所有相關日誌 ---
-            if ! sudo systemctl restart nginx; then
-              echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-              echo "!!! Nginx restart FAILED. Fetching debug logs... !!!"
-              echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-              sleep 2 
-              echo "--- [DEBUG] Nginx Service Status ---"
-              sudo systemctl status nginx.service --no-pager
-              echo "--- [DEBUG] Nginx System Journal (Last 50 lines) ---"
-              sudo journalctl -xeu nginx.service --no-pager -n 50
-              echo "--- [DEBUG] Gunicorn Application Log ---"
-              cat ~/gunicorn-slash.log
-              echo "--- End of Debug Logs ---"
-              exit 1
-            fi
+            # 使用 Gunicorn 啟動應用，'app:app' 指的是 app.py 檔案中的 app 物件
+            # 在背景運行，並將日誌輸出到家目錄的 gunicorn-slash.log
+            nohup gunicorn --workers 3 --bind 127.0.0.1:${GUNICORN_PORT} app:app > ~/gunicorn-slash.log 2>&1 &
 
             deactivate
             echo "--- Deployment to ${REMOTE_APP_DIR} completed successfully! ---"
