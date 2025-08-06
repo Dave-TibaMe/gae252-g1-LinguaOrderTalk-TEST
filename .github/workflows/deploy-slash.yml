@@ -1,7 +1,7 @@
 # .github/workflows/deploy-slash.yml 1228
-# [最終修正版 v2] 使用 gcloud scp 將特定子目錄部署到指定 VM 路徑
+# [最終修正版 v3] 使用 gcloud scp 將特定子目錄部署到指定 VM 路徑
 # 並透過 Nginx + Gunicorn 運行
-# 修正服務啟動順序：先啟動 Gunicorn，再重啟 Nginx
+# 修正 Race Condition：在 Gunicorn 啟動後加入 sleep，確保服務可用後再重啟 Nginx
 
 name: 'Deploy to VM with Nginx: Slash (Subdirectory)'
 
@@ -116,12 +116,14 @@ jobs:
               "}" | sudo tee /etc/nginx/sites-available/${NGINX_APP_NAME} > /dev/null
 
             echo "--- 7. Stopping old Gunicorn and starting new one ---"
-            # 關鍵修正：先啟動 Gunicorn
             pkill -f "gunicorn.*--bind 127.0.0.1:${GUNICORN_PORT} app:app" || echo "Gunicorn not running, which is fine."
             nohup gunicorn --workers 3 --bind 127.0.0.1:${GUNICORN_PORT} app:app > ~/gunicorn-slash.log 2>&1 &
             
+            # --- 關鍵修正：解決 Race Condition ---
+            echo "--- Waiting 3 seconds for Gunicorn to start up... ---"
+            sleep 3
+
             echo "--- 8. Enabling the Nginx site and restarting Nginx ---"
-            # 關鍵修正：後重啟 Nginx
             sudo ln -sf /etc/nginx/sites-available/${NGINX_APP_NAME} /etc/nginx/sites-enabled/
             sudo rm -f /etc/nginx/sites-enabled/default
             sudo nginx -t
