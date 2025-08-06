@@ -1,4 +1,4 @@
-# .github/workflows/deploy-slash.yml v1
+# .github/workflows/deploy-slash.yml
 
 name: 'Deploy System: Slash'
 
@@ -26,12 +26,12 @@ env:
 
   # --- 遠端 VM 路徑設定 ---
   REMOTE_BASE_DIR: "/home/${{ secrets.GCP_VM_USER_PROD }}"
-  REMOTE_APP_DIR: "${{ env.REMOTE_BASE_DIR }}/apps/${{ env.APP_NAME }}"
+  # [修正] 直接組合路徑，避免在 env 區塊內自我引用
+  REMOTE_APP_DIR: "/home/${{ secrets.GCP_VM_USER_PROD }}/apps/Slash"
   REMOTE_NGINX_CONF_DIR: "/etc/nginx/sites-available"
   REMOTE_NGINX_ENABLED_DIR: "/etc/nginx/sites-enabled"
 
   # --- 資料庫密鑰 ---
-  # 將 Secrets 讀取到 GitHub Actions 的環境中
   DB_TYPE: ${{ secrets.DB_TYPE }}
   DB_HOST: ${{ secrets.DB_HOST }}
   DB_USER: ${{ secrets.DB_USER }}
@@ -70,6 +70,7 @@ jobs:
             set -e
 
             # --- 環境變數 (在遠端 VM 上再次定義) ---
+            # 這裡的 env 引用是正確的，因為它是在 job step 中被解析
             APP_NAME=${{ env.APP_NAME }}
             REMOTE_APP_DIR=${{ env.REMOTE_APP_DIR }}
             REMOTE_NGINX_CONF_DIR=${{ env.REMOTE_NGINX_CONF_DIR }}
@@ -93,8 +94,6 @@ jobs:
             sudo systemctl stop ${APP_NAME}.service || true
             sudo systemctl disable ${APP_NAME}.service || true
 
-            # 建立 systemd 服務檔案
-            # 注意看這裡新增的 "Environment" 行
             sudo tee /etc/systemd/system/${APP_NAME}.service > /dev/null <<EOT
             [Unit]
             Description=Gunicorn instance for ${APP_NAME}
@@ -105,13 +104,11 @@ jobs:
             Group=www-data
             WorkingDirectory=${REMOTE_APP_DIR}
             
-            # --- 這是注入環境變數的關鍵部分 ---
             Environment="DB_TYPE=${{ env.DB_TYPE }}"
             Environment="DB_HOST=${{ env.DB_HOST }}"
             Environment="DB_USER=${{ env.DB_USER }}"
             Environment="DB_PASSWORD=${{ env.DB_PASSWORD }}"
             Environment="DB_DATABASE=${{ env.DB_DATABASE }}"
-            # ------------------------------------
 
             ExecStart=${REMOTE_APP_DIR}/venv/bin/gunicorn --workers 3 --bind 127.0.0.1:${GUNICORN_PORT} app:app
             Restart=always
