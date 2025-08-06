@@ -1,7 +1,7 @@
 # .github/workflows/deploy-slash.yml 1228
-# [修正版] 使用 gcloud scp 將特定子目錄部署到指定 VM 路徑
+# [最終修正版] 使用 gcloud scp 將特定子目錄部署到指定 VM 路徑
 # 並透過 Nginx + Gunicorn 運行
-# 修正了使用 printf 生成設定檔以避免 here-document 的縮排和變數擴展問題
+# 使用 'printf | sudo tee' 解決 sudo 重新導向的權限問題
 
 name: 'Deploy to VM with Nginx: Slash (Subdirectory)'
 
@@ -92,7 +92,6 @@ jobs:
             pip install -r requirements.txt
 
             echo "--- 5. Creating .env file with secrets (Robust Method) ---"
-            # 使用 printf 來安全地建立 .env 檔案，避免 here-document 的縮排問題
             printf '%s\n' \
               "DB_TYPE='${{ secrets.DB_TYPE }}'" \
               "DB_HOST='${{ secrets.DB_HOST }}'" \
@@ -101,9 +100,8 @@ jobs:
               "DB_DATABASE='${{ secrets.DB_DATABASE }}'" > .env
 
             echo "--- 6. Creating Nginx configuration file (Robust Method) ---"
-            # 同樣使用 printf 建立 Nginx 設定檔
-            # 並且使用反斜線 (\$) 來跳脫 Nginx 變數，防止 shell 試圖擴展它們
-            sudo printf '%s\n' \
+            # 關鍵修正：使用 'printf | sudo tee' 來解決 sudo 重新導向的權限問題
+            printf '%s\n' \
               "server {" \
               "    listen 80;" \
               "    listen [::]:80;" \
@@ -116,7 +114,7 @@ jobs:
               "        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;" \
               "        proxy_set_header X-Forwarded-Proto \$scheme;" \
               "    }" \
-              "}" > /etc/nginx/sites-available/${NGINX_APP_NAME}
+              "}" | sudo tee /etc/nginx/sites-available/${NGINX_APP_NAME} > /dev/null
 
             echo "--- 7. Enabling the Nginx site and restarting Nginx ---"
             sudo ln -sf /etc/nginx/sites-available/${NGINX_APP_NAME} /etc/nginx/sites-enabled/
