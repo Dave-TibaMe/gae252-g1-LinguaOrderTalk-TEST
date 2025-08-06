@@ -1,4 +1,4 @@
-# .github/workflows/deploy-slash.yml (專業版) 1630
+# .github/workflows/deploy-slash.yml (專業版) 0002
 # 使用 Nginx (子路徑) + systemd + Gunicorn 部署
 
 name: 'Deploy to VM: Slash (Subdirectory)'
