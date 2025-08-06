@@ -1,7 +1,8 @@
-# .github/workflows/deploy-slash.yml 1216
-# [Nginx + Gunicorn 版本] 使用 Nginx 作為反向代理，Gunicorn 運行 Python 應用
+# .github/workflows/deploy-slash.yml 1228
+# [修正版] 使用 gcloud scp 將特定子目錄部署到指定 VM 路徑
+# 並透過 Nginx + Gunicorn 運行
 
-name: 'Deploy to VM with Nginx: Slash'
+name: 'Deploy to VM with Nginx: Slash (Subdirectory)'
 
 on:
   push:
@@ -13,18 +14,25 @@ on:
   workflow_dispatch:
 
 env:
+  # --- 請確認以下變數與您的 GCP 環境相符 ---
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   GCP_VM_ZONE: ${{ secrets.GCP_VM_ZONE }}
   GCP_VM_NAME: ${{ secrets.GCP_VM_NAME }}
-  GCP_VM_USER: ${{ secrets.GCP_VM_USER }}
-  # 專案在 VM 上的根目錄
-  PROJECT_DIR: 'Slash'
-  # Nginx 設定檔中使用的應用程式名稱
+  GCP_VM_USER: 'tibame20250527' # 直接指定 VM 上的使用者名稱
+  
+  # --- 部署路徑設定 ---
+  # 來源: GitHub Repo 中的子目錄
+  LOCAL_APP_PATH: 'deployment/Slash' 
+  # 目標: VM 上的絕對路徑
+  REMOTE_APP_DIR: '/home/tibame20250527/Slash' 
+  
+  # --- 服務設定 ---
   NGINX_APP_NAME: 'slash-app'
+  GUNICORN_PORT: 5002
 
 jobs:
   deploy-to-vm:
-    name: 'Deploy Python App to VM with Nginx'
+    name: 'Deploy Slash App to VM'
     runs-on: ubuntu-latest
 
     permissions:
@@ -32,7 +40,7 @@ jobs:
       id-token: 'write'
 
     steps:
-      - name: '1. Checkout code'
+      - name: '1. Checkout Repository Code'
         uses: actions/checkout@v4
 
       - name: '2. Authenticate to Google Cloud'
@@ -41,38 +49,50 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
-      - name: '3. Set up Cloud SDK'
+      - name: '3. Set up Google Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v2'
 
-      - name: '4. Deploy to Google Compute Engine'
+      - name: '4. Create Remote Directory and Set Permissions'
+        run: |
+          gcloud compute ssh ${{ env.GCP_VM_USER }}@${{ env.GCP_VM_NAME }} --zone ${{ env.GCP_VM_ZONE }} --project ${{ env.GCP_PROJECT_ID }} -- << EOF
+            mkdir -p ${{ env.REMOTE_APP_DIR }}
+            sudo chown -R ${{ env.GCP_VM_USER }}:${{ env.GCP_VM_USER }} ${{ env.REMOTE_APP_DIR }}
+          EOF
+
+      - name: '5. Copy Application Files to VM'
+        run: |
+          gcloud compute scp --recurse ./${{ env.LOCAL_APP_PATH }}/ ${{ env.GCP_VM_USER }}@${{ env.GCP_VM_NAME }}:${{ env.REMOTE_APP_DIR }} --zone ${{ env.GCP_VM_ZONE }} --project ${{ env.GCP_PROJECT_ID }}
+      
+      - name: '6. Install, Configure, and Restart Services on VM'
         run: |
           gcloud compute ssh ${{ env.GCP_VM_USER }}@${{ env.GCP_VM_NAME }} --zone ${{ env.GCP_VM_ZONE }} --project ${{ env.GCP_PROJECT_ID }} -- << 'EOF'
             # 如果任何指令失敗，則立即停止腳本
             set -e
 
             # 從 GitHub Actions 傳入的環境變數
-            PROJECT_DIR="${{ env.PROJECT_DIR }}"
+            REMOTE_APP_DIR="${{ env.REMOTE_APP_DIR }}"
             NGINX_APP_NAME="${{ env.NGINX_APP_NAME }}"
-            APP_DIR_IN_PROJECT="deployment/Slash"
+            GUNICORN_PORT="${{ env.GUNICORN_PORT }}"
             
-            echo "--- 1. Updating package list and installing Nginx ---"
+            echo "--- 1. Updating package list and installing Nginx/Python tools ---"
             sudo apt-get update
-            sudo apt-get install -y nginx
+            sudo apt-get install -y nginx python3-pip python3-venv
 
-            echo "--- 2. Navigating to project directory: ~/${PROJECT_DIR} ---"
-            cd ~/${PROJECT_DIR}
+            echo "--- 2. Navigating to application directory: ${REMOTE_APP_DIR} ---"
+            cd ${REMOTE_APP_DIR}
 
-            echo "--- 3. Pulling latest code from main branch ---"
-            git pull origin main
-
-            echo "--- 4. Activating Python virtual environment ---"
+            echo "--- 3. Creating/Activating Python virtual environment ---"
+            # 如果 venv 不存在，則建立它
+            if [ ! -d "venv" ]; then
+              python3 -m venv venv
+            fi
             source venv/bin/activate
 
-            echo "--- 5. Installing/updating Python dependencies (including gunicorn) ---"
-            pip install -r ${APP_DIR_IN_PROJECT}/requirements.txt
+            echo "--- 4. Installing Python dependencies ---"
+            pip install -r requirements.txt
 
-            echo "--- 6. Creating .env file with secrets ---"
-            cat > ${APP_DIR_IN_PROJECT}/.env << EOT
+            echo "--- 5. Creating .env file with secrets ---"
+            cat > .env << EOT
             DB_TYPE='${{ secrets.DB_TYPE }}'
             DB_HOST='${{ secrets.DB_HOST }}'
             DB_USER='${{ secrets.DB_USER }}'
@@ -80,16 +100,15 @@ jobs:
             DB_DATABASE='${{ secrets.DB_DATABASE }}'
             EOT
 
-            echo "--- 7. Creating Nginx configuration file ---"
-            # 使用 sudo tee 將設定檔寫入受保護的目錄
-            sudo tee /etc/nginx/sites-available/${NGINX_APP_NAME} > /dev/null << 'EOT_NGINX'
+            echo "--- 6. Creating Nginx configuration file ---"
+            sudo tee /etc/nginx/sites-available/${NGINX_APP_NAME} > /dev/null << EOT_NGINX
             server {
                 listen 80;
                 listen [::]:80;
-                server_name ${{ secrets.GCP_VM_IP }}; # 使用 Secret 傳入的 VM IP
+                server_name ${{ secrets.GCP_VM_IP }};
 
                 location / {
-                    proxy_pass http://127.0.0.1:5002; # 轉發給 Gunicorn
+                    proxy_pass http://127.0.0.1:${GUNICORN_PORT};
                     proxy_set_header Host $host;
                     proxy_set_header X-Real-IP $remote_addr;
                     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -98,29 +117,19 @@ jobs:
             }
             EOT_NGINX
 
-            echo "--- 8. Enabling the Nginx site and restarting Nginx ---"
-            # 建立符號連結來啟用網站，-f 參數會覆蓋已存在的連結
+            echo "--- 7. Enabling the Nginx site and restarting Nginx ---"
             sudo ln -sf /etc/nginx/sites-available/${NGINX_APP_NAME} /etc/nginx/sites-enabled/
-            # 移除預設的設定檔，避免衝突
             sudo rm -f /etc/nginx/sites-enabled/default
-            # 測試 Nginx 設定檔語法是否正確
             sudo nginx -t
-            # 重新啟動 Nginx 服務以套用新設定
             sudo systemctl restart nginx
 
-            echo "--- 9. Stopping old Gunicorn process and starting new one ---"
-            # 進入應用程式目錄以正確啟動 Gunicorn
-            cd ${APP_DIR_IN_PROJECT}
-            
-            # 停止舊的 Gunicorn 進程 (如果有的話)
-            pkill -f "gunicorn.*app:app" || echo "Gunicorn not running, which is fine."
+            echo "--- 8. Stopping old Gunicorn and starting new one ---"
+            # 使用 pkill 精準地停止與此應用相關的 Gunicorn 進程
+            pkill -f "gunicorn.*--bind 127.0.0.1:${GUNICORN_PORT} app:app" || echo "Gunicorn not running, which is fine."
 
-            # 使用 Gunicorn 啟動應用，綁定到本地 5002 port
-            # 'app:app' 指的是 app.py 檔案中的 app 物件
-            nohup gunicorn --workers 3 --bind 127.0.0.1:5002 app:app > ~/gunicorn.log 2>&1 &
+            # 使用 Gunicorn 啟動應用，'app:app' 指的是 app.py 檔案中的 app 物件
+            nohup gunicorn --workers 3 --bind 127.0.0.1:${GUNICORN_PORT} app:app > ~/gunicorn-slash.log 2>&1 &
 
-            # 停用虛擬環境
             deactivate
-
-            echo "--- Deployment with Nginx and Gunicorn completed successfully! ---"
+            echo "--- Deployment to ${REMOTE_APP_DIR} completed successfully! ---"
           EOF
