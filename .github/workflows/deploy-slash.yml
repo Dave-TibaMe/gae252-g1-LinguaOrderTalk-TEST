@@ -1,4 +1,4 @@
-# .github/workflows/deploy-slash.yml
+# .github/workflows/deploy-slash.yml 202508061145
 # 完整 CI/CD 流程: 使用服務帳戶金鑰認證，建置 Docker 鏡像，推送到 Artifact Registry，並部署到 GCP VM
 
 name: 'Build, Push, and Deploy: Slash'
