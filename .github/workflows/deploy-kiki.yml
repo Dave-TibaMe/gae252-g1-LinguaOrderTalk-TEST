@@ -1,0 +1,108 @@
+# .github/workflows/deploy-kiki.yml
+
+name: 'Deploy System: Kiki'
+
+on:
+  push:
+    branches:
+      - main
+    # 關鍵：監控 deployment/Kiki/ 目錄下的所有變動。
+    # ** 會匹配任意深度的子目錄。
+    paths:
+      - 'deployment/Kiki/**'
+
+# --- 環境變數 ---
+# 將通用變數放在此處，方便所有 jobs 取用
+env:
+  GCP_VM_IP: ${{ secrets.GCP_VM_IP }}
+  GCP_VM_USER: 'your_vm_username' # 請填寫您登入 VM 的使用者名稱
+  
+  # Kiki 系統的特定設定
+  SYSTEM_NAME: 'Kiki'
+  REMOTE_STATIC_DIR: '/var/www/Kiki' # VM 上存放 Kiki 靜態檔案的目錄
+  REMOTE_APP_DIR: '/home/your_vm_username/apps/Kiki' # VM 上存放 Kiki 應用程式的目錄
+  APP_PORT: 5001 # Kiki 應用程式監聽的內部埠號
+
+jobs:
+  # --- JOB 1: 部署靜態網站 ---
+  deploy-static-site:
+    name: 'Deploy Static Site'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: '1. Checkout Repository'
+        uses: actions/checkout@v4
+
+      - name: '2. Deploy Static Files to VM via rsync'
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.GCP_VM_IP }}
+          username: ${{ env.GCP_VM_USER }}
+          key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
+          script: |
+            # 使用 rsync 將靜態檔案同步到遠端伺服器
+            # --delete 選項會刪除目標目錄中有而來源目錄沒有的檔案，保持完全同步
+            # -avz 是常用選項：archive, verbose, compress
+            echo "--- Syncing static files for ${{ env.SYSTEM_NAME }} ---"
+            rsync -avz --delete \
+              ${{ github.workspace }}/deployment/${{ env.SYSTEM_NAME }}/static/ \
+              ${{ env.GCP_VM_USER }}@${{ env.GCP_VM_IP }}:${{ env.REMOTE_STATIC_DIR }}/
+            echo "--- Static files synchronized successfully! ---"
+
+  # --- JOB 2: 部署動態應用程式 ---
+  deploy-dynamic-app:
+    name: 'Deploy Dynamic App'
+    runs-on: ubuntu-latest
+    needs: deploy-static-site # 確保靜態檔案部署成功後，再部署應用程式
+
+    steps:
+      - name: '1. Checkout Repository'
+        uses: actions/checkout@v4
+
+      - name: '2. Setup Python, Install Dependencies, and Deploy'
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.GCP_VM_IP }}
+          username: ${{ env.GCP_VM_USER }}
+          key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
+          script: |
+            set -e # 任何指令失敗都立刻停止執行
+
+            echo "--- Navigating to app directory: ${{ env.REMOTE_APP_DIR }} ---"
+            # 確保遠端目錄存在
+            mkdir -p ${{ env.REMOTE_APP_DIR }}
+            cd ${{ env.REMOTE_APP_DIR }}
+
+            echo "--- Syncing application files ---"
+            # 將 GitHub Actions 環境中的應用程式碼同步到 VM
+            # 注意：這裡排除了 venv 目錄，避免覆蓋遠端的虛擬環境
+            rsync -avz --delete --exclude 'venv' \
+              ${{ github.workspace }}/deployment/${{ env.SYSTEM_NAME }}/app/ .
+
+            echo "--- Setting up Python virtual environment ---"
+            # 如果 venv 不存在，則建立它
+            if [ ! -d "venv" ]; then
+              python3 -m venv venv
+            fi
+            
+            echo "--- Installing/Updating Python dependencies ---"
+            source venv/bin/activate
+            pip install -r requirements.txt
+
+            echo "--- Creating .env file from secrets ---"
+            # 動態生成 .env 檔案
+            # 建議為每個系統的 secret 加上前綴，如 KIKI_DB_URL
+            echo "FLASK_APP=main.py" > .env
+            echo "DATABASE_URL=${{ secrets.KIKI_DATABASE_URL }}" >> .env
+            echo "LINE_CHANNEL_SECRET=${{ secrets.KIKI_LINE_CHANNEL_SECRET }}" >> .env
+            # ... 其他 Kiki 需要的環境變數
+
+            echo "--- Starting/Reloading application with PM2 ---"
+            # 使用 Gunicorn 作為 WSGI 伺服器，由 PM2 管理
+            # Gunicorn 參數: -w 4 (4個工作進程), -b (綁定地址和埠號), main:app (main.py 裡的 app 物件)
+            # --name 參數讓你在 pm2 中可以輕易地識別和管理這個進程
+            pm2 reload ${{ env.SYSTEM_NAME }} --update-env || \
+            pm2 start "venv/bin/gunicorn --workers 4 --bind 0.0.0.0:${{ env.APP_PORT }} main:app" \
+            --name ${{ env.SYSTEM_NAME }}
+
+            echo "--- Deployment for ${{ env.SYSTEM_NAME }} has been completed successfully! ---"

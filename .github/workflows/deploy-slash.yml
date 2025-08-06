@@ -1,0 +1,136 @@
+# .github/workflows/deploy-slash.yml
+
+name: 'Deploy System: Slash'
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'deployment/Slash/**'
+  workflow_dispatch:
+
+env:
+  # --- VM 存取資訊 ---
+  REMOTE_HOST: ${{ secrets.GCP_VM_IP_PROD }}
+  REMOTE_USER: ${{ secrets.GCP_VM_USER_PROD }}
+  SSH_PRIVATE_KEY: ${{ secrets.GCP_VM_SSH_PRIVATE_KEY_PROD }}
+  REMOTE_PORT: 22
+
+  # --- 應用程式設定 ---
+  APP_NAME: "Slash"
+  LOCAL_APP_DIR: "deployment/Slash/"
+  LOCAL_NGINX_CONF: "deployment/Slash/nginx.conf"
+  DOMAIN_NAME: "35.194.250.197"
+  GUNICORN_PORT: "5002"
+
+  # --- 遠端 VM 路徑設定 ---
+  REMOTE_BASE_DIR: "/home/${{ secrets.GCP_VM_USER_PROD }}"
+  REMOTE_APP_DIR: "${{ env.REMOTE_BASE_DIR }}/apps/${{ env.APP_NAME }}"
+  REMOTE_NGINX_CONF_DIR: "/etc/nginx/sites-available"
+  REMOTE_NGINX_ENABLED_DIR: "/etc/nginx/sites-enabled"
+
+  # --- 資料庫密鑰 ---
+  # 將 Secrets 讀取到 GitHub Actions 的環境中
+  DB_TYPE: ${{ secrets.DB_TYPE }}
+  DB_HOST: ${{ secrets.DB_HOST }}
+  DB_USER: ${{ secrets.DB_USER }}
+  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  DB_DATABASE: ${{ secrets.DB_DATABASE }}
+
+jobs:
+  deploy-dynamic-app:
+    name: 'Deploy Dynamic App to VM'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout code'
+        uses: actions/checkout@v4
+
+      - name: 'Install ssh-agent'
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ env.SSH_PRIVATE_KEY }}
+
+      - name: 'Sync application files to VM'
+        run: |
+          rsync -avz -e "ssh -o StrictHostKeyChecking=no -p ${{ env.REMOTE_PORT }}" \
+            --delete \
+            ${{ env.LOCAL_APP_DIR }} \
+            ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }}:${{ env.REMOTE_APP_DIR }}/
+      
+      - name: 'Sync Nginx config file to VM'
+        run: |
+          scp -o StrictHostKeyChecking=no -P ${{ env.REMOTE_PORT }} \
+            ${{ env.LOCAL_NGINX_CONF }} \
+            ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }}:/tmp/${{ env.APP_NAME }}.conf
+
+      - name: 'Execute deployment script on VM'
+        run: |
+          ssh -o StrictHostKeyChecking=no -p ${{ env.REMOTE_PORT }} ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} << 'EOF'
+            set -e
+
+            # --- 環境變數 (在遠端 VM 上再次定義) ---
+            APP_NAME=${{ env.APP_NAME }}
+            REMOTE_APP_DIR=${{ env.REMOTE_APP_DIR }}
+            REMOTE_NGINX_CONF_DIR=${{ env.REMOTE_NGINX_CONF_DIR }}
+            REMOTE_NGINX_ENABLED_DIR=${{ env.REMOTE_NGINX_ENABLED_DIR }}
+            GUNICORN_PORT=${{ env.GUNICORN_PORT }}
+            
+            echo "--- 1. Setting up Python virtual environment and installing dependencies ---"
+            cd $REMOTE_APP_DIR
+            if [ ! -d "venv" ]; then
+              python3 -m venv venv
+            fi
+            source venv/bin/activate
+            pip install --upgrade pip
+            if [ -f "requirements.txt" ]; then
+              pip install -r requirements.txt
+            fi
+            deactivate
+            echo "--- Python environment setup completed. ---"
+
+            echo "--- 2. Setting up systemd service ---"
+            sudo systemctl stop ${APP_NAME}.service || true
+            sudo systemctl disable ${APP_NAME}.service || true
+
+            # 建立 systemd 服務檔案
+            # 注意看這裡新增的 "Environment" 行
+            sudo tee /etc/systemd/system/${APP_NAME}.service > /dev/null <<EOT
+            [Unit]
+            Description=Gunicorn instance for ${APP_NAME}
+            After=network.target
+
+            [Service]
+            User=${{ secrets.GCP_VM_USER_PROD }}
+            Group=www-data
+            WorkingDirectory=${REMOTE_APP_DIR}
+            
+            # --- 這是注入環境變數的關鍵部分 ---
+            Environment="DB_TYPE=${{ env.DB_TYPE }}"
+            Environment="DB_HOST=${{ env.DB_HOST }}"
+            Environment="DB_USER=${{ env.DB_USER }}"
+            Environment="DB_PASSWORD=${{ env.DB_PASSWORD }}"
+            Environment="DB_DATABASE=${{ env.DB_DATABASE }}"
+            # ------------------------------------
+
+            ExecStart=${REMOTE_APP_DIR}/venv/bin/gunicorn --workers 3 --bind 127.0.0.1:${GUNICORN_PORT} app:app
+            Restart=always
+
+            [Install]
+            WantedBy=multi-user.target
+            EOT
+            echo "--- systemd service file created. ---"
+
+            echo "--- 3. Setting up Nginx reverse proxy ---"
+            sudo mv /tmp/${APP_NAME}.conf ${REMOTE_NGINX_CONF_DIR}/${APP_NAME}
+            sudo ln -sf ${REMOTE_NGINX_CONF_DIR}/${APP_NAME} ${REMOTE_NGINX_ENABLED_DIR}/
+            echo "--- Nginx config moved and linked. ---"
+
+            echo "--- 4. Reloading services ---"
+            sudo systemctl daemon-reload
+            sudo systemctl start ${APP_NAME}.service
+            sudo systemctl enable ${APP_NAME}.service
+            sudo nginx -t
+            sudo systemctl restart nginx
+            echo "--- Deployment for ${APP_NAME} completed successfully! ---"
+          EOF
