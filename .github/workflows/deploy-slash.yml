@@ -1,7 +1,5 @@
 # .github/workflows/deploy-slash.yml 1228
-# [最終修正版 v3] 使用 gcloud scp 將特定子目錄部署到指定 VM 路徑
-# 並透過 Nginx + Gunicorn 運行
-# 修正 Race Condition：在 Gunicorn 啟動後加入 sleep，確保服務可用後再重啟 Nginx
+# [偵錯模式 v1] 捕獲並顯示 Nginx 和 Gunicorn 的詳細日誌，以找出根本原因
 
 name: 'Deploy to VM with Nginx: Slash (Subdirectory)'
 
@@ -67,31 +65,23 @@ jobs:
       - name: '6. Install, Configure, and Restart Services on VM'
         run: |
           gcloud compute ssh ${{ env.GCP_VM_USER }}@${{ env.GCP_VM_NAME }} --zone ${{ env.GCP_VM_ZONE }} --project ${{ env.GCP_PROJECT_ID }} -- << 'EOF'
-            # 如果任何指令失敗，則立即停止腳本
             set -e
 
-            # 從 GitHub Actions 傳入的環境變數
             REMOTE_APP_DIR="${{ env.REMOTE_APP_DIR }}"
             NGINX_APP_NAME="${{ env.NGINX_APP_NAME }}"
             GUNICORN_PORT="${{ env.GUNICORN_PORT }}"
             
-            echo "--- 1. Updating package list and installing Nginx/Python tools ---"
+            echo "--- 1-4. Installing dependencies and activating venv ---"
             sudo apt-get update
             sudo apt-get install -y nginx python3-pip python3-venv
-
-            echo "--- 2. Navigating to application directory: ${REMOTE_APP_DIR} ---"
             cd ${REMOTE_APP_DIR}
-
-            echo "--- 3. Creating/Activating Python virtual environment ---"
             if [ ! -d "venv" ]; then
               python3 -m venv venv
             fi
             source venv/bin/activate
-
-            echo "--- 4. Installing Python dependencies ---"
             pip install -r requirements.txt
 
-            echo "--- 5. Creating .env file with secrets (Robust Method) ---"
+            echo "--- 5. Creating .env file ---"
             printf '%s\n' \
               "DB_TYPE='${{ secrets.DB_TYPE }}'" \
               "DB_HOST='${{ secrets.DB_HOST }}'" \
@@ -99,35 +89,41 @@ jobs:
               "DB_PASSWORD='${{ secrets.DB_PASSWORD }}'" \
               "DB_DATABASE='${{ secrets.DB_DATABASE }}'" > .env
 
-            echo "--- 6. Creating Nginx configuration file (Robust Method) ---"
+            echo "--- 6. Creating Nginx configuration ---"
             printf '%s\n' \
               "server {" \
               "    listen 80;" \
-              "    listen [::]:80;" \
               "    server_name ${{ secrets.GCP_VM_IP }};" \
-              "" \
-              "    location / {" \
-              "        proxy_pass http://127.0.0.1:${GUNICORN_PORT};" \
-              "        proxy_set_header Host \$host;" \
-              "        proxy_set_header X-Real-IP \$remote_addr;" \
-              "        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;" \
-              "        proxy_set_header X-Forwarded-Proto \$scheme;" \
-              "    }" \
+              "    location / { proxy_pass http://127.0.0.1:${GUNICORN_PORT}; proxy_set_header Host \$host; }" \
               "}" | sudo tee /etc/nginx/sites-available/${NGINX_APP_NAME} > /dev/null
 
-            echo "--- 7. Stopping old Gunicorn and starting new one ---"
+            echo "--- 7. Starting Gunicorn in background ---"
             pkill -f "gunicorn.*--bind 127.0.0.1:${GUNICORN_PORT} app:app" || echo "Gunicorn not running, which is fine."
             nohup gunicorn --workers 3 --bind 127.0.0.1:${GUNICORN_PORT} app:app > ~/gunicorn-slash.log 2>&1 &
             
-            # --- 關鍵修正：解決 Race Condition ---
-            echo "--- Waiting 3 seconds for Gunicorn to start up... ---"
-            sleep 3
+            echo "--- Waiting 5 seconds for Gunicorn to start up... ---"
+            sleep 5
 
-            echo "--- 8. Enabling the Nginx site and restarting Nginx ---"
+            echo "--- 8. Enabling Nginx site and attempting to restart Nginx ---"
             sudo ln -sf /etc/nginx/sites-available/${NGINX_APP_NAME} /etc/nginx/sites-enabled/
             sudo rm -f /etc/nginx/sites-enabled/default
             sudo nginx -t
-            sudo systemctl restart nginx
+            
+            # --- 關鍵偵錯：如果 Nginx 重啟失敗，就顯示所有相關日誌 ---
+            if ! sudo systemctl restart nginx; then
+              echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+              echo "!!! Nginx restart FAILED. Fetching debug logs... !!!"
+              echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+              sleep 2 
+              echo "--- [DEBUG] Nginx Service Status ---"
+              sudo systemctl status nginx.service --no-pager
+              echo "--- [DEBUG] Nginx System Journal (Last 50 lines) ---"
+              sudo journalctl -xeu nginx.service --no-pager -n 50
+              echo "--- [DEBUG] Gunicorn Application Log ---"
+              cat ~/gunicorn-slash.log
+              echo "--- End of Debug Logs ---"
+              exit 1
+            fi
 
             deactivate
             echo "--- Deployment to ${REMOTE_APP_DIR} completed successfully! ---"
