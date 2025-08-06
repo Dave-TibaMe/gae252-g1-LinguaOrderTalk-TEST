@@ -14,6 +14,7 @@ env:
   # --- VM 存取資訊 ---
   REMOTE_HOST: ${{ secrets.GCP_VM_IP_PROD }}
   REMOTE_USER: ${{ secrets.GCP_VM_USER_PROD }}
+  # [注意] SSH_PRIVATE_KEY 現在可以是 OpenSSH 格式
   SSH_PRIVATE_KEY: ${{ secrets.GCP_VM_SSH_PRIVATE_KEY_PROD }}
   REMOTE_PORT: 22
 
@@ -26,7 +27,6 @@ env:
 
   # --- 遠端 VM 路徑設定 ---
   REMOTE_BASE_DIR: "/home/${{ secrets.GCP_VM_USER_PROD }}"
-  # [修正] 直接組合路徑，避免在 env 區塊內自我引用
   REMOTE_APP_DIR: "/home/${{ secrets.GCP_VM_USER_PROD }}/apps/Slash"
   REMOTE_NGINX_CONF_DIR: "/etc/nginx/sites-available"
   REMOTE_NGINX_ENABLED_DIR: "/etc/nginx/sites-enabled"
@@ -46,31 +46,35 @@ jobs:
       - name: 'Checkout code'
         uses: actions/checkout@v4
 
-      - name: 'Install ssh-agent'
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ env.SSH_PRIVATE_KEY }}
+      # [變更 1] 移除 webfactory/ssh-agent，改為手動設定金鑰
+      - name: 'Setup SSH Key'
+        run: |
+          mkdir -p ~/.ssh/
+          echo "${{ env.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa_gcp
+          chmod 600 ~/.ssh/id_rsa_gcp
 
+      # [變更 2] 在 rsync 指令中，透過 -e 參數指定 ssh 使用哪個金鑰檔案
       - name: 'Sync application files to VM'
         run: |
-          rsync -avz -e "ssh -o StrictHostKeyChecking=no -p ${{ env.REMOTE_PORT }}" \
+          rsync -avz -e "ssh -o StrictHostKeyChecking=no -p ${{ env.REMOTE_PORT }} -i ~/.ssh/id_rsa_gcp" \
             --delete \
             ${{ env.LOCAL_APP_DIR }} \
             ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }}:${{ env.REMOTE_APP_DIR }}/
       
+      # [變更 3] 在 scp 指令中，透過 -i 參數指定金鑰檔案
       - name: 'Sync Nginx config file to VM'
         run: |
-          scp -o StrictHostKeyChecking=no -P ${{ env.REMOTE_PORT }} \
+          scp -o StrictHostKeyChecking=no -P ${{ env.REMOTE_PORT }} -i ~/.ssh/id_rsa_gcp \
             ${{ env.LOCAL_NGINX_CONF }} \
             ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }}:/tmp/${{ env.APP_NAME }}.conf
 
+      # [變更 4] 在 ssh 指令中，透過 -i 參數指定金鑰檔案
       - name: 'Execute deployment script on VM'
         run: |
-          ssh -o StrictHostKeyChecking=no -p ${{ env.REMOTE_PORT }} ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no -p ${{ env.REMOTE_PORT }} -i ~/.ssh/id_rsa_gcp ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} << 'EOF'
             set -e
 
             # --- 環境變數 (在遠端 VM 上再次定義) ---
-            # 這裡的 env 引用是正確的，因為它是在 job step 中被解析
             APP_NAME=${{ env.APP_NAME }}
             REMOTE_APP_DIR=${{ env.REMOTE_APP_DIR }}
             REMOTE_NGINX_CONF_DIR=${{ env.REMOTE_NGINX_CONF_DIR }}
