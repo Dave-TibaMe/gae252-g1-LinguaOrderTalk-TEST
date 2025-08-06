@@ -1,137 +1,90 @@
 # .github/workflows/deploy-slash.yml
+# 完整 CI/CD 流程: 使用服務帳戶金鑰認證，建置 Docker 鏡像，推送到 Artifact Registry，並部署到 GCP VM
 
-name: 'Deploy System: Slash'
+name: 'Build, Push, and Deploy: Slash'
 
 on:
   push:
     branches:
-      - main
+      - main # 當 main 分支有更新時觸發
     paths:
-      - 'deployment/Slash/**'
-  workflow_dispatch:
+      - 'deployment/Slash/**' # 只在 Slash 目錄有變動時觸發
+      - '.github/workflows/deploy-slash.yml' # 當 workflow 本身變動時也觸發
+  workflow_dispatch: # 允許手動觸發
 
 env:
-  # --- VM 存取資訊 ---
-  REMOTE_HOST: ${{ secrets.GCP_VM_IP_PROD }}
-  REMOTE_USER: ${{ secrets.GCP_VM_USER_PROD }}
-  # [注意] SSH_PRIVATE_KEY 現在可以是 OpenSSH 格式
-  SSH_PRIVATE_KEY: ${{ secrets.GCP_VM_SSH_PRIVATE_KEY_PROD }}
-  REMOTE_PORT: 22
-
-  # --- 應用程式設定 ---
-  APP_NAME: "Slash"
-  LOCAL_APP_DIR: "deployment/Slash/"
-  LOCAL_NGINX_CONF: "deployment/Slash/nginx.conf"
-  DOMAIN_NAME: "35.194.250.197"
-  GUNICORN_PORT: "5002"
-
-  # --- 遠端 VM 路徑設定 ---
-  REMOTE_BASE_DIR: "/home/${{ secrets.GCP_VM_USER_PROD }}"
-  REMOTE_APP_DIR: "/home/${{ secrets.GCP_VM_USER_PROD }}/apps/Slash"
-  REMOTE_NGINX_CONF_DIR: "/etc/nginx/sites-available"
-  REMOTE_NGINX_ENABLED_DIR: "/etc/nginx/sites-enabled"
-
-  # --- 資料庫密鑰 ---
-  DB_TYPE: ${{ secrets.DB_TYPE }}
-  DB_HOST: ${{ secrets.DB_HOST }}
-  DB_USER: ${{ secrets.DB_USER }}
-  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-  DB_DATABASE: ${{ secrets.DB_DATABASE }}
+  # --- GCP & Artifact Registry 設定 ---
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GCP_VM_ZONE: ${{ secrets.GCP_VM_ZONE }}
+  GCP_ARTIFACT_LOCATION: 'asia-east1'
+  GCP_ARTIFACT_REPO: 'docker-repo-store-backend'
+  
+  # --- VM & 應用程式設定 ---
+  GCP_VM_NAME: ${{ secrets.GCP_VM_NAME }}
+  GCP_VM_USER: ${{ secrets.GCP_VM_USER }}
+  APP_NAME: 'slash-app' # Docker 容器的名稱
+  APP_DIR: 'deployment/Slash' # 您專案中包含 Dockerfile 的目錄
+  
+  # --- 鏡像路徑與標籤 ---
+  IMAGE_PATH: ${{ secrets.GCP_PROJECT_ID }}/${{ env.GCP_ARTIFACT_REPO }}/${{ env.APP_NAME }}
+  IMAGE_TAG: ${{ github.sha }}
 
 jobs:
-  deploy-dynamic-app:
-    name: 'Deploy Dynamic App to VM'
+  build-push-and-deploy:
+    name: 'Build, Push Docker and Deploy to VM'
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
     steps:
-      - name: 'Checkout code'
+      - name: '1. Checkout code'
         uses: actions/checkout@v4
 
-      # [變更 1] 移除 webfactory/ssh-agent，改為手動設定金鑰
-      - name: 'Setup SSH Key'
-        run: |
-          mkdir -p ~/.ssh/
-          echo "${{ env.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa_gcp
-          chmod 600 ~/.ssh/id_rsa_gcp
+      - name: '2. Authenticate to Google Cloud'
+        id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
-      # [變更 2] 在 rsync 指令中，透過 -e 參數指定 ssh 使用哪個金鑰檔案
-      - name: 'Sync application files to VM'
-        run: |
-          rsync -avz -e "ssh -o StrictHostKeyChecking=no -p ${{ env.REMOTE_PORT }} -i ~/.ssh/id_rsa_gcp" \
-            --delete \
-            ${{ env.LOCAL_APP_DIR }} \
-            ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }}:${{ env.REMOTE_APP_DIR }}/
-      
-      # [變更 3] 在 scp 指令中，透過 -i 參數指定金鑰檔案
-      - name: 'Sync Nginx config file to VM'
-        run: |
-          scp -o StrictHostKeyChecking=no -P ${{ env.REMOTE_PORT }} -i ~/.ssh/id_rsa_gcp \
-            ${{ env.LOCAL_NGINX_CONF }} \
-            ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }}:/tmp/${{ env.APP_NAME }}.conf
+      - name: '3. Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
 
-      # [變更 4] 在 ssh 指令中，透過 -i 參數指定金鑰檔案
-      - name: 'Execute deployment script on VM'
+      - name: '4. Configure Docker for Artifact Registry'
+        run: gcloud auth configure-docker ${{ env.GCP_ARTIFACT_LOCATION }}-docker.pkg.dev
+
+      - name: '5. Build and Push Docker Image'
         run: |
-          ssh -o StrictHostKeyChecking=no -p ${{ env.REMOTE_PORT }} -i ~/.ssh/id_rsa_gcp ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} << 'EOF'
+          docker build -t ${{ env.GCP_ARTIFACT_LOCATION }}-docker.pkg.dev/${{ env.IMAGE_PATH }}:${{ env.IMAGE_TAG }} ${{ env.APP_DIR }}
+          docker push ${{ env.GCP_ARTIFACT_LOCATION }}-docker.pkg.dev/${{ env.IMAGE_PATH }}:${{ env.IMAGE_TAG }}
+
+      - name: '6. Deploy to Google Compute Engine'
+        run: |
+          gcloud compute ssh ${{ env.GCP_VM_USER }}@${{ env.GCP_VM_NAME }} --zone ${{ env.GCP_VM_ZONE }} --project ${{ env.GCP_PROJECT_ID }} -- << EOF
             set -e
 
-            # --- 環境變數 (在遠端 VM 上再次定義) ---
-            APP_NAME=${{ env.APP_NAME }}
-            REMOTE_APP_DIR=${{ env.REMOTE_APP_DIR }}
-            REMOTE_NGINX_CONF_DIR=${{ env.REMOTE_NGINX_CONF_DIR }}
-            REMOTE_NGINX_ENABLED_DIR=${{ env.REMOTE_NGINX_ENABLED_DIR }}
-            GUNICORN_PORT=${{ env.GUNICORN_PORT }}
-            
-            echo "--- 1. Setting up Python virtual environment and installing dependencies ---"
-            cd $REMOTE_APP_DIR
-            if [ ! -d "venv" ]; then
-              python3 -m venv venv
-            fi
-            source venv/bin/activate
-            pip install --upgrade pip
-            if [ -f "requirements.txt" ]; then
-              pip install -r requirements.txt
-            fi
-            deactivate
-            echo "--- Python environment setup completed. ---"
+            echo "--- 1. Authenticating Docker on VM ---"
+            gcloud auth configure-docker ${{ env.GCP_ARTIFACT_LOCATION }}-docker.pkg.dev
 
-            echo "--- 2. Setting up systemd service ---"
-            sudo systemctl stop ${APP_NAME}.service || true
-            sudo systemctl disable ${APP_NAME}.service || true
+            echo "--- 2. Pulling the latest Docker image ---"
+            docker pull ${{ env.GCP_ARTIFACT_LOCATION }}-docker.pkg.dev/${{ env.IMAGE_PATH }}:${{ env.IMAGE_TAG }}
 
-            sudo tee /etc/systemd/system/${APP_NAME}.service > /dev/null <<EOT
-            [Unit]
-            Description=Gunicorn instance for ${APP_NAME}
-            After=network.target
+            echo "--- 3. Stopping and removing the old container (if it exists) ---"
+            docker stop ${{ env.APP_NAME }} || true
+            docker rm ${{ env.APP_NAME }} || true
 
-            [Service]
-            User=${{ secrets.GCP_VM_USER_PROD }}
-            Group=www-data
-            WorkingDirectory=${REMOTE_APP_DIR}
-            
-            Environment="DB_TYPE=${{ env.DB_TYPE }}"
-            Environment="DB_HOST=${{ env.DB_HOST }}"
-            Environment="DB_USER=${{ env.DB_USER }}"
-            Environment="DB_PASSWORD=${{ env.DB_PASSWORD }}"
-            Environment="DB_DATABASE=${{ env.DB_DATABASE }}"
+            echo "--- 4. Starting the new container ---"
+            docker run -d --name ${{ env.APP_NAME }} -p 80:5000 --restart always \
+              -e DB_TYPE='${{ secrets.DB_TYPE }}' \
+              -e DB_HOST='${{ secrets.DB_HOST }}' \
+              -e DB_USER='${{ secrets.DB_USER }}' \
+              -e DB_PASSWORD='${{ secrets.DB_PASSWORD }}' \
+              -e DB_DATABASE='${{ secrets.DB_DATABASE }}' \
+              ${{ env.GCP_ARTIFACT_LOCATION }}-docker.pkg.dev/${{ env.IMAGE_PATH }}:${{ env.IMAGE_TAG }}
 
-            ExecStart=${REMOTE_APP_DIR}/venv/bin/gunicorn --workers 3 --bind 127.0.0.1:${GUNICORN_PORT} app:app
-            Restart=always
+            echo "--- 5. Cleaning up old Docker images ---"
+            docker image prune -af
 
-            [Install]
-            WantedBy=multi-user.target
-            EOT
-            echo "--- systemd service file created. ---"
-
-            echo "--- 3. Setting up Nginx reverse proxy ---"
-            sudo mv /tmp/${APP_NAME}.conf ${REMOTE_NGINX_CONF_DIR}/${APP_NAME}
-            sudo ln -sf ${REMOTE_NGINX_CONF_DIR}/${APP_NAME} ${REMOTE_NGINX_ENABLED_DIR}/
-            echo "--- Nginx config moved and linked. ---"
-
-            echo "--- 4. Reloading services ---"
-            sudo systemctl daemon-reload
-            sudo systemctl start ${APP_NAME}.service
-            sudo systemctl enable ${APP_NAME}.service
-            sudo nginx -t
-            sudo systemctl restart nginx
-            echo "--- Deployment for ${APP_NAME} completed successfully! ---"
+            echo "--- Deployment to VM completed successfully! ---"
           EOF
