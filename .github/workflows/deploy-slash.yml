@@ -129,7 +129,7 @@ jobs:
             Group=www-data
             WorkingDirectory=${REMOTE_APP_DIR}
             Environment="PATH=${REMOTE_APP_DIR}/venv/bin"
-            ExecStart=${REMOTE_APP_DIR}/venv/bin/gunicorn --workers 3 --bind 127.0.0.1:${GUNICORN_PORT} wsgi:application
+            ExecStart=${REMOTE_APP_DIR}/venv/bin/gunicorn --workers 3 --bind 127.0.0.1:${GUNICORN_PORT} app:app
 
             [Install]
             WantedBy=multi-user.target
