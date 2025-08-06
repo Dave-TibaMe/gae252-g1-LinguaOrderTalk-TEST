@@ -1,7 +1,7 @@
 # .github/workflows/deploy-slash.yml 1228
-# [最終修正版] 使用 gcloud scp 將特定子目錄部署到指定 VM 路徑
+# [最終修正版 v2] 使用 gcloud scp 將特定子目錄部署到指定 VM 路徑
 # 並透過 Nginx + Gunicorn 運行
-# 使用 'printf | sudo tee' 解決 sudo 重新導向的權限問題
+# 修正服務啟動順序：先啟動 Gunicorn，再重啟 Nginx
 
 name: 'Deploy to VM with Nginx: Slash (Subdirectory)'
 
@@ -100,7 +100,6 @@ jobs:
               "DB_DATABASE='${{ secrets.DB_DATABASE }}'" > .env
 
             echo "--- 6. Creating Nginx configuration file (Robust Method) ---"
-            # 關鍵修正：使用 'printf | sudo tee' 來解決 sudo 重新導向的權限問題
             printf '%s\n' \
               "server {" \
               "    listen 80;" \
@@ -116,15 +115,17 @@ jobs:
               "    }" \
               "}" | sudo tee /etc/nginx/sites-available/${NGINX_APP_NAME} > /dev/null
 
-            echo "--- 7. Enabling the Nginx site and restarting Nginx ---"
+            echo "--- 7. Stopping old Gunicorn and starting new one ---"
+            # 關鍵修正：先啟動 Gunicorn
+            pkill -f "gunicorn.*--bind 127.0.0.1:${GUNICORN_PORT} app:app" || echo "Gunicorn not running, which is fine."
+            nohup gunicorn --workers 3 --bind 127.0.0.1:${GUNICORN_PORT} app:app > ~/gunicorn-slash.log 2>&1 &
+            
+            echo "--- 8. Enabling the Nginx site and restarting Nginx ---"
+            # 關鍵修正：後重啟 Nginx
             sudo ln -sf /etc/nginx/sites-available/${NGINX_APP_NAME} /etc/nginx/sites-enabled/
             sudo rm -f /etc/nginx/sites-enabled/default
             sudo nginx -t
             sudo systemctl restart nginx
-
-            echo "--- 8. Stopping old Gunicorn and starting new one ---"
-            pkill -f "gunicorn.*--bind 127.0.0.1:${GUNICORN_PORT} app:app" || echo "Gunicorn not running, which is fine."
-            nohup gunicorn --workers 3 --bind 127.0.0.1:${GUNICORN_PORT} app:app > ~/gunicorn-slash.log 2>&1 &
 
             deactivate
             echo "--- Deployment to ${REMOTE_APP_DIR} completed successfully! ---"
