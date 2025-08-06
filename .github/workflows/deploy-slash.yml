@@ -1,7 +1,7 @@
-# .github/workflows/deploy-slash.yml 20250806 1205
-# [非 Docker 版本] 直接部署到 VM，拉取程式碼並重新啟動 Python 應用
+# .github/workflows/deploy-slash.yml 1216
+# [Nginx + Gunicorn 版本] 使用 Nginx 作為反向代理，Gunicorn 運行 Python 應用
 
-name: 'Deploy to VM: Slash'
+name: 'Deploy to VM with Nginx: Slash'
 
 on:
   push:
@@ -17,10 +17,14 @@ env:
   GCP_VM_ZONE: ${{ secrets.GCP_VM_ZONE }}
   GCP_VM_NAME: ${{ secrets.GCP_VM_NAME }}
   GCP_VM_USER: ${{ secrets.GCP_VM_USER }}
+  # 專案在 VM 上的根目錄
+  PROJECT_DIR: 'Slash'
+  # Nginx 設定檔中使用的應用程式名稱
+  NGINX_APP_NAME: 'slash-app'
 
 jobs:
   deploy-to-vm:
-    name: 'Deploy Python App to VM'
+    name: 'Deploy Python App to VM with Nginx'
     runs-on: ubuntu-latest
 
     permissions:
@@ -42,29 +46,33 @@ jobs:
 
       - name: '4. Deploy to Google Compute Engine'
         run: |
-          gcloud compute ssh ${{ env.GCP_VM_USER }}@${{ env.GCP_VM_NAME }} --zone ${{ env.GCP_VM_ZONE }} --project ${{ env.GCP_PROJECT_ID }} -- << EOF
+          gcloud compute ssh ${{ env.GCP_VM_USER }}@${{ env.GCP_VM_NAME }} --zone ${{ env.GCP_VM_ZONE }} --project ${{ env.GCP_PROJECT_ID }} -- << 'EOF'
             # 如果任何指令失敗，則立即停止腳本
             set -e
 
-            # 在 VM 上的專案路徑和應用程式進入點
-            PROJECT_DIR="/home/${{ env.GCP_VM_USER }}/lingua-order-talk-backend"
-            APP_ENTRYPOINT="deployment/Slash/app.py"
+            # 從 GitHub Actions 傳入的環境變數
+            PROJECT_DIR="${{ env.PROJECT_DIR }}"
+            NGINX_APP_NAME="${{ env.NGINX_APP_NAME }}"
+            APP_DIR_IN_PROJECT="deployment/Slash"
+            
+            echo "--- 1. Updating package list and installing Nginx ---"
+            sudo apt-get update
+            sudo apt-get install -y nginx
 
-            echo "--- 1. Navigating to project directory: \${PROJECT_DIR} ---"
-            cd \${PROJECT_DIR}
+            echo "--- 2. Navigating to project directory: ~/${PROJECT_DIR} ---"
+            cd ~/${PROJECT_DIR}
 
-            echo "--- 2. Pulling latest code from main branch ---"
+            echo "--- 3. Pulling latest code from main branch ---"
             git pull origin main
 
-            echo "--- 3. Activating Python virtual environment ---"
+            echo "--- 4. Activating Python virtual environment ---"
             source venv/bin/activate
 
-            echo "--- 4. Installing/updating Python dependencies ---"
-            pip install -r deployment/Slash/requirements.txt
+            echo "--- 5. Installing/updating Python dependencies (including gunicorn) ---"
+            pip install -r ${APP_DIR_IN_PROJECT}/requirements.txt
 
-            echo "--- 5. Creating .env file with secrets ---"
-            # 這個 .env 檔案會被 Python 的 dotenv 函式庫讀取
-            cat > deployment/Slash/.env << EOT
+            echo "--- 6. Creating .env file with secrets ---"
+            cat > ${APP_DIR_IN_PROJECT}/.env << EOT
             DB_TYPE='${{ secrets.DB_TYPE }}'
             DB_HOST='${{ secrets.DB_HOST }}'
             DB_USER='${{ secrets.DB_USER }}'
@@ -72,17 +80,47 @@ jobs:
             DB_DATABASE='${{ secrets.DB_DATABASE }}'
             EOT
 
-            echo "--- 6. Stopping the old application process (if running) ---"
-            # 使用 pkill 來尋找並停止正在運行的 app.py 進程
-            # [a]pp.py 寫法是為了防止 pkill 指令找到自己
-            pkill -f "python3 \${PROJECT_DIR}/${APP_ENTRYPOINT}" || echo "Application not running, which is fine."
+            echo "--- 7. Creating Nginx configuration file ---"
+            # 使用 sudo tee 將設定檔寫入受保護的目錄
+            sudo tee /etc/nginx/sites-available/${NGINX_APP_NAME} > /dev/null << 'EOT_NGINX'
+            server {
+                listen 80;
+                listen [::]:80;
+                server_name ${{ secrets.GCP_VM_IP }}; # 使用 Secret 傳入的 VM IP
 
-            echo "--- 7. Starting the new application process in the background ---"
-            # 使用 nohup 讓程式在 SSH 登出後繼續運行，並將日誌寫入 app.log
-            nohup python3 \${APP_ENTRYPOINT} > \${PROJECT_DIR}/app.log 2>&1 &
+                location / {
+                    proxy_pass http://127.0.0.1:5002; # 轉發給 Gunicorn
+                    proxy_set_header Host $host;
+                    proxy_set_header X-Real-IP $remote_addr;
+                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                    proxy_set_header X-Forwarded-Proto $scheme;
+                }
+            }
+            EOT_NGINX
+
+            echo "--- 8. Enabling the Nginx site and restarting Nginx ---"
+            # 建立符號連結來啟用網站，-f 參數會覆蓋已存在的連結
+            sudo ln -sf /etc/nginx/sites-available/${NGINX_APP_NAME} /etc/nginx/sites-enabled/
+            # 移除預設的設定檔，避免衝突
+            sudo rm -f /etc/nginx/sites-enabled/default
+            # 測試 Nginx 設定檔語法是否正確
+            sudo nginx -t
+            # 重新啟動 Nginx 服務以套用新設定
+            sudo systemctl restart nginx
+
+            echo "--- 9. Stopping old Gunicorn process and starting new one ---"
+            # 進入應用程式目錄以正確啟動 Gunicorn
+            cd ${APP_DIR_IN_PROJECT}
+            
+            # 停止舊的 Gunicorn 進程 (如果有的話)
+            pkill -f "gunicorn.*app:app" || echo "Gunicorn not running, which is fine."
+
+            # 使用 Gunicorn 啟動應用，綁定到本地 5002 port
+            # 'app:app' 指的是 app.py 檔案中的 app 物件
+            nohup gunicorn --workers 3 --bind 127.0.0.1:5002 app:app > ~/gunicorn.log 2>&1 &
 
             # 停用虛擬環境
             deactivate
 
-            echo "--- Deployment to VM completed successfully! ---"
+            echo "--- Deployment with Nginx and Gunicorn completed successfully! ---"
           EOF
