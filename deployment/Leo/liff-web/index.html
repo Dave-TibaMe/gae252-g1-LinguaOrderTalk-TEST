@@ -457,11 +457,250 @@
                 liffConfigError: '설정 오류: ',
                 liffConfigErrorDesc: '코드에 LIFF ID를 입력해 주세요.',
                 helloUser: '안녕하세요',
-                liffInitSuccess: 'LIFF 초기화 성공 (로그인 안됨)',
+                liffInitSuccess: 'LIFF 초기화 성공 (로그인되지 않음)',
                 devMode: '개발 모드: LIFF 시뮬레이션 환경',
                 liffInitFailed: 'LIFF 초기화에 실패했습니다.'
             }
         };
+
+        // --- 多語言支援配置 ---
+        const SUPPORTED_LANGUAGES = ['zh-TW', 'en-US', 'ja-JP', 'ko-KR']; // 4種種子語言
+
+        /**
+         * 語言協商：決定使用者的目標語言和UI語言
+         * @returns {string} 目標語言碼 (BCP47格式)
+         */
+        function pickUserLang() {
+            const url = new URLSearchParams(location.search);
+            const fromUrl = url.get('preferred_lang') || url.get('lang');
+            const fromLiff = (liffInitialized && typeof liff.getLanguage === 'function') ? liff.getLanguage() : null;
+            const browser = navigator.language;
+
+            // 語言優先級：URL > LIFF > 瀏覽器 > 預設
+            let raw = fromUrl || fromLiff || browser || 'zh-TW';
+            
+            // 處理瀏覽器的 Accept-Language 格式（如 "en-US,en;q=0.9,zh;q=0.8"）
+            if (raw.includes(',')) {
+                raw = raw.split(',')[0].trim();
+            }
+            
+            // 簡單正規化 → BCP47 的常見縮寫補全
+            const map = { 
+                'zh': 'zh-TW', 'zh-CN': 'zh-TW', 'zh-Hans': 'zh-TW', 'zh-Hant': 'zh-TW',
+                'en': 'en-US', 'en-GB': 'en-US', 'en-AU': 'en-US', 'en-CA': 'en-US',
+                'ja': 'ja-JP', 'ja-Hira': 'ja-JP',
+                'ko': 'ko-KR', 'ko-KP': 'ko-KR'
+            };
+            
+            const normalized = map[raw] || raw; // 儘量保留使用者語言，例如 "fr-FR"
+            
+            console.log(`語言協商結果: URL=${fromUrl}, LIFF=${fromLiff}, Browser=${browser}, Raw=${raw}, Final=${normalized}`);
+            return normalized;
+        }
+
+        /**
+         * 確保UI字典存在：如果目標語言不在支援清單中，動態生成翻譯字典
+         * @param {string} targetLang 目標語言碼
+         */
+        async function ensureUiDictionary(targetLang) {
+            if (SUPPORTED_LANGUAGES.includes(targetLang)) return;           // 4種已有
+            if (translations[targetLang]) return;                           // 已經快取過
+
+            try {
+                console.log(`正在為語言 ${targetLang} 生成UI字典...`);
+                
+                // 從 en-US 當模板做批次翻譯（也可改成 zh-TW 當來源）
+                const base = translations['en-US'];
+                const keys = Object.keys(base);
+                const contents = keys.map(k => base[k]);
+
+                const res = await fetch(`${API_BASE_URL}/api/translate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        source: 'en',
+                        target: targetLang,                   // e.g. "fr-FR"
+                        contents
+                    })
+                });
+
+                if (!res.ok) {
+                    throw new Error(`翻譯API錯誤: ${res.status}`);
+                }
+
+                const { translated } = await res.json();        // 陣列：對應 contents
+                
+                // 建立新的翻譯字典
+                translations[targetLang] = Object.fromEntries(
+                    keys.map((k, i) => [k, translated[i]])
+                );
+                
+                console.log(`語言 ${targetLang} 的UI字典已生成並快取`);
+                
+                // 更新語言顯示
+                updateLanguageDisplay(targetLang);
+                
+            } catch (error) {
+                console.warn(`無法為語言 ${targetLang} 生成UI字典，將使用英文作為fallback:`, error);
+                // 如果翻譯失敗，使用英文作為fallback
+                translations[targetLang] = translations['en-US'];
+                updateLanguageDisplay('en-US');
+            }
+        }
+
+        /**
+         * 語言碼轉換：將完整語言碼轉換為後端期望的格式
+         * @param {string} language 完整語言碼 (如 "fr-FR")
+         * @returns {string} 後端語言碼 (如 "fr")
+         */
+        function getBackendLanguage(language) {
+            // 如果是支援的語言，使用現有的對應
+            const backendLanguageMapping = {
+                'en-US': 'en',
+                'zh-TW': 'zh',
+                'ja-JP': 'ja',
+                'ko-KR': 'ko'
+            };
+            
+            if (backendLanguageMapping[language]) {
+                return backendLanguageMapping[language];
+            }
+            
+            // 對於其他語言，取主要語言碼 (如 "fr-FR" -> "fr")
+            return language.split('-')[0];
+        }
+
+        /**
+         * 更新語言顯示：顯示當前使用的語言名稱
+         * @param {string} languageCode 語言碼
+         */
+        function updateLanguageDisplay(languageCode) {
+            const languageNames = {
+                'zh-TW': '繁體中文',
+                'en-US': 'English',
+                'ja-JP': '日本語',
+                'ko-KR': '한국어',
+                'fr-FR': 'Français',
+                'fr-CA': 'Français (Canada)',
+                'de-DE': 'Deutsch',
+                'de-AT': 'Deutsch (Österreich)',
+                'de-CH': 'Deutsch (Schweiz)',
+                'es-ES': 'Español',
+                'es-MX': 'Español (México)',
+                'es-AR': 'Español (Argentina)',
+                'it-IT': 'Italiano',
+                'pt-PT': 'Português',
+                'pt-BR': 'Português (Brasil)',
+                'ru-RU': 'Русский',
+                'ar-SA': 'العربية',
+                'ar-EG': 'العربية (مصر)',
+                'hi-IN': 'हिन्दी',
+                'th-TH': 'ไทย',
+                'vi-VN': 'Tiếng Việt',
+                'id-ID': 'Bahasa Indonesia',
+                'ms-MY': 'Bahasa Melayu',
+                'tr-TR': 'Türkçe',
+                'pl-PL': 'Polski',
+                'cs-CZ': 'Čeština',
+                'sk-SK': 'Slovenčina',
+                'hu-HU': 'Magyar',
+                'ro-RO': 'Română',
+                'bg-BG': 'Български',
+                'hr-HR': 'Hrvatski',
+                'sr-RS': 'Српски',
+                'sl-SI': 'Slovenščina',
+                'et-EE': 'Eesti',
+                'lv-LV': 'Latviešu',
+                'lt-LT': 'Lietuvių',
+                'fi-FI': 'Suomi',
+                'sv-SE': 'Svenska',
+                'da-DK': 'Dansk',
+                'no-NO': 'Norsk',
+                'is-IS': 'Íslenska',
+                'nl-NL': 'Nederlands',
+                'nl-BE': 'Nederlands (België)',
+                'el-GR': 'Ελληνικά',
+                'he-IL': 'עברית',
+                'fa-IR': 'فارسی',
+                'ur-PK': 'اردو',
+                'bn-BD': 'বাংলা',
+                'ta-IN': 'தமிழ்',
+                'te-IN': 'తెలుగు',
+                'kn-IN': 'ಕನ್ನಡ',
+                'ml-IN': 'മലയാളം',
+                'gu-IN': 'ગુજરાતી',
+                'pa-IN': 'ਪੰਜਾਬੀ',
+                'or-IN': 'ଓଡ଼ିଆ',
+                'as-IN': 'অসমীয়া',
+                'ne-NP': 'नेपाली',
+                'si-LK': 'සිංහල',
+                'my-MM': 'မြန်မာ',
+                'km-KH': 'ខ្មែរ',
+                'lo-LA': 'ລາວ',
+                'ka-GE': 'ქართული',
+                'hy-AM': 'Հայերեն',
+                'az-AZ': 'Azərbaycan',
+                'kk-KZ': 'Қазақ',
+                'ky-KG': 'Кыргызча',
+                'lb-LU': 'Lëtzebuergesch',
+                'mt-MT': 'Malti',
+                'cy-GB': 'Cymraeg',
+                'ga-IE': 'Gaeilge',
+                'gd-GB': 'Gàidhlig',
+                'kw-GB': 'Kernewek',
+                'br-FR': 'Brezhoneg',
+                'oc-FR': 'Occitan',
+                'ca-ES': 'Català',
+                'eu-ES': 'Euskara',
+                'gl-ES': 'Galego',
+                'ast-ES': 'Asturianu',
+                'an-ES': 'Aragonés',
+                'rm-CH': 'Rumantsch',
+                'fur-IT': 'Furlan',
+                'lld-IT': 'Ladin',
+                'vec-IT': 'Vèneto',
+                'sc-IT': 'Sardu',
+                'co-FR': 'Corsu',
+                'wa-BE': 'Walon',
+                'li-NL': 'Limburgs',
+                'fy-NL': 'Frysk',
+                'st-ZA': 'Sesotho',
+                'zu-ZA': 'isiZulu',
+                'xh-ZA': 'isiXhosa',
+                'af-ZA': 'Afrikaans',
+                'sw-KE': 'Kiswahili',
+                'am-ET': 'አማርኛ',
+                'om-ET': 'Afaan Oromoo',
+                'so-SO': 'Soomaali',
+                'ti-ER': 'ትግርኛ',
+                'ha-NG': 'Hausa',
+                'yo-NG': 'Yorùbá',
+                'ig-NG': 'Igbo',
+                'zu-ZA': 'isiZulu',
+                'xh-ZA': 'isiXhosa',
+                'af-ZA': 'Afrikaans',
+                'sw-KE': 'Kiswahili',
+                'am-ET': 'አማርኛ',
+                'om-ET': 'Afaan Oromoo',
+                'so-SO': 'Soomaali',
+                'ti-ER': 'ትግርኛ',
+                'ha-NG': 'Hausa',
+                'yo-NG': 'Yorùbá',
+                'ig-NG': 'Igbo'
+            };
+            
+            const languageName = languageNames[languageCode] || languageCode;
+            const languageElement = document.getElementById('language-name');
+            if (languageElement) {
+                languageElement.textContent = languageName;
+            }
+            
+            // 更新頁面標題
+            const texts = translations[languageCode] || translations['en-US'];
+            if (texts && texts.pageTitle) {
+                document.title = texts.pageTitle;
+            }
+        }
 
         // --- 語言切換函數 ---
         function updateInterfaceLanguage() {
@@ -549,14 +788,44 @@
 
         // --- 主要執行函數 ---
         document.addEventListener('DOMContentLoaded', async () => {
-            // 等待 LIFF SDK 載入完成
-            await waitForLiff();
-            await initializeLiff();
-            await initializeParameters();
-            
-            // 隱藏讀取畫面，顯示主內容
-            document.getElementById('loading').classList.add('hidden');
-            document.getElementById('main-content').classList.remove('hidden');
+            try {
+                // 等待 LIFF SDK 載入完成
+                await waitForLiff();
+                await initializeLiff();
+                
+                // 語言協商：決定使用者的目標語言
+                const targetLang = pickUserLang();
+                console.log('使用者目標語言:', targetLang);
+                
+                // 確保UI字典存在（如果是新語言，會動態生成）
+                await ensureUiDictionary(targetLang);
+                
+                // 設定當前語言為目標語言
+                currentLanguage = targetLang;
+                
+                // 更新語言顯示
+                updateLanguageDisplay(currentLanguage);
+                
+                // 初始化其他參數
+                await initializeParameters();
+                
+                // 隱藏讀取畫面，顯示主內容
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('main-content').classList.remove('hidden');
+                
+                console.log('應用程式初始化完成，使用語言:', currentLanguage);
+            } catch (error) {
+                console.error('應用程式初始化失敗:', error);
+                // 如果初始化失敗，至少顯示錯誤訊息
+                document.getElementById('loading').innerHTML = `
+                    <div class="text-center py-20">
+                        <p class="text-red-600 mb-4">初始化失敗</p>
+                        <button onclick="location.reload()" class="bg-blue-600 text-white px-4 py-2 rounded-lg">
+                            重新載入
+                        </button>
+                    </div>
+                `;
+            }
         });
 
         // 等待 LIFF SDK 載入
@@ -629,58 +898,20 @@
             const urlParams = new URLSearchParams(window.location.search);
             const storeId = urlParams.get('store_id');
             const placeId = urlParams.get('place_id');
-            const preferredLang = urlParams.get('preferred_lang'); // 新增：從 LINE Bot 傳入的使用者偏好語言
             const storeName = urlParams.get('store_name') || 'Unknown Store';
             
             // 檢查是否有 store_id 或 place_id
             const hasStoreIdentifier = storeId || placeId;
             
-            // 語言偵測邏輯：優先使用URL參數，備用自動偵測
-            let detectedLanguage = preferredLang || urlParams.get('lang');
-            
-            // 如果沒有URL參數，嘗試自動偵測LINE語言
-            if (!detectedLanguage && liffInitialized) {
-                try {
-                    const liffLanguage = liff.getLanguage();
-                    console.log('LIFF自動偵測語言:', liffLanguage);
-                    detectedLanguage = liffLanguage;
-                } catch (error) {
-                    console.log('LIFF語言偵測失敗，使用瀏覽器語言');
-                    // 備用：使用瀏覽器語言
-                    detectedLanguage = navigator.language || 'zh-TW';
-                }
-            }
-            
-            // 如果還是沒有語言設定，使用預設值
-            const language = detectedLanguage || 'zh-TW';
-            
-            // 語言代碼轉換：將簡短代碼轉換為完整代碼
-            const languageCodeMapping = {
-                'en': 'en-US',
-                'zh-TW': 'zh-TW', 
-                'ja': 'ja-JP',
-                'ko': 'ko-KR',
-                'zh': 'zh-TW',  // 支援簡體中文轉繁體
-                'en-US': 'en-US',
-                'ja-JP': 'ja-JP',
-                'ko-KR': 'ko-KR'
-            };
-            const normalizedLanguage = languageCodeMapping[language] || 'zh-TW';
-            
-            // 設定全局變數
+            // 設定全局變數（語言已在啟動流程中設定）
             currentStore = storeId || placeId || 'non-partner';
-            currentLanguage = normalizedLanguage;
             
-            // 除錯：顯示語言偵測過程
-            console.log('語言偵測過程:', {
+            // 除錯：顯示初始化過程
+            console.log('參數初始化過程:', {
                 store_id: storeId,
                 place_id: placeId,
-                preferred_lang: preferredLang,
-                detected_language: detectedLanguage,
-                original_language: language,
-                normalized_language: normalizedLanguage,
+                current_language: currentLanguage,
                 liff_initialized: liffInitialized,
-                browser_language: navigator.language,
                 hasStoreIdentifier: hasStoreIdentifier,
                 storeName: storeName,
                 currentStore: currentStore
@@ -688,7 +919,7 @@
             
             // 如果有店家識別碼，向後端查詢合作狀態
             if (hasStoreIdentifier) {
-                await checkStorePartnerStatus(storeId || placeId, storeName, normalizedLanguage);
+                await checkStorePartnerStatus(storeId || placeId, storeName, currentLanguage);
             } else {
                 // 沒有店家識別碼，顯示非合作店家介面
                 showNonPartnerInterface();
@@ -702,7 +933,7 @@
             updateInterfaceLanguage();
         }
 
-        async function checkStorePartnerStatus(storeIdentifier, storeName, language) {
+        async function checkStorePartnerStatus(storeIdentifier, storeName, currentLang) {
             try {
                 console.log('開始檢查店家合作狀態:', storeIdentifier);
                 
@@ -734,7 +965,7 @@
                     
                     if (data.has_menu) {
                         // 有菜單，載入菜單
-                        await loadPartnerStoreMenu(data.store_id, language);
+                        await loadPartnerStoreMenu(data.store_id, currentLanguage);
                     } else {
                         // 沒有菜單，顯示非合作店家介面
                         console.log('合作店家但沒有菜單，顯示相機選項');
@@ -748,9 +979,9 @@
                     // 非合作店家也要檢查是否有菜單
                     if (data.has_menu) {
                         // 有菜單，載入菜單
-                        await loadPartnerStoreMenu(data.store_id || storeIdentifier, language);
+                        await loadPartnerStoreMenu(data.store_id || storeIdentifier, currentLanguage);
                     } else {
-                        // 沒有菜單，顯示非合作店家介面（相機選項）
+                        // 非合作店家介面（相機選項）
                         console.log('非合作店家且沒有菜單，顯示相機選項');
                         showNonPartnerInterface(storeName);
                     }
@@ -808,22 +1039,16 @@
                     </div>
                 `;
                 
-                // 語言代碼轉換：將完整代碼轉換為後端期望的簡短代碼
-                const backendLanguageMapping = {
-                    'en-US': 'en',
-                    'zh-TW': 'zh',
-                    'ja-JP': 'ja',
-                    'ko-KR': 'ko'
-                };
-                const backendLanguage = backendLanguageMapping[language] || language;
+                // 直接傳遞完整語言碼給後端（支援任意 BCP47 語言）
+                const apiLanguage = currentLanguage; // 不再轉換，直接傳遞
                 
                 // 判斷是 store_id 還是 place_id，選擇正確的 API 端點
                 const isStoreId = !isNaN(storeIdentifier);
                 const apiEndpoint = isStoreId 
-                    ? `${API_BASE_URL}/api/menu/${storeIdentifier}?lang=${backendLanguage}`
-                    : `${API_BASE_URL}/api/menu/by-place-id/${storeIdentifier}?lang=${backendLanguage}`;
+                    ? `${API_BASE_URL}/api/menu/${storeIdentifier}?lang=${apiLanguage}`
+                    : `${API_BASE_URL}/api/menu/by-place-id/${storeIdentifier}?lang=${apiLanguage}`;
                 
-                console.log('使用 API 端點:', apiEndpoint);
+                console.log('使用 API 端點:', apiEndpoint, '語言:', apiLanguage);
                 
                 // 向後端請求菜單資料
                 const response = await fetch(apiEndpoint);
@@ -1020,14 +1245,8 @@
                 const storeId = currentStore || 'non-partner';
                 console.log('即將上傳 store_id:', storeId);
                 
-                // 語言代碼轉換：將完整代碼轉換為後端期望的簡短代碼
-                const backendLanguageMapping = {
-                    'en-US': 'en',
-                    'zh-TW': 'zh',
-                    'ja-JP': 'ja',
-                    'ko-KR': 'ko'
-                };
-                const backendLanguage = backendLanguageMapping[language] || language;
+                // 使用新的語言處理函數
+                const backendLanguage = getBackendLanguage(currentLanguage);
                 
                 const formData = new FormData();
                 formData.append('file', file);
