@@ -24,6 +24,44 @@
         #lang-info {
             display: none;
         }
+        
+        /* 上傳介面收合狀態的樣式 */
+        #ocr-section.collapsed {
+            background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,0.9) 70%, rgba(255,255,255,0.7) 100%);
+            border: 1px solid #e5e7eb;
+            position: relative;
+        }
+        
+        #ocr-section.collapsed::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.9));
+            pointer-events: none;
+        }
+        
+        /* 菜單列表的樣式優化 */
+        #menu-list {
+            scroll-margin-top: 20px;
+        }
+        
+        /* 收合按鈕的樣式 */
+        .collapse-button {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .collapse-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -189,8 +227,11 @@
                 preparingOrder: '正在準備點餐環境',
                 
                 // OCR 介面
+                partnerStoreNoMenu: '合作店家（無菜單）',
+                partnerStoreNoMenuDesc: '此合作店家目前沒有菜單，請拍攝或上傳菜單照片，我們將為您即時翻譯並建立點餐單。',
                 ocrTitle: '非合作店家',
                 ocrDescription: '請拍攝或上傳清楚的菜單照片，我們將為您即時翻譯並建立點餐單。',
+                menuLoadedClickToExpand: '菜單已載入，點擊展開上傳介面',
                 selectPhoto: '選擇菜單照片',
                 takePhoto: '拍照',
                 selectFromGallery: '從相簿選擇',
@@ -262,8 +303,11 @@
                 preparingOrder: 'Preparing ordering environment',
                 
                 // OCR 介面
+                partnerStoreNoMenu: 'Partner Store (No Menu)',
+                partnerStoreNoMenuDesc: 'This partner store currently has no menu. Please take or upload a clear photo of the menu. We will translate it in real-time and create an order form.',
                 ocrTitle: 'Non-Partner Store',
                 ocrDescription: 'Please take or upload a clear photo of the menu. We will translate it in real-time and create an order form.',
+                menuLoadedClickToExpand: 'Menu loaded, click to expand upload interface',
                 selectPhoto: 'Select Menu Photo',
                 takePhoto: 'Take Photo',
                 selectFromGallery: 'Select from Gallery',
@@ -335,8 +379,11 @@
                 preparingOrder: '注文環境を準備中',
                 
                 // OCR 介面
+                partnerStoreNoMenu: 'パートナー店舗（メニューなし）',
+                partnerStoreNoMenuDesc: 'このパートナー店舗には現在メニューがありません。メニューの写真を撮影またはアップロードしてください。リアルタイムで翻訳し、注文フォームを作成いたします。',
                 ocrTitle: '非パートナー店舗',
                 ocrDescription: 'メニューの写真を撮影またはアップロードしてください。リアルタイムで翻訳し、注文フォームを作成いたします。',
+                menuLoadedClickToExpand: 'メニューが読み込まれました。クリックしてアップロードインターフェースを展開',
                 selectPhoto: 'メニュー写真を選択',
                 takePhoto: '写真を撮影',
                 selectFromGallery: 'ギャラリーから選択',
@@ -408,8 +455,11 @@
                 preparingOrder: '주문 환경을 준비 중',
                 
                 // OCR 介面
+                partnerStoreNoMenu: '파트너 매장 (메뉴 없음)',
+                partnerStoreNoMenuDesc: '이 파트너 매장에는 현재 메뉴가 없습니다. 메뉴 사진을 촬영하거나 업로드해 주세요. 실시간으로 번역하여 주문 양식을 만들어 드리겠습니다.',
                 ocrTitle: '비파트너 매장',
                 ocrDescription: '메뉴 사진을 촬영하거나 업로드해 주세요. 실시간으로 번역하여 주문 양식을 만들어 드리겠습니다.',
+                menuLoadedClickToExpand: '메뉴가 로드되었습니다. 클릭하여 업로드 인터페이스를 펼치세요',
                 selectPhoto: '메뉴 사진 선택',
                 takePhoto: '사진 촬영',
                 selectFromGallery: '갤러리에서 선택',
@@ -739,9 +789,13 @@
                 document.getElementById('store-type-badge').textContent = texts.preparingOrder;
             }
             
-            // 更新 OCR 介面
-            document.getElementById('ocr-title').textContent = texts.ocrTitle;
-            document.getElementById('ocr-description').textContent = texts.ocrDescription;
+            // 更新 OCR 介面（根據模式決定是否覆蓋）
+            const ocrSection = document.getElementById('ocr-section');
+            if (ocrSection && ocrSection.dataset.mode !== 'partner-no-menu') {
+                // 只有在非合作店家無菜單模式時才覆蓋標題和描述
+                document.getElementById('ocr-title').textContent = texts.ocrTitle;
+                document.getElementById('ocr-description').textContent = texts.ocrDescription;
+            }
             // 更新統一的上傳按鈕文字
             const customUploadBtn = document.getElementById('custom-upload-btn');
             if (customUploadBtn) {
@@ -922,7 +976,7 @@
                 await checkStorePartnerStatus(storeId || placeId, storeName, currentLanguage);
             } else {
                 // 沒有店家識別碼，顯示非合作店家介面
-                showNonPartnerInterface();
+                showNonPartnerInterface('', false); // 傳入 false 表示非合作店家
             }
             
             // 更新語言顯示
@@ -946,7 +1000,7 @@
                 
                 if (!response.ok) {
                     console.log('店家合作狀態檢查失敗，顯示非合作店家介面');
-                    showNonPartnerInterface(storeName);
+                    showNonPartnerInterface(storeName, false); // 傳入 false 表示非合作店家
                     return;
                 }
                 
@@ -967,9 +1021,9 @@
                         // 有菜單，載入菜單
                         await loadPartnerStoreMenu(data.store_id, currentLanguage);
                     } else {
-                        // 沒有菜單，顯示非合作店家介面
+                        // 沒有菜單，顯示相機選項介面
                         console.log('合作店家但沒有菜單，顯示相機選項');
-                        showNonPartnerInterface(storeName);
+                        showNonPartnerInterface(storeName, true); // 傳入 true 表示是合作店家
                     }
                 } else {
                     // 非合作店家
@@ -983,14 +1037,14 @@
                     } else {
                         // 非合作店家介面（相機選項）
                         console.log('非合作店家且沒有菜單，顯示相機選項');
-                        showNonPartnerInterface(storeName);
+                        showNonPartnerInterface(storeName, false); // 傳入 false 表示非合作店家
                     }
                 }
                 
             } catch (error) {
                 console.error('檢查店家合作狀態時發生錯誤:', error);
                 // 發生錯誤時，顯示非合作店家介面
-                showNonPartnerInterface(storeName);
+                showNonPartnerInterface(storeName, false); // 傳入 false 表示非合作店家
             }
         }
 
@@ -1101,13 +1155,32 @@
             }
         }
 
-        function showNonPartnerInterface(storeName = '') {
+        function showNonPartnerInterface(storeName = '', isPartnerStore = false) {
             // 顯示非合作店家介面
-            document.getElementById('ocr-section').classList.remove('hidden');
+            const ocrSection = document.getElementById('ocr-section');
+            ocrSection.classList.remove('hidden');
+            
+            // 設定模式旗標，避免被 updateInterfaceLanguage 覆蓋
+            ocrSection.dataset.mode = isPartnerStore ? 'partner-no-menu' : 'non-partner';
             
             // 如果有店家名稱，更新顯示
             if (storeName) {
                 document.getElementById('current-store-name').textContent = storeName;
+            }
+            
+            // 根據店家狀態更新標題和描述
+            const ocrTitle = document.getElementById('ocr-title');
+            const ocrDescription = document.getElementById('ocr-description');
+            const texts = translations[currentLanguage] || translations['zh-TW'];
+            
+            if (isPartnerStore) {
+                // 合作店家但沒有菜單
+                ocrTitle.textContent = texts.partnerStoreNoMenu || '合作店家（無菜單）';
+                ocrDescription.textContent = texts.partnerStoreNoMenuDesc || '此合作店家目前沒有菜單，請拍攝或上傳菜單照片，我們將為您即時翻譯並建立點餐單。';
+            } else {
+                // 非合作店家
+                ocrTitle.textContent = texts.ocrTitle;
+                ocrDescription.textContent = texts.ocrDescription;
             }
             
             // 初始化非合作店家模式
@@ -1346,8 +1419,12 @@
         function renderMenu(items) {
             currentMenuItems = items;
             const menuList = document.getElementById('menu-list');
+            const ocrSection = document.getElementById('ocr-section');
+            
+            // 清空菜單列表
             menuList.innerHTML = '';
             
+            // 渲染菜單項目
             items.forEach(item => {
                 const element = createMenuItemElement(item);
                 if (element) {
@@ -1355,7 +1432,54 @@
                 }
             });
             
+            // 菜單辨識完成後，隱藏或縮小上傳介面
+            if (ocrSection && !ocrSection.classList.contains('hidden')) {
+                // 將上傳介面縮小並移到側邊，讓菜單成為主要顯示內容
+                ocrSection.classList.add('collapsed');
+                ocrSection.style.maxHeight = '120px';
+                ocrSection.style.overflow = 'hidden';
+                ocrSection.style.transition = 'all 0.3s ease';
+                
+                // 添加收合按鈕
+                const collapseButton = document.createElement('button');
+                collapseButton.className = 'w-full text-center text-white text-sm py-3 px-4 rounded-lg transition-all collapse-button';
+                const texts = translations[currentLanguage] || translations['zh-TW'];
+                collapseButton.innerHTML = `📋 ${texts.menuLoadedClickToExpand || '菜單已載入，點擊展開上傳介面'}`;
+                collapseButton.onclick = () => toggleOcrSection();
+                
+                // 在菜單列表前插入收合按鈕
+                const menuListContainer = menuList.parentElement;
+                const collapseButtonContainer = document.createElement('div');
+                collapseButtonContainer.className = 'mb-4';
+                collapseButtonContainer.appendChild(collapseButton);
+                menuListContainer.insertBefore(collapseButtonContainer, menuList);
+                
+                // 滾動到菜單頂部，確保使用者能看到菜單
+                setTimeout(() => {
+                    menuList.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 300);
+            }
+            
+            // 顯示購物車
             document.getElementById('cart-footer').classList.remove('hidden');
+        }
+
+        // 新增：切換上傳介面的展開/收合狀態
+        function toggleOcrSection() {
+            const ocrSection = document.getElementById('ocr-section');
+            const isCollapsed = ocrSection.classList.contains('collapsed');
+            
+            if (isCollapsed) {
+                // 展開上傳介面
+                ocrSection.classList.remove('collapsed');
+                ocrSection.style.maxHeight = 'none';
+                ocrSection.style.overflow = 'visible';
+            } else {
+                // 收合上傳介面
+                ocrSection.classList.add('collapsed');
+                ocrSection.style.maxHeight = '120px';
+                ocrSection.style.overflow = 'hidden';
+            }
         }
 
         function createMenuItemElement(item) {
