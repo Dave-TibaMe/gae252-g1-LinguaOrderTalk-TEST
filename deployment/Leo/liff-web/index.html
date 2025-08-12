@@ -20,9 +20,9 @@
         /* 隱藏預設的檔案上傳按鈕 */
         input[type="file"] { display: none; }
         
-        /* 隱藏店家ID/語言那行 */
+        /* 顯示店家ID/語言那行 */
         #lang-info {
-            display: none;
+            display: block;
         }
         
         /* 上傳介面收合狀態的樣式 */
@@ -1322,9 +1322,10 @@
                 const backendLanguage = getBackendLanguage(currentLanguage);
                 
                 const formData = new FormData();
-                formData.append('file', file);
+                formData.append('file', file);  // upload-menu-image 端點期望的參數名稱是 'file'
                 formData.append('lang', backendLanguage);
                 formData.append('store_id', storeId);
+                // 不發送 user_id，讓後端自動創建臨時用戶
                 
                 // debug: dump every key/val
                 console.log('FormData 內容:');
@@ -1340,6 +1341,7 @@
                     storeId: storeId
                 });
                 
+                // 使用 upload-menu-image 端點來處理OCR菜單
                 const response = await fetch(`${API_BASE_URL}/api/upload-menu-image`, {
                     method: 'POST',
                     body: formData
@@ -1378,10 +1380,25 @@
                 `;
                 setTimeout(() => ocrStatus.classList.add('hidden'), 2000);
                 
+                // 檢查是否有OCR菜單ID
+                if (data.ocr_menu_id) {
+                    console.log('OCR菜單ID:', data.ocr_menu_id);
+                    // 保存OCR菜單ID供後續使用
+                    window.currentOcrMenuId = data.ocr_menu_id;
+                }
+                
                 // 渲染辨識結果
                 if (data.menu_items && data.menu_items.length > 0) {
                     try {
-                        renderMenu(data.menu_items);
+                        // 確保菜單項目有正確的OCR ID格式
+                        const menuItemsWithOcrIds = data.menu_items.map((item, index) => ({
+                            ...item,
+                            id: data.ocr_menu_id ? `ocr_${data.ocr_menu_id}_${index}` : item.id,
+                            menu_item_id: data.ocr_menu_id ? `ocr_${data.ocr_menu_id}_${index}` : item.menu_item_id
+                        }));
+                        
+                        console.log('處理後的菜單項目:', menuItemsWithOcrIds);
+                        renderMenu(menuItemsWithOcrIds);
                         // 渲染成功，隱藏狀態訊息
                         setTimeout(() => ocrStatus.classList.add('hidden'), 2000);
                     } catch (renderError) {
@@ -1704,11 +1721,24 @@
                     total: totalAmount,  // 可選，後端會重新計算
                     language: currentLanguage
                 };
+                
+                // 如果是OCR訂單，添加OCR菜單ID
+                if (window.currentOcrMenuId) {
+                    payload.ocr_menu_id = window.currentOcrMenuId;
+                    console.log('添加OCR菜單ID到訂單:', window.currentOcrMenuId);
+                }
 
                 console.log('發送訂單 payload:', payload);
 
-                // 4. 發送請求
-                const response = await fetch(`${API_BASE_URL}/api/orders`, {
+                // 4. 發送請求 - 檢查是否為OCR菜單訂單
+                const isOcrOrder = orderItems.some(item => 
+                    item.menu_item_id && item.menu_item_id.toString().startsWith('ocr_')
+                );
+                
+                const endpoint = isOcrOrder ? '/api/orders/ocr' : '/api/orders';
+                console.log(`使用端點: ${endpoint}, 是否為OCR訂單: ${isOcrOrder}`);
+                
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

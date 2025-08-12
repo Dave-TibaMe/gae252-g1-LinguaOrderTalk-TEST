@@ -62,6 +62,15 @@ def allowed_file(filename):
 # 功能：提供 LIFF 前端所需的核心功能
 # =============================================================================
 
+@api_bp.route('/test', methods=['GET'])
+def test_api():
+    """API 連線測試端點"""
+    return jsonify({
+        'message': 'API 連線正常',
+        'timestamp': datetime.datetime.utcnow().isoformat(),
+        'status': 'success'
+    })
+
 @api_bp.route('/translate', methods=['POST', 'OPTIONS'])
 def translate_text():
     """批次翻譯文字內容（支援任意語言）"""
@@ -90,6 +99,68 @@ def translate_text():
     except Exception as e:
         current_app.logger.error(f"翻譯API錯誤: {str(e)}")
         return jsonify({"error": f"翻譯失敗: {str(e)}"}), 500
+
+@api_bp.route('/stores/resolve-old', methods=['GET'])
+def resolve_store_old():
+    """解析店家識別碼，將 Place ID 轉換為內部 store_id (舊版本)"""
+    try:
+        place_id = request.args.get('place_id')
+        store_name = request.args.get('name')
+        
+        if not place_id:
+            return jsonify({"error": "place_id 參數是必需的"}), 400
+        
+        from .store_resolver import resolve_store_id
+        store_db_id = resolve_store_id(place_id, store_name)
+        
+        return jsonify({
+            "success": True,
+            "place_id": place_id,
+            "store_id": store_db_id,
+            "message": f"成功解析店家識別碼: {place_id} -> {store_db_id}"
+        }), 200
+        
+    except ValueError as e:
+        return jsonify({
+            "success": False,
+            "error": "無效的店家識別碼",
+            "details": str(e)
+        }), 400
+    except Exception as e:
+        current_app.logger.error(f"解析店家識別碼失敗: {e}")
+        return jsonify({
+            "success": False,
+            "error": "解析失敗",
+            "details": str(e)
+        }), 500
+
+@api_bp.route('/stores/debug', methods=['GET'])
+def debug_store_id():
+    """除錯用：分析 store_id 的詳細資訊"""
+    try:
+        store_id = request.args.get('store_id')
+        
+        if not store_id:
+            return jsonify({"error": "store_id 參數是必需的"}), 400
+        
+        from .store_resolver import debug_store_id_info
+        
+        # 分析 store_id
+        debug_info = debug_store_id_info(store_id)
+        
+        return jsonify({
+            "success": True,
+            "debug_info": debug_info,
+            "message": "store_id 分析完成"
+        }), 200
+        
+    except Exception as e:
+        current_app.logger.error(f"除錯 store_id 失敗: {e}")
+        return jsonify({
+            "success": False,
+            "error": "除錯失敗",
+            "details": str(e)
+        }), 500
 
 @api_bp.route('/stores/<int:store_id>', methods=['GET'])
 def get_store(store_id):
@@ -351,15 +422,30 @@ def process_menu_ocr():
         return response, 400
     
     # 取得參數
-    store_id = request.form.get('store_id', type=int)
-    user_id = request.form.get('user_id', type=int)
+    raw_store_id = request.form.get('store_id')  # 可能是整數、數字字串或 Google Place ID
+    user_id = request.form.get('user_id')  # 移除 type=int，因為前端傳遞的是字串格式的 LINE 用戶 ID
     target_lang = request.form.get('lang', 'en')
     
     # 新增：簡化模式參數
     simple_mode = request.form.get('simple_mode', 'false').lower() == 'true'
     
-    if not store_id:
+    if not raw_store_id:
         response = jsonify({"error": "需要提供店家ID"})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, 400
+    
+    # 使用 store resolver 解析店家 ID
+    try:
+        from .store_resolver import resolve_store_id
+        store_db_id = resolve_store_id(raw_store_id)
+        print(f"✅ 店家ID解析成功: {raw_store_id} -> {store_db_id}")
+    except Exception as e:
+        print(f"❌ 店家ID解析失敗: {e}")
+        response = jsonify({
+            "error": "店家ID格式錯誤",
+            "details": str(e),
+            "received_store_id": raw_store_id
+        })
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response, 400
     
@@ -367,22 +453,48 @@ def process_menu_ocr():
         # 儲存上傳的檔案
         filepath = save_uploaded_file(file)
         
-        # 建立 OCR 菜單記錄（符合同事的資料庫結構）
-        from app.models import OCRMenu, OCRMenuItem
-        
         # 先處理圖片獲取店家資訊
         print("開始使用 Gemini API 處理圖片...")
         result = process_menu_with_gemini(filepath, target_lang)
         
         # 檢查處理結果
         if result and result.get('success', False):
-            # 建立 OCR 菜單記錄
+            # 處理 user_id - 使用 LINE 用戶 ID 或創建臨時使用者
+            if user_id:
+                # 檢查是否已存在該 LINE 用戶
+                existing_user = User.query.filter_by(line_user_id=user_id).first()
+                if existing_user:
+                    actual_user_id = existing_user.user_id
+                    print(f"✅ 使用現有使用者，ID: {actual_user_id} (LINE ID: {user_id})")
+                else:
+                    # 創建新使用者
+                    new_user = User(
+                        line_user_id=user_id,
+                        preferred_lang=target_lang or 'zh'
+                    )
+                    db.session.add(new_user)
+                    db.session.flush()  # 獲取 user_id
+                    actual_user_id = new_user.user_id
+                    print(f"✅ 創建新使用者，ID: {actual_user_id} (LINE ID: {user_id})")
+            else:
+                # 沒有提供 user_id，創建臨時使用者
+                temp_user = User(
+                    line_user_id=f"temp_guest_{int(time.time())}",
+                    preferred_lang=target_lang or 'zh'
+                )
+                db.session.add(temp_user)
+                db.session.flush()  # 獲取 user_id
+                actual_user_id = temp_user.user_id
+                print(f"✅ 創建臨時使用者，ID: {actual_user_id}")
+            
+            # 建立 OCR 菜單記錄（使用解析後的整數 store_id）
             ocr_menu = OCRMenu(
-                user_id=user_id or 1,
+                user_id=actual_user_id,
                 store_name=result.get('store_info', {}).get('name', '臨時店家')
             )
             db.session.add(ocr_menu)
             db.session.flush()  # 獲取 ocr_menu_id
+            
             # 儲存菜單項目到資料庫
             menu_items = result.get('menu_items', [])
             dynamic_menu = []
@@ -454,7 +566,9 @@ def process_menu_ocr():
                     "menu_items": dynamic_menu,
                     "total_items": len(dynamic_menu),
                     "target_language": target_lang,
-                    "processing_notes": result.get('processing_notes', '')
+                    "processing_notes": result.get('processing_notes', ''),
+                    "ocr_menu_id": ocr_menu.ocr_menu_id,
+                    "saved_to_database": True
                 }
             
             response = jsonify(response_data)
@@ -464,12 +578,13 @@ def process_menu_ocr():
             mode_text = "簡化模式" if simple_mode else "完整模式"
             print(f"🎉 API 成功回應 201 Created ({mode_text})")
             print(f"📊 回應統計:")
-            print(f"  - 處理ID: {ocr_menu.ocr_menu_id}")
+            print(f"  - OCR菜單ID: {ocr_menu.ocr_menu_id}")
             print(f"  - 菜單項目數: {len(dynamic_menu)}")
             print(f"  - 目標語言: {target_lang}")
             print(f"  - 回應模式: {mode_text}")
             print(f"  - 店家資訊: {result.get('store_info', {})}")
             print(f"  - 處理備註: {result.get('processing_notes', '')}")
+            print(f"  - 已儲存到資料庫: True")
             
             return response, 201
         else:
@@ -521,214 +636,527 @@ def create_order():
     if request.method == 'OPTIONS':
         return handle_cors_preflight()
     
-    # 直接轉發到 simple_order 以確保向後相容性
-    return simple_order()
+    data = request.get_json()
+    
+    if not data:
+        return jsonify({"error": "請求資料為空"}), 400
+    
+    # 檢查必要欄位
+    required_fields = ['items']
+    missing_fields = [field for field in required_fields if field not in data]
+    if missing_fields:
+        return jsonify({
+            "error": "訂單資料不完整",
+            "missing_fields": missing_fields,
+            "received_data": list(data.keys())
+        }), 400
+    
+    try:
+        # 處理 line_user_id（可選）
+        line_user_id = data.get('line_user_id')
+        if not line_user_id:
+            # 為非 LINE 入口生成臨時 ID
+            line_user_id = f"guest_{uuid.uuid4().hex[:8]}"
+            guest_mode = True
+        else:
+            guest_mode = False
 
-    # 查找或創建使用者
-    user = User.query.filter_by(line_user_id=line_user_id).first()
-    if not user:
-        try:
-            # 檢查語言是否存在，如果不存在就使用預設語言
-            preferred_lang = data.get('language', 'zh')
-            language = Language.query.get(preferred_lang)
-            if not language:
-                # 如果指定的語言不存在，使用中文作為預設
-                preferred_lang = 'zh'
+        # 查找或創建使用者
+        user = User.query.filter_by(line_user_id=line_user_id).first()
+        if not user:
+            try:
+                # 檢查語言是否存在，如果不存在就使用預設語言
+                preferred_lang = data.get('language', 'zh')
                 language = Language.query.get(preferred_lang)
                 if not language:
-                    # 如果連中文都不存在，創建基本語言資料
-                    from tools.manage_translations import init_languages
-                    init_languages()
-            
-            # 為訪客創建臨時使用者
-            user = User(
-                line_user_id=line_user_id,
-                preferred_lang=preferred_lang
-            )
-            db.session.add(user)
-            db.session.flush()  # 先產生 user_id，但不提交
-            # 注意：這裡不需要 commit，因為後面會一起提交訂單
-        except Exception as e:
-            db.session.rollback()
-            return jsonify({
-                "error": "建立使用者失敗",
-                "details": str(e)
-            }), 500
+                    # 如果指定的語言不存在，使用中文作為預設
+                    preferred_lang = 'zh'
+                    language = Language.query.get(preferred_lang)
+                    if not language:
+                        # 如果連中文都不存在，創建基本語言資料
+                        from tools.manage_translations import init_languages
+                        init_languages()
+                
+                # 為訪客創建臨時使用者
+                user = User(
+                    line_user_id=line_user_id,
+                    preferred_lang=preferred_lang
+                )
+                db.session.add(user)
+                db.session.flush()  # 先產生 user_id，但不提交
+            except Exception as e:
+                db.session.rollback()
+                return jsonify({
+                    "error": "建立使用者失敗",
+                    "details": str(e)
+                }), 500
 
-    total_amount = 0
-    order_items_to_create = []
-    order_details = []
-    validation_errors = []
-    
-    for i, item_data in enumerate(data['items']):
-        # 支援多種欄位名稱格式
-        menu_item_id = item_data.get('menu_item_id') or item_data.get('id')
-        quantity = item_data.get('quantity') or item_data.get('qty') or item_data.get('quantity_small')
+        # 先解析 store_id，確保後續所有操作都使用正確的整數 ID
+        raw_store_id = data.get('store_id', 1)
         
-        # 檢查是否為臨時菜單項目（以 temp_ 開頭）
-        if menu_item_id and menu_item_id.startswith('temp_'):
-            # 處理臨時菜單項目
-            price = item_data.get('price') or item_data.get('price_small') or item_data.get('price_unit') or 0
-            item_name = item_data.get('item_name') or item_data.get('name') or item_data.get('original_name') or f"項目 {i+1}"
+        # 先進行格式驗證
+        from .store_resolver import validate_store_id_format, safe_resolve_store_id
+        
+        if not validate_store_id_format(raw_store_id):
+            return jsonify({
+                "error": "訂單資料驗證失敗",
+                "validation_errors": [f"無效的 store_id 格式: {raw_store_id}"],
+                "received_data": {"store_id": raw_store_id}
+            }), 400
+        
+        # 保存前端傳遞的店家名稱
+        frontend_store_name = data.get('store_name')
+        print(f"📋 前端傳遞的店家名稱: {frontend_store_name}")
+        print(f"📋 前端傳遞的原始store_id: {raw_store_id}")
+        print(f"📋 前端傳遞的完整資料: {data}")
+        
+        try:
+            store_db_id = safe_resolve_store_id(raw_store_id, frontend_store_name, default_id=1)
+            print(f"✅ 訂單店家ID解析成功: {raw_store_id} -> {store_db_id}")
             
-            # 驗證數量
-            if not quantity:
-                validation_errors.append(f"項目 {i+1}: 缺少 quantity 或 qty 欄位")
-                continue
+            # 查詢店家資料庫記錄
+            store_record = Store.query.get(store_db_id)
+            if store_record:
+                print(f"📋 資料庫店家記錄: store_id={store_record.store_id}, store_name='{store_record.store_name}', partner_level={store_record.partner_level}")
+            else:
+                print(f"❌ 找不到店家記錄: store_id={store_db_id}")
+                
+        except Exception as e:
+            print(f"❌ 訂單店家ID解析失敗: {e}")
+            # 如果解析失敗，使用預設值
+            store_db_id = 1
+            print(f"⚠️ 使用預設店家ID: {store_db_id}")
+        
+        total_amount = 0
+        order_items_to_create = []
+        order_details = []
+        validation_errors = []
+        ocr_menu_id = None
+        
+        for i, item_data in enumerate(data['items']):
+            # 支援多種欄位名稱格式
+            menu_item_id = item_data.get('menu_item_id') or item_data.get('id')
+            quantity = item_data.get('quantity') or item_data.get('qty') or item_data.get('quantity_small')
             
-            try:
-                quantity = int(quantity)
-                if quantity <= 0:
-                    validation_errors.append(f"項目 {i+1}: 數量必須大於 0")
+            # 檢查是否為OCR菜單項目（以 ocr_ 開頭）
+            if menu_item_id and menu_item_id.startswith('ocr_'):
+                # 處理OCR菜單項目
+                price = item_data.get('price') or item_data.get('price_small') or item_data.get('price_unit') or 0
+                
+                # 處理新的雙語格式 {name: {original: "中文", translated: "English"}}
+                if item_data.get('name') and isinstance(item_data['name'], dict):
+                    item_name = item_data['name'].get('original') or f"項目 {i+1}"
+                    translated_name = item_data['name'].get('translated') or item_name
+                else:
+                    item_name = item_data.get('item_name') or item_data.get('name') or item_data.get('original_name') or f"項目 {i+1}"
+                    translated_name = item_data.get('translated_name') or item_data.get('en_name') or item_name
+                
+                # 提取OCR菜單ID
+                if not ocr_menu_id:
+                    parts = menu_item_id.split('_')
+                    if len(parts) >= 3:
+                        ocr_menu_id = int(parts[1])
+                
+                # 驗證數量
+                if not quantity:
+                    validation_errors.append(f"項目 {i+1}: 缺少 quantity 或 qty 欄位")
                     continue
-            except (ValueError, TypeError):
-                validation_errors.append(f"項目 {i+1}: 數量格式錯誤，必須是整數")
-                continue
-            
-            # 計算小計
-            subtotal = int(price) * quantity
-            total_amount += subtotal
-            
-            # 為臨時項目創建一個臨時的 MenuItem 記錄
-            try:
-                # 檢查是否已經有對應的臨時菜單項目
-                temp_menu_item = MenuItem.query.filter_by(item_name=item_name).first()
                 
-                if not temp_menu_item:
-                    # 創建新的臨時菜單項目
-                    from app.models import Menu
-                    
-                    # 找到或創建一個臨時菜單
-                    temp_menu = Menu.query.filter_by(store_id=data['store_id']).first()
-                    if not temp_menu:
-                        temp_menu = Menu(store_id=data['store_id'], version=1)
-                        db.session.add(temp_menu)
-                        db.session.flush()
-                    
-                    temp_menu_item = MenuItem(
-                        menu_id=temp_menu.menu_id,
-                        item_name=item_name,
-                        price_small=int(price),
-                        price_big=int(price)  # 使用相同價格
-                    )
-                    db.session.add(temp_menu_item)
-                    db.session.flush()  # 獲取 menu_item_id
+                try:
+                    quantity = int(quantity)
+                    if quantity <= 0:
+                        validation_errors.append(f"項目 {i+1}: 數量必須大於 0")
+                        continue
+                except (ValueError, TypeError):
+                    validation_errors.append(f"項目 {i+1}: 數量格式錯誤，必須是整數")
+                    continue
                 
-                # 使用臨時菜單項目的 ID
+                # 計算小計
+                subtotal = int(price) * quantity
+                total_amount += subtotal
+                
+                # 為OCR項目創建一個臨時的 MenuItem 記錄
+                try:
+                    # 檢查是否已經有對應的臨時菜單項目
+                    temp_menu_item = MenuItem.query.filter_by(item_name=item_name).first()
+                    
+                    if not temp_menu_item:
+                        # 創建新的臨時菜單項目
+                        from app.models import Menu
+                        
+                        # 找到或創建一個臨時菜單
+                        # 修正：使用解析後的 store_db_id 而不是原始的 store_id
+                        temp_menu = Menu.query.filter_by(store_id=store_db_id).first()
+                        if not temp_menu:
+                            temp_menu = Menu(
+                                store_id=store_db_id, 
+                                version=1,
+                                effective_date=datetime.datetime.now()  # 明確設置 effective_date
+                            )
+                            db.session.add(temp_menu)
+                            db.session.flush()
+                        
+                        temp_menu_item = MenuItem(
+                            menu_id=temp_menu.menu_id,
+                            item_name=item_name,
+                            price_small=int(price),
+                            price_big=int(price)  # 使用相同價格
+                        )
+                        db.session.add(temp_menu_item)
+                        db.session.flush()  # 獲取 menu_item_id
+                    
+                    # 使用臨時菜單項目的 ID
+                    order_items_to_create.append(OrderItem(
+                        menu_item_id=temp_menu_item.menu_item_id,
+                        quantity_small=quantity,
+                        subtotal=subtotal,
+                        original_name=item_name,
+                        translated_name=translated_name
+                    ))
+                    
+                    # 建立訂單明細供確認
+                    order_details.append({
+                        'menu_item_id': temp_menu_item.menu_item_id,
+                        'item_name': item_name,
+                        'translated_name': translated_name,
+                        'quantity': quantity,
+                        'price': int(price),
+                        'subtotal': subtotal,
+                        'is_ocr': True
+                    })
+                    
+                except Exception as e:
+                    validation_errors.append(f"項目 {i+1}: 創建OCR菜單項目失敗 - {str(e)}")
+                    continue
+            # 檢查是否為臨時菜單項目（以 temp_ 開頭）
+            elif menu_item_id and menu_item_id.startswith('temp_'):
+                # 處理臨時菜單項目
+                price = item_data.get('price') or item_data.get('price_small') or item_data.get('price_unit') or 0
+                item_name = item_data.get('item_name') or item_data.get('name') or item_data.get('original_name') or f"項目 {i+1}"
+                
+                # 驗證數量
+                if not quantity:
+                    validation_errors.append(f"項目 {i+1}: 缺少 quantity 或 qty 欄位")
+                    continue
+                
+                try:
+                    quantity = int(quantity)
+                    if quantity <= 0:
+                        validation_errors.append(f"項目 {i+1}: 數量必須大於 0")
+                        continue
+                except (ValueError, TypeError):
+                    validation_errors.append(f"項目 {i+1}: 數量格式錯誤，必須是整數")
+                    continue
+                
+                # 計算小計
+                subtotal = int(price) * quantity
+                total_amount += subtotal
+                
+                # 為臨時項目創建一個臨時的 MenuItem 記錄
+                try:
+                    # 檢查是否已經有對應的臨時菜單項目
+                    temp_menu_item = MenuItem.query.filter_by(item_name=item_name).first()
+                    
+                    if not temp_menu_item:
+                        # 創建新的臨時菜單項目
+                        from app.models import Menu
+                        
+                        # 找到或創建一個臨時菜單
+                        # 修正：使用解析後的 store_db_id 而不是原始的 store_id
+                        temp_menu = Menu.query.filter_by(store_id=store_db_id).first()
+                        if not temp_menu:
+                            temp_menu = Menu(
+                                store_id=store_db_id, 
+                                version=1,
+                                effective_date=datetime.datetime.now()  # 明確設置 effective_date
+                            )
+                            db.session.add(temp_menu)
+                            db.session.flush()
+                        
+                        temp_menu_item = MenuItem(
+                            menu_id=temp_menu.menu_id,
+                            item_name=item_name,
+                            price_small=int(price),
+                            price_big=int(price)  # 使用相同價格
+                        )
+                        db.session.add(temp_menu_item)
+                        db.session.flush()  # 獲取 menu_item_id
+                    
+                    # 使用臨時菜單項目的 ID
+                    order_items_to_create.append(OrderItem(
+                        menu_item_id=temp_menu_item.menu_item_id,
+                        quantity_small=quantity,
+                        subtotal=subtotal
+                    ))
+                    
+                    # 建立訂單明細供確認
+                    order_details.append({
+                        'menu_item_id': temp_menu_item.menu_item_id,
+                        'item_name': item_name,
+                        'quantity': quantity,
+                        'price': int(price),
+                        'subtotal': subtotal,
+                        'is_temp': True
+                    })
+                    
+                except Exception as e:
+                    validation_errors.append(f"項目 {i+1}: 創建臨時菜單項目失敗 - {str(e)}")
+                    continue
+            else:
+                # 處理正式菜單項目（合作店家）
+                if not menu_item_id:
+                    validation_errors.append(f"項目 {i+1}: 缺少 menu_item_id 或 id 欄位")
+                    continue
+                    
+                if not quantity:
+                    validation_errors.append(f"項目 {i+1}: 缺少 quantity 或 qty 欄位")
+                    continue
+                
+                try:
+                    quantity = int(quantity)
+                    if quantity <= 0:
+                        validation_errors.append(f"項目 {i+1}: 數量必須大於 0")
+                        continue
+                except (ValueError, TypeError):
+                    validation_errors.append(f"項目 {i+1}: 數量格式錯誤，必須是整數")
+                    continue
+                
+                menu_item = MenuItem.query.get(menu_item_id)
+                if not menu_item:
+                    validation_errors.append(f"項目 {i+1}: 找不到菜單項目 ID {menu_item_id}")
+                    continue
+                
+                subtotal = menu_item.price_small * quantity
+                total_amount += subtotal
+                
                 order_items_to_create.append(OrderItem(
-                    menu_item_id=temp_menu_item.menu_item_id,
+                    menu_item_id=menu_item.menu_item_id,
                     quantity_small=quantity,
                     subtotal=subtotal
                 ))
                 
                 # 建立訂單明細供確認
                 order_details.append({
-                    'menu_item_id': temp_menu_item.menu_item_id,
-                    'item_name': item_name,
+                    'menu_item_id': menu_item.menu_item_id,
+                    'item_name': menu_item.item_name,
                     'quantity': quantity,
-                    'price': int(price),
+                    'price': menu_item.price_small,
                     'subtotal': subtotal,
-                    'is_temp': True
+                    'is_temp': False
                 })
-                
-            except Exception as e:
-                validation_errors.append(f"項目 {i+1}: 創建臨時菜單項目失敗 - {str(e)}")
-                continue
-        else:
-            # 處理正式菜單項目（合作店家）
-            if not menu_item_id:
-                validation_errors.append(f"項目 {i+1}: 缺少 menu_item_id 或 id 欄位")
-                continue
-                
-            if not quantity:
-                validation_errors.append(f"項目 {i+1}: 缺少 quantity 或 qty 欄位")
-                continue
+
+        if validation_errors:
+            return jsonify({
+                "error": "訂單資料驗證失敗",
+                "validation_errors": validation_errors,
+                "received_items": data['items']
+            }), 400
+
+        if not order_items_to_create:
+            return jsonify({
+                "error": "沒有選擇任何商品",
+                "received_items": data['items']
+            }), 400
+
+        try:
+            # store_id 已經在前面解析過了，這裡直接使用 store_db_id
+            
+            # 記錄訂單創建SQL
+            import logging
+            from sqlalchemy import text
+            logging.basicConfig(level=logging.INFO)
+            
+            print(f"📝 準備創建訂單記錄...")
+            print(f"📋 訂單參數:")
+            print(f"   user_id: {user.user_id} (型態: {type(user.user_id)})")
+            print(f"   store_id: {store_db_id} (型態: {type(store_db_id)})")
+            print(f"   total_amount: {total_amount} (型態: {type(total_amount)})")
+            print(f"   frontend_store_name: {frontend_store_name} (型態: {type(frontend_store_name)})")
+            
+            # 查詢使用者資料
+            user_record = User.query.get(user.user_id)
+            if user_record:
+                print(f"📋 使用者資料: user_id={user_record.user_id}, line_user_id='{user_record.line_user_id}', preferred_lang='{user_record.preferred_lang}'")
+            else:
+                print(f"❌ 找不到使用者記錄: user_id={user.user_id}")
+            
+            # 使用原生SQL創建訂單
+            order_sql = """
+            INSERT INTO orders (user_id, store_id, total_amount, order_time, status)
+            VALUES (:user_id, :store_id, :total_amount, :order_time, :status)
+            """
+            
+            order_params = {
+                "user_id": user.user_id,
+                "store_id": store_db_id,
+                "total_amount": total_amount,
+                "order_time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "status": "pending"
+            }
+            
+            print(f"📋 SQL參數詳細資訊:")
+            for key, value in order_params.items():
+                print(f"   {key}: {value} (型態: {type(value)})")
+            
+            logging.info(f"Executing Order SQL: {order_sql}")
+            logging.info(f"With parameters: {order_params}")
             
             try:
-                quantity = int(quantity)
-                if quantity <= 0:
-                    validation_errors.append(f"項目 {i+1}: 數量必須大於 0")
-                    continue
-            except (ValueError, TypeError):
-                validation_errors.append(f"項目 {i+1}: 數量格式錯誤，必須是整數")
-                continue
+                result = db.session.execute(text(order_sql), order_params)
+                db.session.commit()
+                print(f"✅ SQL執行成功，影響行數: {result.rowcount}")
+            except Exception as sql_error:
+                print(f"❌ SQL執行失敗: {sql_error}")
+                print(f"錯誤類型: {type(sql_error).__name__}")
+                import traceback
+                traceback.print_exc()
+                raise sql_error
             
-            menu_item = MenuItem.query.get(menu_item_id)
-            if not menu_item:
-                validation_errors.append(f"項目 {i+1}: 找不到菜單項目 ID {menu_item_id}")
-                continue
+            # 獲取訂單ID
+            order_id_result = db.session.execute(text("SELECT LAST_INSERT_ID() as id"))
+            order_id = order_id_result.fetchone()[0]
             
-            subtotal = menu_item.price_small * quantity
-            total_amount += subtotal
+            print(f"✅ 訂單已創建，ID: {order_id}")
             
-            order_items_to_create.append(OrderItem(
-                menu_item_id=menu_item.menu_item_id,
-                quantity_small=quantity,
-                subtotal=subtotal
-            ))
+            # 創建訂單項目
+            for i, order_item in enumerate(order_items_to_create):
+                order_item_sql = """
+                INSERT INTO order_items (order_id, menu_item_id, quantity_small, subtotal, original_name, translated_name, created_at)
+                VALUES (:order_id, :menu_item_id, :quantity_small, :subtotal, :original_name, :translated_name, :created_at)
+                """
+                
+                order_item_params = {
+                    "order_id": order_id,
+                    "menu_item_id": order_item.menu_item_id,
+                    "quantity_small": order_item.quantity_small,
+                    "subtotal": order_item.subtotal,
+                    "original_name": order_item.original_name or '',
+                    "translated_name": order_item.translated_name or '',
+                    "created_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                }
+                
+                logging.info(f"Executing Order Item {i+1} SQL: {order_item_sql}")
+                logging.info(f"With parameters: {order_item_params}")
+                
+                db.session.execute(text(order_item_sql), order_item_params)
             
-            # 建立訂單明細供確認
-            order_details.append({
-                'menu_item_id': menu_item.menu_item_id,
-                'item_name': menu_item.item_name,
-                'quantity': quantity,
-                'price': menu_item.price_small,
-                'subtotal': subtotal,
-                'is_temp': False
-            })
-
-    if validation_errors:
-        return jsonify({
-            "error": "訂單資料驗證失敗",
-            "validation_errors": validation_errors,
-            "received_items": data['items']
-        }), 400
-
-    if not order_items_to_create:
-        return jsonify({
-            "error": "沒有選擇任何商品",
-            "received_items": data['items']
-        }), 400
-
-    try:
-        # 確保 store_id 有值
-        store_id = data.get('store_id')
-        if not store_id:
+            db.session.commit()
+            print(f"✅ 已創建 {len(order_items_to_create)} 個訂單項目")
+            
+            # 創建Order物件用於後續處理
+            new_order = Order()
+            new_order.order_id = order_id
+            new_order.user_id = user.user_id
+            new_order.store_id = store_db_id
+            new_order.total_amount = total_amount
+            
+            # 保存前端店家名稱供後續使用
+            if frontend_store_name:
+                new_order.frontend_store_name = frontend_store_name
+                print(f"✅ 已保存前端店家名稱: '{frontend_store_name}'")
+            else:
+                print(f"⚠️ 沒有前端店家名稱可保存")
+            
+            print(f"📋 訂單物件資訊:")
+            print(f"   order_id: {new_order.order_id}")
+            print(f"   user_id: {new_order.user_id}")
+            print(f"   store_id: {new_order.store_id}")
+            print(f"   total_amount: {new_order.total_amount}")
+            print(f"   frontend_store_name: {getattr(new_order, 'frontend_store_name', 'None')}")
+            
+            # 建立完整訂單確認內容
+            from .helpers import create_complete_order_confirmation, send_complete_order_notification, generate_voice_order
+            
+            print(f"🔧 準備生成訂單確認...")
+            print(f"📋 訂單ID: {new_order.order_id}")
+            print(f"📋 用戶偏好語言: {user.preferred_lang}")
+            
+            try:
+                order_confirmation = create_complete_order_confirmation(new_order.order_id, user.preferred_lang)
+                print(f"✅ 訂單確認生成成功")
+                print(f"📋 確認內容: {order_confirmation}")
+            except Exception as e:
+                print(f"❌ 訂單確認生成失敗: {e}")
+                print(f"錯誤類型: {type(e).__name__}")
+                import traceback
+                traceback.print_exc()
+                raise e
+            
+            # 生成中文語音檔
+            print(f"🔧 準備生成語音檔...")
+            try:
+                voice_path = generate_voice_order(new_order.order_id)
+                print(f"✅ 語音檔生成成功: {voice_path}")
+            except Exception as e:
+                print(f"❌ 語音檔生成失敗: {e}")
+                print(f"錯誤類型: {type(e).__name__}")
+                import traceback
+                traceback.print_exc()
+                voice_path = None
+            
+            # 如果是OCR菜單訂單，建立訂單摘要並儲存到資料庫
+            if ocr_menu_id:
+                try:
+                    from .helpers import save_ocr_menu_and_summary_to_database
+                    
+                    # 準備OCR項目資料
+                    ocr_items = []
+                    for item in order_details:
+                        if item.get('is_ocr'):
+                            ocr_items.append({
+                                'name': {
+                                    'original': item.get('item_name', ''),
+                                    'translated': item.get('translated_name', item.get('item_name', ''))
+                                },
+                                'price': item.get('price', 0),
+                                'item_name': item.get('item_name', ''),
+                                'translated_name': item.get('translated_name', item.get('item_name', ''))
+                            })
+                    
+                    if ocr_items:
+                        # 儲存到資料庫
+                        save_result = save_ocr_menu_and_summary_to_database(
+                            order_id=new_order.order_id,
+                            ocr_items=ocr_items,
+                            chinese_summary=order_confirmation.get('chinese', 'OCR訂單摘要'),
+                            user_language_summary=order_confirmation.get('translated', 'OCR訂單摘要'),
+                            user_language=data.get('language', 'zh'),
+                            total_amount=total_amount,
+                            user_id=user.user_id if user else None,
+                            store_name=data.get('store_name', 'OCR店家'),
+                            existing_ocr_menu_id=ocr_menu_id
+                        )
+                        
+                        if save_result['success']:
+                            print(f"✅ OCR訂單摘要已成功儲存到資料庫")
+                            print(f"   OCR菜單ID: {save_result['ocr_menu_id']}")
+                            print(f"   訂單摘要ID: {save_result['summary_id']}")
+                        else:
+                            print(f"⚠️ OCR訂單摘要儲存失敗: {save_result['message']}")
+                except Exception as e:
+                    print(f"⚠️ 儲存OCR訂單摘要時發生錯誤: {e}")
+                    # 不影響主要流程，繼續執行
+            
+            # 只在非訪客模式下發送 LINE 通知
+            if not guest_mode:
+                send_complete_order_notification(new_order.order_id)
+            
             return jsonify({
-                "error": "缺少店家ID",
-                "received_data": list(data.keys())
-            }), 400
-        
-        new_order = Order(
-            user_id=user.user_id,
-            store_id=store_id,
-            total_amount=total_amount,
-            items=order_items_to_create
-        )
-        
-        db.session.add(new_order)
-        db.session.commit()
-        
-        # 建立完整訂單確認內容
-        from .helpers import create_complete_order_confirmation, send_complete_order_notification, generate_voice_order
-        
-        order_confirmation = create_complete_order_confirmation(new_order.order_id, user.preferred_lang)
-        
-        # 生成中文語音檔
-        voice_path = generate_voice_order(new_order.order_id)
-        
-        # 只在非訪客模式下發送 LINE 通知
-        if not guest_mode:
-            send_complete_order_notification(new_order.order_id)
-        
-        return jsonify({
-            "message": "訂單建立成功", 
-            "order_id": new_order.order_id,
-            "order_details": order_details,
-            "total_amount": total_amount,
-            "confirmation": order_confirmation,
-            "voice_generated": voice_path is not None
-        }), 201
+                "message": "訂單建立成功", 
+                "order_id": new_order.order_id,
+                "order_details": order_details,
+                "total_amount": total_amount,
+                "confirmation": order_confirmation,
+                "voice_generated": voice_path is not None,
+                "ocr_menu_id": ocr_menu_id
+            }), 201
+            
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({
+                "error": "訂單建立失敗",
+                "details": str(e)
+            }), 500
         
     except Exception as e:
         db.session.rollback()
@@ -1616,17 +2044,32 @@ def upload_menu_image():
             return response, 400
         
         # 取得參數
-        store_id = request.form.get('store_id')  # 移除 type=int，接受字串
+        raw_store_id = request.form.get('store_id')  # 可能是整數、數字字串或 Google Place ID
         user_id = request.form.get('user_id', type=int)
         target_lang = request.form.get('lang', 'en')
         
-        print(f"店家ID: {store_id}")
+        print(f"原始店家ID: {raw_store_id}")
         print(f"使用者ID: {user_id}")
         print(f"目標語言: {target_lang}")
         
-        if not store_id:
+        if not raw_store_id:
             print("錯誤：沒有提供店家ID")
             response = jsonify({"error": "需要提供店家ID"})
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            return response, 400
+        
+        # 使用 store resolver 解析店家 ID
+        try:
+            from .store_resolver import resolve_store_id
+            store_db_id = resolve_store_id(raw_store_id)
+            print(f"✅ 店家ID解析成功: {raw_store_id} -> {store_db_id}")
+        except Exception as e:
+            print(f"❌ 店家ID解析失敗: {e}")
+            response = jsonify({
+                "error": "店家ID格式錯誤",
+                "details": str(e),
+                "received_store_id": raw_store_id
+            })
             response.headers.add('Access-Control-Allow-Origin', '*')
             return response, 400
         
@@ -1650,38 +2093,50 @@ def upload_menu_image():
             menu_items = result.get('menu_items', [])
             dynamic_menu = []
             
-            # 如果是非合作店家，儲存到資料庫
+            # 建立 OCR 菜單記錄到資料庫（使用解析後的整數 store_id）
             ocr_menu_id = None
-            if not store_id or store_id == 'temp':
-                try:
-                    # 建立 OCR 菜單記錄到資料庫
-                    ocr_menu = OCRMenu(
-                        user_id=user_id or 1,  # 如果沒有提供 user_id，使用預設值
-                        store_name=result.get('store_info', {}).get('name', '臨時店家')
+            try:
+                # 處理 user_id - 如果沒有提供，創建一個臨時使用者
+                actual_user_id = user_id
+                if not actual_user_id:
+                    # 創建一個臨時使用者
+                    temp_user = User(
+                        line_user_id=f"temp_guest_{int(time.time())}",
+                        preferred_lang=target_lang or 'zh'
                     )
-                    db.session.add(ocr_menu)
-                    db.session.flush()  # 獲取 ocr_menu_id
-                    ocr_menu_id = ocr_menu.ocr_menu_id
-                    
-                    # 儲存菜單項目到資料庫
-                    for item in menu_items:
-                        ocr_menu_item = OCRMenuItem(
-                            ocr_menu_id=ocr_menu.ocr_menu_id,
-                            item_name=item.get('original_name', ''),
-                            price_small=item.get('price', 0),
-                            price_big=item.get('price', 0),  # 暫時使用相同價格
-                            translated_desc=item.get('description', '') or item.get('translated_name', '')
-                        )
-                        db.session.add(ocr_menu_item)
-                    
-                    # 提交到資料庫
-                    db.session.commit()
-                    print(f"✅ 非合作店家菜單已儲存到資料庫，OCR 菜單 ID: {ocr_menu_id}")
-                    
-                except Exception as e:
-                    print(f"❌ 儲存到資料庫失敗: {e}")
-                    db.session.rollback()
-                    ocr_menu_id = None
+                    db.session.add(temp_user)
+                    db.session.flush()  # 獲取 user_id
+                    actual_user_id = temp_user.user_id
+                    print(f"✅ 創建臨時使用者，ID: {actual_user_id}")
+                
+                # 建立 OCR 菜單記錄到資料庫
+                ocr_menu = OCRMenu(
+                    user_id=actual_user_id,
+                    store_name=result.get('store_info', {}).get('name', '臨時店家')
+                )
+                db.session.add(ocr_menu)
+                db.session.flush()  # 獲取 ocr_menu_id
+                ocr_menu_id = ocr_menu.ocr_menu_id
+                
+                # 儲存菜單項目到資料庫
+                for item in menu_items:
+                    ocr_menu_item = OCRMenuItem(
+                        ocr_menu_id=ocr_menu.ocr_menu_id,
+                        item_name=item.get('original_name', ''),
+                        price_small=item.get('price', 0),
+                        price_big=item.get('price', 0),  # 暫時使用相同價格
+                        translated_desc=item.get('description', '') or item.get('translated_name', '')
+                    )
+                    db.session.add(ocr_menu_item)
+                
+                # 提交到資料庫
+                db.session.commit()
+                print(f"✅ OCR菜單已儲存到資料庫，OCR 菜單 ID: {ocr_menu_id}")
+                
+            except Exception as e:
+                print(f"❌ 儲存到資料庫失敗: {e}")
+                db.session.rollback()
+                ocr_menu_id = None
             
             for i, item in enumerate(menu_items):
                 # 確保所有字串欄位都不是 null/undefined，避免前端 charAt() 錯誤
@@ -1727,7 +2182,9 @@ def upload_menu_image():
                 "menu_items": dynamic_menu,
                 "total_items": len(dynamic_menu),
                 "target_language": target_lang,
-                "processing_notes": result.get('processing_notes', '')
+                "processing_notes": result.get('processing_notes', ''),
+                "store_id": store_db_id,  # 加入解析後的整數 store_id
+                "original_store_id": raw_store_id  # 保留原始輸入的 store_id
             }
             
             # 如果儲存到資料庫，加入相關資訊
@@ -1973,63 +2430,54 @@ def simple_menu_ocr():
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response, 500
 
-@api_bp.route('/menu/ocr/<int:ocr_menu_id>', methods=['GET', 'OPTIONS'])
+@api_bp.route('/menu/ocr/<int:ocr_menu_id>', methods=['GET'])
 def get_ocr_menu(ocr_menu_id):
-    """取得已儲存的 OCR 菜單"""
-    # 處理 OPTIONS 預檢請求
-    if request.method == 'OPTIONS':
-        return handle_cors_preflight()
-    
+    """根據OCR菜單ID取得已儲存的菜單資料"""
     try:
-        # 查詢 OCR 菜單
+        # 查詢OCR菜單
         ocr_menu = OCRMenu.query.get(ocr_menu_id)
         if not ocr_menu:
-            response = jsonify({
-                "success": False,
-                "error": "找不到指定的 OCR 菜單"
-            })
-            response.headers.add('Access-Control-Allow-Origin', '*')
-            return response, 404
+            return jsonify({"error": "找不到OCR菜單"}), 404
         
-        # 查詢菜單項目，過濾掉價格為 0 的商品
-        menu_items = OCRMenuItem.query.filter(
-            OCRMenuItem.ocr_menu_id == ocr_menu_id,
-            OCRMenuItem.price_small > 0  # 只返回價格大於 0 的商品
-        ).all()
+        # 查詢OCR菜單項目
+        ocr_menu_items = OCRMenuItem.query.filter_by(ocr_menu_id=ocr_menu_id).all()
         
-        # 準備回應資料
-        items_data = []
-        for item in menu_items:
-            items_data.append({
-                'id': item.ocr_menu_item_id,
-                'name': item.item_name,
+        # 取得使用者語言偏好
+        user_language = request.args.get('lang', 'zh')
+        
+        # 轉換為前端相容格式
+        menu_items = []
+        for item in ocr_menu_items:
+            menu_items.append({
+                'id': f"ocr_{ocr_menu_id}_{item.ocr_menu_item_id}",
+                'original_name': item.item_name,
+                'translated_name': item.translated_desc or item.item_name,
                 'price': item.price_small,
+                'price_small': item.price_small,
                 'price_big': item.price_big,
-                'description': item.translated_desc or ''
+                'description': item.translated_desc or '',
+                'category': '其他',
+                'image_url': '/static/images/default-dish.png',
+                'imageUrl': '/static/images/default-dish.png',
+                'show_image': False,
+                'inventory': 999,
+                'available': True,
+                'ocr_menu_item_id': item.ocr_menu_item_id
             })
         
-        response = jsonify({
+        return jsonify({
             "success": True,
-            "ocr_menu": {
-                "ocr_menu_id": ocr_menu.ocr_menu_id,
-                "store_name": ocr_menu.store_name,
-                "user_id": ocr_menu.user_id,
-                "upload_time": ocr_menu.upload_time.isoformat() if ocr_menu.upload_time else None,
-                "items": items_data,
-                "total_items": len(items_data)
-            }
+            "ocr_menu_id": ocr_menu_id,
+            "store_name": ocr_menu.store_name,
+            "user_language": user_language,
+            "menu_items": menu_items,
+            "total_items": len(menu_items),
+            "upload_time": ocr_menu.upload_time.isoformat() if ocr_menu.upload_time else None
         })
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        return response, 200
         
     except Exception as e:
-        print(f"查詢 OCR 菜單失敗：{e}")
-        response = jsonify({
-            "success": False,
-            "error": "查詢過程中發生錯誤"
-        })
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        return response, 500
+        current_app.logger.error(f"取得OCR菜單錯誤: {str(e)}")
+        return jsonify({'error': '無法載入OCR菜單'}), 500
 
 @api_bp.route('/menu/ocr', methods=['GET', 'OPTIONS'])
 def list_ocr_menus():
@@ -2216,7 +2664,7 @@ def simple_order():
                             menu = Menu(
                                 store_id=store.store_id,
                                 version=1,
-                                effective_date=datetime.datetime.now()
+                                effective_date=datetime.datetime.now()  # 明確設置 effective_date
                             )
                             db.session.add(menu)
                             db.session.flush()
@@ -2602,3 +3050,417 @@ def serve_voice(filename):
     except Exception as e:
         print(f"提供語音檔案失敗: {e}")
         return jsonify({"error": "語音檔案服務失敗"}), 500
+
+@api_bp.route('/menu/ocr/user/<int:user_id>', methods=['GET'])
+def get_user_ocr_menus(user_id):
+    """查詢使用者的OCR菜單歷史"""
+    try:
+        # 查詢使用者的OCR菜單
+        ocr_menus = OCRMenu.query.filter_by(user_id=user_id).order_by(OCRMenu.upload_time.desc()).all()
+        
+        if not ocr_menus:
+            return jsonify({
+                "success": True,
+                "user_id": user_id,
+                "ocr_menus": [],
+                "total_count": 0
+            })
+        
+        # 轉換為前端相容格式
+        menus_data = []
+        for ocr_menu in ocr_menus:
+            # 查詢菜單項目數量
+            item_count = OCRMenuItem.query.filter_by(ocr_menu_id=ocr_menu.ocr_menu_id).count()
+            
+            menus_data.append({
+                'ocr_menu_id': ocr_menu.ocr_menu_id,
+                'store_name': ocr_menu.store_name,
+                'upload_time': ocr_menu.upload_time.isoformat() if ocr_menu.upload_time else None,
+                'item_count': item_count,
+                'user_id': ocr_menu.user_id
+            })
+        
+        return jsonify({
+            "success": True,
+            "user_id": user_id,
+            "ocr_menus": menus_data,
+            "total_count": len(menus_data)
+        })
+        
+    except Exception as e:
+        current_app.logger.error(f"查詢使用者OCR菜單歷史錯誤: {str(e)}")
+        return jsonify({'error': '無法載入OCR菜單歷史'}), 500
+
+@api_bp.route('/orders/ocr', methods=['POST', 'OPTIONS'])
+def create_ocr_order():
+    """建立OCR菜單訂單"""
+    # 處理 OPTIONS 預檢請求
+    if request.method == 'OPTIONS':
+        return handle_cors_preflight()
+    
+    data = request.get_json()
+    
+    if not data:
+        return jsonify({"error": "請求資料為空"}), 400
+    
+    # 檢查必要欄位
+    required_fields = ['items', 'ocr_menu_id']
+    missing_fields = [field for field in required_fields if field not in data]
+    if missing_fields:
+        return jsonify({
+            "error": "訂單資料不完整",
+            "missing_fields": missing_fields,
+            "received_data": list(data.keys())
+        }), 400
+    
+    try:
+        # 處理 line_user_id（可選）
+        line_user_id = data.get('line_user_id')
+        if not line_user_id:
+            # 為非 LINE 入口生成臨時 ID
+            line_user_id = f"guest_{uuid.uuid4().hex[:8]}"
+            guest_mode = True
+        else:
+            guest_mode = False
+
+        # 查找或創建使用者
+        user = User.query.filter_by(line_user_id=line_user_id).first()
+        if not user:
+            try:
+                # 檢查語言是否存在，如果不存在就使用預設語言
+                preferred_lang = data.get('language', 'zh')
+                language = Language.query.get(preferred_lang)
+                if not language:
+                    # 如果指定的語言不存在，使用中文作為預設
+                    preferred_lang = 'zh'
+                    language = Language.query.get(preferred_lang)
+                    if not language:
+                        # 如果連中文都不存在，創建基本語言資料
+                        from tools.manage_translations import init_languages
+                        init_languages()
+                
+                # 為訪客創建臨時使用者
+                user = User(
+                    line_user_id=line_user_id,
+                    preferred_lang=preferred_lang
+                )
+                db.session.add(user)
+                db.session.flush()  # 先產生 user_id，但不提交
+            except Exception as e:
+                db.session.rollback()
+                return jsonify({
+                    "error": "建立使用者失敗",
+                    "details": str(e)
+                }), 500
+
+        # 驗證OCR菜單是否存在
+        ocr_menu_id = data.get('ocr_menu_id')
+        ocr_menu = OCRMenu.query.get(ocr_menu_id)
+        if not ocr_menu:
+            return jsonify({
+                "error": "找不到指定的OCR菜單",
+                "ocr_menu_id": ocr_menu_id
+            }), 404
+
+        total_amount = 0
+        order_items_to_create = []
+        order_details = []
+        validation_errors = []
+        
+        for i, item_data in enumerate(data['items']):
+            # 支援多種欄位名稱格式
+            menu_item_id = item_data.get('menu_item_id') or item_data.get('id')
+            quantity = item_data.get('quantity') or item_data.get('qty') or item_data.get('quantity_small')
+            
+            # 檢查是否為OCR菜單項目（以 ocr_ 開頭）
+            if menu_item_id and menu_item_id.startswith('ocr_'):
+                # 處理OCR菜單項目
+                price = item_data.get('price') or item_data.get('price_small') or item_data.get('price_unit') or 0
+                
+                # 處理新的雙語格式 {name: {original: "中文", translated: "English"}}
+                if item_data.get('name') and isinstance(item_data['name'], dict):
+                    item_name = item_data['name'].get('original') or f"項目 {i+1}"
+                    translated_name = item_data['name'].get('translated') or item_name
+                else:
+                    item_name = item_data.get('item_name') or item_data.get('name') or item_data.get('original_name') or f"項目 {i+1}"
+                    translated_name = item_data.get('translated_name') or item_data.get('en_name') or item_name
+                
+                # 驗證數量
+                if not quantity:
+                    validation_errors.append(f"項目 {i+1}: 缺少 quantity 或 qty 欄位")
+                    continue
+                
+                try:
+                    quantity = int(quantity)
+                    if quantity <= 0:
+                        validation_errors.append(f"項目 {i+1}: 數量必須大於 0")
+                        continue
+                except (ValueError, TypeError):
+                    validation_errors.append(f"項目 {i+1}: 數量格式錯誤，必須是整數")
+                    continue
+                
+                # 計算小計
+                subtotal = int(price) * quantity
+                total_amount += subtotal
+                
+                # 為OCR項目創建一個臨時的 MenuItem 記錄
+                try:
+                    # 檢查是否已經有對應的臨時菜單項目
+                    temp_menu_item = MenuItem.query.filter_by(item_name=item_name).first()
+                    
+                    if not temp_menu_item:
+                        # 創建新的臨時菜單項目
+                        from app.models import Menu
+                        
+                        # 找到或創建一個臨時菜單
+                        temp_menu = Menu.query.filter_by(store_id=data.get('store_id', 1)).first()
+                        if not temp_menu:
+                            temp_menu = Menu(
+                                store_id=data.get('store_id', 1), 
+                                version=1,
+                                effective_date=datetime.datetime.now()  # 明確設置 effective_date
+                            )
+                            db.session.add(temp_menu)
+                            db.session.flush()
+                        
+                        temp_menu_item = MenuItem(
+                            menu_id=temp_menu.menu_id,
+                            item_name=item_name,
+                            price_small=int(price),
+                            price_big=int(price)  # 使用相同價格
+                        )
+                        db.session.add(temp_menu_item)
+                        db.session.flush()  # 獲取 menu_item_id
+                    
+                    # 使用臨時菜單項目的 ID
+                    order_items_to_create.append(OrderItem(
+                        menu_item_id=temp_menu_item.menu_item_id,
+                        quantity_small=quantity,
+                        subtotal=subtotal,
+                        original_name=item_name,
+                        translated_name=translated_name
+                    ))
+                    
+                    # 建立訂單明細供確認
+                    order_details.append({
+                        'menu_item_id': temp_menu_item.menu_item_id,
+                        'item_name': item_name,
+                        'translated_name': translated_name,
+                        'quantity': quantity,
+                        'price': int(price),
+                        'subtotal': subtotal,
+                        'is_ocr': True
+                    })
+                    
+                except Exception as e:
+                    validation_errors.append(f"項目 {i+1}: 創建OCR菜單項目失敗 - {str(e)}")
+                    continue
+            else:
+                validation_errors.append(f"項目 {i+1}: 不是有效的OCR菜單項目")
+
+        if validation_errors:
+            return jsonify({
+                "error": "訂單資料驗證失敗",
+                "validation_errors": validation_errors,
+                "received_items": data['items']
+            }), 400
+
+        if not order_items_to_create:
+            return jsonify({
+                "error": "沒有選擇任何商品",
+                "received_items": data['items']
+            }), 400
+
+        try:
+            # 使用 store resolver 解析店家 ID
+            raw_store_id = data.get('store_id', 1)
+            try:
+                from .store_resolver import resolve_store_id
+                store_db_id = resolve_store_id(raw_store_id)
+                print(f"✅ OCR訂單店家ID解析成功: {raw_store_id} -> {store_db_id}")
+            except Exception as e:
+                print(f"❌ OCR訂單店家ID解析失敗: {e}")
+                # 如果解析失敗，使用預設值
+                store_db_id = 1
+                print(f"⚠️ 使用預設店家ID: {store_db_id}")
+            
+            new_order = Order(
+                user_id=user.user_id,
+                store_id=store_db_id,
+                total_amount=total_amount,
+                items=order_items_to_create
+            )
+            
+            db.session.add(new_order)
+            db.session.commit()
+            
+            # 建立完整訂單確認內容
+            from .helpers import create_complete_order_confirmation, send_complete_order_notification, generate_voice_order
+            
+            print(f"🔧 準備生成訂單確認...")
+            print(f"📋 訂單ID: {new_order.order_id}")
+            print(f"📋 用戶偏好語言: {user.preferred_lang}")
+            
+            try:
+                order_confirmation = create_complete_order_confirmation(new_order.order_id, user.preferred_lang)
+                print(f"✅ 訂單確認生成成功")
+                print(f"📋 確認內容: {order_confirmation}")
+            except Exception as e:
+                print(f"❌ 訂單確認生成失敗: {e}")
+                print(f"錯誤類型: {type(e).__name__}")
+                import traceback
+                traceback.print_exc()
+                raise e
+            
+            # 生成中文語音檔
+            print(f"🔧 準備生成語音檔...")
+            try:
+                voice_path = generate_voice_order(new_order.order_id)
+                print(f"✅ 語音檔生成成功: {voice_path}")
+            except Exception as e:
+                print(f"❌ 語音檔生成失敗: {e}")
+                print(f"錯誤類型: {type(e).__name__}")
+                import traceback
+                traceback.print_exc()
+                voice_path = None
+            
+            # 建立訂單摘要並儲存到資料庫
+            try:
+                from .helpers import save_ocr_menu_and_summary_to_database
+                
+                # 準備OCR項目資料
+                ocr_items = []
+                for item in order_details:
+                    if item.get('is_ocr'):
+                        ocr_items.append({
+                            'name': {
+                                'original': item.get('item_name', ''),
+                                'translated': item.get('translated_name', item.get('item_name', ''))
+                            },
+                            'price': item.get('price', 0),
+                            'item_name': item.get('item_name', ''),
+                            'translated_name': item.get('translated_name', item.get('item_name', ''))
+                        })
+                
+                if ocr_items:
+                    # 儲存到資料庫
+                    save_result = save_ocr_menu_and_summary_to_database(
+                        order_id=new_order.order_id,
+                        ocr_items=ocr_items,
+                        chinese_summary=order_confirmation.get('chinese', 'OCR訂單摘要'),
+                        user_language_summary=order_confirmation.get('translated', 'OCR訂單摘要'),
+                        user_language=data.get('language', 'zh'),
+                        total_amount=total_amount,
+                        user_id=user.user_id if user else None,
+                        store_name=ocr_menu.store_name
+                    )
+                    
+                    if save_result['success']:
+                        print(f"✅ OCR訂單摘要已成功儲存到資料庫")
+                        print(f"   OCR菜單ID: {save_result['ocr_menu_id']}")
+                        print(f"   訂單摘要ID: {save_result['summary_id']}")
+                    else:
+                        print(f"⚠️ OCR訂單摘要儲存失敗: {save_result['message']}")
+            except Exception as e:
+                print(f"⚠️ 儲存OCR訂單摘要時發生錯誤: {e}")
+                # 不影響主要流程，繼續執行
+            
+            # 只在非訪客模式下發送 LINE 通知
+            if not guest_mode:
+                send_complete_order_notification(new_order.order_id)
+            
+            return jsonify({
+                "message": "OCR訂單建立成功", 
+                "order_id": new_order.order_id,
+                "order_details": order_details,
+                "total_amount": total_amount,
+                "confirmation": order_confirmation,
+                "voice_generated": voice_path is not None,
+                "ocr_menu_id": ocr_menu_id,
+                "store_name": ocr_menu.store_name
+            }), 201
+            
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({
+                "error": "OCR訂單建立失敗",
+                "details": str(e)
+            }), 500
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "error": "OCR訂單建立失敗",
+            "details": str(e)
+        }), 500
+
+@api_bp.route('/stores/resolve', methods=['GET', 'POST', 'OPTIONS'])
+def resolve_store():
+    """解析店家識別碼（測試用）"""
+    # 處理 OPTIONS 預檢請求
+    if request.method == 'OPTIONS':
+        return handle_cors_preflight()
+    
+    try:
+        if request.method == 'GET':
+            # GET 請求：從查詢參數取得
+            place_id = request.args.get('place_id')
+            store_name = request.args.get('store_name')
+        else:
+            # POST 請求：從 JSON 取得
+            data = request.get_json() or {}
+            place_id = data.get('place_id')
+            store_name = data.get('store_name')
+        
+        if not place_id:
+            response = jsonify({
+                "error": "需要提供 place_id 參數",
+                "usage": {
+                    "GET": "/api/stores/resolve?place_id=ChlJ0boght2rQjQRsH-_buCo3S4&store_name=店家名稱",
+                    "POST": '{"place_id": "ChlJ0boght2rQjQRsH-_buCo3S4", "store_name": "店家名稱"}'
+                }
+            })
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            return response, 400
+        
+        # 使用 store resolver 解析
+        from .store_resolver import resolve_store_id, validate_store_id
+        
+        # 先驗證格式
+        if not validate_store_id(place_id):
+            response = jsonify({
+                "error": "無效的 place_id 格式",
+                "place_id": place_id,
+                "valid_formats": [
+                    "整數 (如: 123)",
+                    "數字字串 (如: '456')", 
+                    "Google Place ID (如: 'ChlJ0boght2rQjQRsH-_buCo3S4')"
+                ]
+            })
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            return response, 400
+        
+        # 解析店家 ID
+        store_db_id = resolve_store_id(place_id, store_name)
+        
+        response_data = {
+            "success": True,
+            "original_place_id": place_id,
+            "resolved_store_id": store_db_id,
+            "store_name": store_name or f"店家_{place_id[:8]}",
+            "message": f"成功解析店家識別碼: {place_id} -> {store_db_id}"
+        }
+        
+        response = jsonify(response_data)
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, 200
+        
+    except Exception as e:
+        print(f"❌ Store resolver 測試失敗: {e}")
+        response = jsonify({
+            "error": "店家識別碼解析失敗",
+            "details": str(e),
+            "place_id": place_id if 'place_id' in locals() else None
+        })
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, 500

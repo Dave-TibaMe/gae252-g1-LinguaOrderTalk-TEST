@@ -330,8 +330,8 @@ def process_menu_with_gemini(image_path, target_language='en'):
   "success": true,
   "menu_items": [
     {{
-      "original_name": "原始菜名",
-      "translated_name": "翻譯菜名", 
+      "original_name": "原始中文菜名",
+      "translated_name": "翻譯為{target_language}的菜名", 
       "price": 數字,
       "description": "描述或null",
       "category": "分類或null"
@@ -345,14 +345,17 @@ def process_menu_with_gemini(image_path, target_language='en'):
   "processing_notes": "備註或null"
 }}
 
-## 規則：
-1. 圖片中沒有的店家資訊請回 `null`，不要猜測
-2. 一律不要使用 ``` 或任何程式碼區塊語法
-3. 價格輸出數字，無法辨識時用 0
-4. **只輸出 JSON**，不要其他文字
-5. 若圖片模糊或無法辨識，將 success 設為 false
-6. 優先處理清晰可見的菜單項目
-7. 菜名翻譯為 {target_language} 語言
+## 重要規則：
+1. **original_name 必須是圖片中的原始中文菜名**，不要翻譯
+2. **translated_name 必須是翻譯為 {target_language} 的菜名**
+3. 如果圖片中的菜名已經是 {target_language}，則 original_name 和 translated_name 可以相同
+4. 圖片中沒有的店家資訊請回 `null`，不要猜測
+5. 一律不要使用 ``` 或任何程式碼區塊語法
+6. 價格輸出數字，無法辨識時用 0
+7. **只輸出 JSON**，不要其他文字
+8. 若圖片模糊或無法辨識，將 success 設為 false
+9. 優先處理清晰可見的菜單項目
+10. **確保每個菜品都有原始中文名稱和翻譯名稱**
 """
         
         # 呼叫 Gemini 2.5 Flash API（添加超時控制）
@@ -580,6 +583,9 @@ def generate_voice_order(order_id, speech_rate=1.0):
     """
     使用 Azure TTS 生成訂單語音
     """
+    print(f"🔧 開始生成語音檔...")
+    print(f"📋 輸入參數: order_id={order_id}, speech_rate={speech_rate}")
+    
     # 先 cleanup（延長清理時間）
     cleanup_old_voice_files(3600)  # 60分鐘
     
@@ -589,39 +595,24 @@ def generate_voice_order(order_id, speech_rate=1.0):
         # 取得訂單資訊
         order = Order.query.get(order_id)
         if not order:
-            print(f"找不到訂單: {order_id}")
+            print(f"❌ 找不到訂單: {order_id}")
             return None
         
-        # 建立自然的中文訂單文字
-        items_for_voice = []
+        print(f"✅ 找到訂單: order_id={order.order_id}")
         
-        for item in order.items:
-            menu_item = MenuItem.query.get(item.menu_item_id)
-            if menu_item:
-                # 改進：根據菜名類型選擇合適的量詞
-                item_name = menu_item.item_name
-                quantity = item.quantity_small
-                
-                # 判斷是飲料還是餐點
-                if any(keyword in item_name for keyword in ['茶', '咖啡', '飲料', '果汁', '奶茶', '汽水', '可樂', '啤酒', '酒']):
-                    # 飲料類用「杯」
-                    if quantity == 1:
-                        items_for_voice.append(f"{item_name}一杯")
-                    else:
-                        items_for_voice.append(f"{item_name}{quantity}杯")
-                else:
-                    # 餐點類用「份」
-                    if quantity == 1:
-                        items_for_voice.append(f"{item_name}一份")
-                    else:
-                        items_for_voice.append(f"{item_name}{quantity}份")
+        # 使用 create_complete_order_confirmation 生成正確的中文語音文字
+        print(f"🔧 調用 create_complete_order_confirmation 生成語音文字...")
+        confirmation = create_complete_order_confirmation(order_id, 'zh')  # 強制使用中文
+        if not confirmation:
+            print(f"❌ 無法生成訂單確認內容")
+            return None
         
-        # 生成自然的中文語音
-        if len(items_for_voice) == 1:
-            order_text = f"老闆，我要{items_for_voice[0]}，謝謝。"
-        else:
-            voice_items = "、".join(items_for_voice[:-1]) + "和" + items_for_voice[-1]
-            order_text = f"老闆，我要{voice_items}，謝謝。"
+        order_text = confirmation.get('chinese_voice_text', '')
+        print(f"🎤 使用中文語音文字: '{order_text}'")
+        
+        if not order_text:
+            print(f"❌ 語音文字為空，使用備用方案")
+            return generate_voice_order_fallback(order_id, speech_rate)
         
         # 應用文本預處理（確保沒有遺漏的 x1 格式）
         order_text = normalize_order_text_for_tts(order_text)
@@ -936,14 +927,28 @@ def get_menu_translation_from_db(menu_item_id, target_language):
     try:
         from ..models import MenuTranslation
         
+        print(f"🔍 查詢菜品翻譯: menu_item_id={menu_item_id}, target_language={target_language}")
+        
         translation = MenuTranslation.query.filter_by(
             menu_item_id=menu_item_id,
             lang_code=target_language
         ).first()
         
+        if translation:
+            print(f"✅ 找到資料庫翻譯: description='{translation.description}'")
+        else:
+            print(f"❌ 資料庫中沒有找到翻譯")
+            
+            # 檢查是否有其他語言的翻譯
+            all_translations = MenuTranslation.query.filter_by(menu_item_id=menu_item_id).all()
+            if all_translations:
+                print(f"📋 該菜品有其他語言翻譯: {[(t.lang_code, t.description) for t in all_translations]}")
+            else:
+                print(f"📋 該菜品完全沒有翻譯資料")
+        
         return translation
     except Exception as e:
-        print(f"取得資料庫翻譯失敗：{e}")
+        print(f"❌ 取得資料庫翻譯失敗：{e}")
         return None
 
 def get_store_translation_from_db(store_id, target_language):
@@ -1058,6 +1063,10 @@ def translate_menu_items_with_db_fallback(menu_items, target_language):
 
 def translate_store_info_with_db_fallback(store, target_language):
     """翻譯店家資訊，優先使用資料庫翻譯，失敗時使用 AI 翻譯"""
+    from ..models import StoreTranslation
+    
+    print(f"🔍 查詢店家翻譯: store_id={store.store_id}, store_name='{store.store_name}', target_language={target_language}")
+    
     # 嘗試從資料庫獲取翻譯
     db_translation = None
     try:
@@ -1065,22 +1074,39 @@ def translate_store_info_with_db_fallback(store, target_language):
             store_id=store.store_id,
             language_code=target_language
         ).first()
+        
+        if db_translation:
+            print(f"✅ 找到店家資料庫翻譯: description='{db_translation.description}'")
+        else:
+            print(f"❌ 資料庫中沒有找到店家翻譯")
+            
+            # 檢查是否有其他語言的翻譯
+            all_translations = StoreTranslation.query.filter_by(store_id=store.store_id).all()
+            if all_translations:
+                print(f"📋 該店家有其他語言翻譯: {[(t.language_code, t.description) for t in all_translations]}")
+            else:
+                print(f"📋 該店家完全沒有翻譯資料")
+                
     except Exception as e:
-        print(f"店家翻譯查詢失敗: {e}")
+        print(f"❌ 店家翻譯查詢失敗: {e}")
     
     # 如果資料庫有翻譯，使用資料庫翻譯
     if db_translation and db_translation.description:
         translated_name = db_translation.description
         translation_source = 'database'
+        print(f"✅ 使用資料庫翻譯: '{translated_name}'")
     else:
         # 使用 AI 翻譯
         try:
+            print(f"🔧 嘗試AI翻譯店家名稱: '{store.store_name}'")
             translated_name = translate_text_with_fallback(store.store_name, target_language)
             translation_source = 'ai'
+            print(f"✅ AI翻譯結果: '{translated_name}'")
         except Exception as e:
-            print(f"AI 翻譯失敗: {e}")
+            print(f"❌ AI 翻譯失敗: {e}")
             translated_name = store.store_name
             translation_source = 'original'
+            print(f"⚠️ 使用原始名稱: '{translated_name}'")
     
     return {
         'store_id': store.store_id,
@@ -1094,30 +1120,120 @@ def create_complete_order_confirmation(order_id, user_language='zh'):
     """
     建立完整的訂單確認內容（包含語音、中文紀錄、使用者語言紀錄）
     """
+    import logging
+    logging.basicConfig(level=logging.INFO)
+    
     from ..models import Order, OrderItem, MenuItem, Store, User
+    
+    print(f"🔧 開始生成訂單確認...")
+    print(f"📋 輸入參數: order_id={order_id}, user_language={user_language}")
     
     order = Order.query.get(order_id)
     if not order:
+        print(f"❌ 找不到訂單: {order_id}")
         return None
     
+    print(f"✅ 找到訂單: order_id={order.order_id}, user_id={order.user_id}, store_id={order.store_id}")
+    
     store = Store.query.get(order.store_id)
+    if not store:
+        print(f"❌ 找不到店家: store_id={order.store_id}")
+        return None
+    
+    print(f"✅ 找到店家: store_id={store.store_id}, store_name='{store.store_name}'")
+    
+    # 檢查是否有前端傳遞的店家名稱（優先使用）
+    frontend_store_name = getattr(order, 'frontend_store_name', None)
+    print(f"🔍 檢查前端店家名稱: {frontend_store_name}")
+    print(f"🔍 訂單物件屬性: {dir(order)}")
+    
+    if frontend_store_name:
+        print(f"✅ 使用前端傳遞的店家名稱: '{frontend_store_name}'")
+        store_name_for_display = frontend_store_name
+    else:
+        print(f"⚠️ 沒有前端店家名稱，使用資料庫名稱: '{store.store_name}'")
+        store_name_for_display = store.store_name
+    
+    print(f"📋 最終使用的店家名稱: '{store_name_for_display}'")
+    
     user = User.query.get(order.user_id)
+    if not user:
+        print(f"❌ 找不到使用者: user_id={order.user_id}")
+        return None
+    
+    print(f"✅ 找到使用者: user_id={user.user_id}, preferred_lang='{user.preferred_lang}'")
     
     # 1. 中文語音內容（改善格式，更自然）
     items_for_voice = []
     items_for_summary = []
     
-    for item in order.items:
-        menu_item = MenuItem.query.get(item.menu_item_id)
-        if menu_item:
+    print(f"🔧 開始處理訂單項目...")
+    print(f"📋 訂單項目數量: {len(order.items)}")
+    
+    for i, item in enumerate(order.items):
+        print(f"📋 處理第 {i+1} 個項目: menu_item_id={item.menu_item_id}, quantity_small={item.quantity_small}")
+        
+        # 檢查是否為OCR菜單項目（有original_name）
+        if hasattr(item, 'original_name') and item.original_name:
+            print(f"✅ 檢測到OCR菜單項目: original_name='{item.original_name}', translated_name='{getattr(item, 'translated_name', '')}'")
+            
+            # 使用原始中文名稱進行語音和摘要
+            item_name_for_voice = item.original_name
+            item_name_for_summary = item.original_name
+            
             # 為語音準備：自然的中文表達
-            if item.quantity == 1:
-                items_for_voice.append(f"{menu_item.item_name}一份")
+            if item.quantity_small == 1:
+                voice_text = f"{item_name_for_voice}一份"
             else:
-                items_for_voice.append(f"{menu_item.item_name}{item.quantity}份")
+                voice_text = f"{item_name_for_voice}{item.quantity_small}份"
+            
+            items_for_voice.append(voice_text)
+            print(f"📝 語音文字: '{voice_text}'")
             
             # 為摘要準備：清晰的格式
-            items_for_summary.append(f"{menu_item.item_name} x{item.quantity}")
+            summary_text = f"{item_name_for_summary} x{item.quantity_small}"
+            items_for_summary.append(summary_text)
+            print(f"📝 摘要文字: '{summary_text}'")
+            
+        else:
+            # 使用傳統的MenuItem查詢
+            menu_item = MenuItem.query.get(item.menu_item_id)
+            if menu_item:
+                print(f"✅ 找到菜單項目: item_name='{menu_item.item_name}', price_small={menu_item.price_small}")
+                
+                # 嘗試獲取中文翻譯
+                print(f"🔍 嘗試獲取菜品中文翻譯: menu_item_id={item.menu_item_id}")
+                db_translation = get_menu_translation_from_db(item.menu_item_id, 'zh')
+                
+                if db_translation and db_translation.description:
+                    chinese_name = db_translation.description
+                    print(f"✅ 找到中文翻譯: '{chinese_name}'")
+                else:
+                    # 如果沒有資料庫翻譯，嘗試AI翻譯
+                    print(f"🔧 嘗試AI翻譯菜品名稱: '{menu_item.item_name}'")
+                    try:
+                        chinese_name = translate_text_with_fallback(menu_item.item_name, 'zh')
+                        print(f"✅ AI翻譯結果: '{chinese_name}'")
+                    except Exception as e:
+                        print(f"❌ AI翻譯失敗: {e}")
+                        chinese_name = menu_item.item_name
+                        print(f"⚠️ 使用原始名稱: '{chinese_name}'")
+                
+                # 為語音準備：使用中文名稱
+                if item.quantity_small == 1:
+                    voice_text = f"{chinese_name}一份"
+                else:
+                    voice_text = f"{chinese_name}{item.quantity_small}份"
+                
+                items_for_voice.append(voice_text)
+                print(f"📝 語音文字: '{voice_text}'")
+                
+                # 為摘要準備：使用中文名稱
+                summary_text = f"{chinese_name} x{item.quantity_small}"
+                items_for_summary.append(summary_text)
+                print(f"📝 摘要文字: '{summary_text}'")
+            else:
+                print(f"❌ 找不到菜單項目: menu_item_id={item.menu_item_id}")
     
     # 生成自然的中文語音
     if len(items_for_voice) == 1:
@@ -1126,9 +1242,10 @@ def create_complete_order_confirmation(order_id, user_language='zh'):
         voice_items = "、".join(items_for_voice[:-1]) + "和" + items_for_voice[-1]
         chinese_voice_text = f"老闆，我要{voice_items}，謝謝。"
     
+    print(f"🎤 生成中文語音文字: '{chinese_voice_text}'")
+    
     # 2. 中文點餐紀錄（改善格式）
-    chinese_summary = f"訂單編號：{order.order_id}\n"
-    chinese_summary += f"店家：{store.store_name}\n"
+    chinese_summary = f"店家：{store_name_for_display}\n"
     chinese_summary += "訂購項目：\n"
     
     for item_summary in items_for_summary:
@@ -1136,43 +1253,78 @@ def create_complete_order_confirmation(order_id, user_language='zh'):
     
     chinese_summary += f"總金額：${order.total_amount}"
     
-    # 3. 使用者語言的點餐紀錄（優先使用資料庫翻譯）
+    print(f"📝 生成中文摘要:")
+    print(f"   {chinese_summary.replace(chr(10), chr(10) + '   ')}")
+    
+    # 3. 使用者語言的點餐紀錄（根據用戶偏好語言）
+    print(f"🔧 開始生成使用者語言摘要...")
+    print(f"📋 使用者語言: {user_language}")
+    
     if user_language != 'zh':
         # 翻譯店家名稱
+        print(f"🔧 開始翻譯店家名稱...")
         store_translation = translate_store_info_with_db_fallback(store, user_language)
         translated_store_name = store_translation['translated_name']
+        print(f"📝 店家翻譯結果: '{store.store_name}' → '{translated_store_name}'")
         
-        translated_summary = f"Order #{order.order_id}\n"
-        translated_summary += f"Store: {translated_store_name}\n"
+        translated_summary = f"Store: {translated_store_name}\n"
         translated_summary += "Items:\n"
         
         for item in order.items:
-            menu_item = MenuItem.query.get(item.menu_item_id)
-            if menu_item:
-                # 優先使用資料庫翻譯
-                db_translation = get_menu_translation_from_db(menu_item.menu_item_id, user_language)
-                if db_translation and db_translation.item_name_trans:
-                    translated_name = db_translation.item_name_trans
-                else:
-                    translated_name = translate_text_with_fallback(menu_item.item_name, user_language)
-                
-                translated_summary += f"- {translated_name} x{item.quantity} (${item.subtotal})\n"
+            # 檢查是否為OCR菜單項目（有translated_name）
+            if hasattr(item, 'translated_name') and item.translated_name:
+                print(f"✅ 檢測到OCR菜單項目，使用已翻譯名稱: '{item.translated_name}'")
+                translated_name = item.translated_name
+                translated_summary += f"- {translated_name} x{item.quantity_small} (${item.subtotal})\n"
+            else:
+                # 使用傳統的MenuItem查詢和翻譯
+                menu_item = MenuItem.query.get(item.menu_item_id)
+                if menu_item:
+                    print(f"🔧 翻譯菜品: '{menu_item.item_name}'")
+                    
+                    # 優先使用資料庫翻譯
+                    db_translation = get_menu_translation_from_db(menu_item.menu_item_id, user_language)
+                    if db_translation and db_translation.description:
+                        translated_name = db_translation.description
+                        print(f"✅ 使用資料庫翻譯: '{translated_name}'")
+                    else:
+                        translated_name = translate_text_with_fallback(menu_item.item_name, user_language)
+                        print(f"✅ 使用AI翻譯: '{translated_name}'")
+                    
+                    translated_summary += f"- {translated_name} x{item.quantity_small} (${item.subtotal})\n"
         
         translated_summary += f"Total: ${order.total_amount}"
     else:
+        # 如果用戶語言是中文，使用者語言摘要就是中文摘要
+        print(f"📝 使用者語言是中文，使用中文摘要")
         translated_summary = chinese_summary
     
-    return {
+    print(f"📝 生成使用者語言摘要:")
+    print(f"   {translated_summary.replace(chr(10), chr(10) + '   ')}")
+    
+    result = {
         "chinese_voice_text": chinese_voice_text,
+        "chinese": chinese_summary,
+        "translated": translated_summary,
         "chinese_summary": chinese_summary,
         "translated_summary": translated_summary,
         "user_language": user_language
     }
+    
+    print(f"🎉 訂單確認生成完成!")
+    print(f"📋 返回結果:")
+    print(f"   chinese_voice_text: '{result['chinese_voice_text']}'")
+    print(f"   chinese: '{result['chinese'][:100]}...'")
+    print(f"   translated: '{result['translated'][:100]}...'")
+    print(f"   user_language: '{result['user_language']}'")
+    
+    return result
 
 def send_complete_order_notification(order_id):
     """
     發送完整的訂單確認通知到 LINE
     包含：兩則訂單文字摘要、中文語音檔、語速控制按鈕
+    支援OCR菜單訂單的特殊處理
     """
     from ..models import Order, User
     from ..webhook.routes import get_line_bot_api
@@ -1199,6 +1351,23 @@ def send_complete_order_notification(order_id):
     
     try:
         print(f"開始發送訂單通知: {order_id} -> {user.line_user_id}")
+        
+        # 檢查是否為OCR菜單訂單
+        is_ocr_order = any(item.original_name for item in order.items)
+        ocr_menu_id = None
+        
+        if is_ocr_order:
+            # 嘗試從訂單項目中提取OCR菜單ID
+            for item in order.items:
+                if item.original_name:
+                    # 檢查是否有相關的OCR菜單記錄
+                    from ..models import OCRMenu, OCRMenuItem
+                    ocr_menu_item = OCRMenuItem.query.filter_by(
+                        item_name=item.original_name
+                    ).first()
+                    if ocr_menu_item:
+                        ocr_menu_id = ocr_menu_item.ocr_menu_id
+                        break
         
         # 1. 生成中文語音檔（標準語速）
         voice_result = generate_voice_order(order_id, 1.0)
@@ -1251,17 +1420,24 @@ def send_complete_order_notification(order_id):
         # 3. 發送中文點餐紀錄
         line_bot_api = get_line_bot_api()
         if line_bot_api:
+            # 使用純淨的摘要內容，不包含系統資訊
+            chinese_summary = confirmation["chinese_summary"]
+            
             line_bot_api.push_message(
                 user.line_user_id,
-                TextSendMessage(text=confirmation["chinese_summary"])
+                TextSendMessage(text=chinese_summary)
             )
             print("中文訂單摘要已發送到 LINE")
         
         # 4. 發送使用者語言的點餐紀錄
         if user.preferred_lang != 'zh':
+            translated_summary = confirmation.get("translated_summary", confirmation["chinese_summary"])
+            
+            # 使用純淨的摘要內容，不包含系統資訊
+            
             line_bot_api.push_message(
                 user.line_user_id,
-                TextSendMessage(text=confirmation["translated_summary"])
+                TextSendMessage(text=translated_summary)
             )
             print(f"{user.preferred_lang} 語訂單摘要已發送到 LINE")
         
@@ -1319,6 +1495,8 @@ def send_complete_order_notification(order_id):
         # 7. 不立即清理語音檔案，讓靜態路由服務
         # 語音檔案會在60分鐘後由cleanup_old_voice_files自動清理
         print(f"訂單通知發送完成: {order_id}")
+        if is_ocr_order:
+            print(f"📋 OCR菜單訂單處理完成，OCR菜單ID: {ocr_menu_id}")
             
     except Exception as e:
         print(f"發送訂單確認失敗：{e}")
@@ -2279,14 +2457,13 @@ def generate_chinese_summary_optimized(order_id):
         store = Store.query.get(order.store_id)
         
         # 中文摘要
-        chinese_summary = f"訂單編號：{order.order_id}\n"
-        chinese_summary += f"店家：{store.store_name if store else '未知店家'}\n"
+        chinese_summary = f"店家：{store.store_name if store else '未知店家'}\n"
         chinese_summary += "訂購項目：\n"
         
         for item in order.items:
             menu_item = MenuItem.query.get(item.menu_item_id)
             if menu_item:
-                chinese_summary += f"- {menu_item.item_name} x{item.quantity}\n"
+                chinese_summary += f"- {menu_item.item_name} x{item.quantity_small}\n"
         
         chinese_summary += f"總金額：${order.total_amount}"
         
@@ -3041,7 +3218,7 @@ def create_order_summary(order_id, user_language='zh'):
         "translated": translated_summary
     }
 
-def save_ocr_menu_and_summary_to_database(order_id, ocr_items, chinese_summary, user_language_summary, user_language, total_amount, user_id, store_name=None):
+def save_ocr_menu_and_summary_to_database(order_id, ocr_items, chinese_summary, user_language_summary, user_language, total_amount, user_id, store_name=None, existing_ocr_menu_id=None):
     """
     將 OCR 菜單和訂單摘要儲存到 Cloud MySQL 資料庫
     
@@ -3054,69 +3231,144 @@ def save_ocr_menu_and_summary_to_database(order_id, ocr_items, chinese_summary, 
         total_amount: 訂單總金額
         user_id: 使用者 ID
         store_name: 店家名稱（可選）
+        existing_ocr_menu_id: 現有的OCR菜單ID（可選）
     
     Returns:
         dict: 包含 ocr_menu_id 和 summary_id 的結果
     """
+    import logging
+    import datetime
+    logging.basicConfig(level=logging.INFO)
+    
     try:
         from ..models import db, OCRMenu, OCRMenuItem, OrderSummary
+        from sqlalchemy import text
         
         print(f"🔄 開始儲存 OCR 菜單和訂單摘要到資料庫...")
+        print(f"📋 輸入參數:")
+        print(f"   order_id: {order_id} (型態: {type(order_id)})")
+        print(f"   user_id: {user_id} (型態: {type(user_id)})")
+        print(f"   total_amount: {total_amount} (型態: {type(total_amount)})")
+        print(f"   user_language: {user_language} (型態: {type(user_language)})")
+        print(f"   existing_ocr_menu_id: {existing_ocr_menu_id} (型態: {type(existing_ocr_menu_id)})")
+        print(f"   store_name: {store_name} (型態: {type(store_name)})")
+        print(f"   ocr_items 數量: {len(ocr_items) if ocr_items else 0}")
         
-        # 1. 建立 OCR 菜單記錄
-        ocr_menu = OCRMenu(
-            user_id=user_id,
-            store_name=store_name or '非合作店家'
-        )
-        db.session.add(ocr_menu)
-        db.session.flush()  # 獲取 ocr_menu_id
+        # 1. 使用現有的OCR菜單ID或創建新的OCR菜單記錄
+        if existing_ocr_menu_id:
+            # 使用現有的OCR菜單ID
+            ocr_menu_id = existing_ocr_menu_id
+            print(f"✅ 使用現有的 OCR 菜單 ID: {ocr_menu_id}")
+        else:
+            # 創建新的OCR菜單記錄
+            print(f"📝 準備創建新的 OCR 菜單記錄...")
+            
+            # 記錄OCR菜單插入SQL
+            ocr_menu_sql = """
+            INSERT INTO ocr_menus (user_id, store_name, upload_time)
+            VALUES (:user_id, :store_name, :upload_time)
+            """
+            ocr_menu_params = {
+                "user_id": user_id,
+                "store_name": store_name or '非合作店家',
+                "upload_time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            }
+            
+            logging.info(f"Executing OCR Menu SQL: {ocr_menu_sql}")
+            logging.info(f"With parameters: {ocr_menu_params}")
+            
+            # 使用原生SQL執行
+            result = db.session.execute(text(ocr_menu_sql), ocr_menu_params)
+            db.session.commit()
+            
+            # 獲取插入的ID
+            ocr_menu_id_result = db.session.execute(text("SELECT LAST_INSERT_ID() as id"))
+            ocr_menu_id = ocr_menu_id_result.fetchone()[0]
+            
+            print(f"✅ 已建立新的 OCR 菜單記錄: {ocr_menu_id}")
         
-        print(f"✅ 已建立 OCR 菜單記錄: {ocr_menu.ocr_menu_id}")
-        
-        # 2. 儲存 OCR 菜單項目
-        for item in ocr_items:
-            ocr_menu_item = OCRMenuItem(
-                ocr_menu_id=ocr_menu.ocr_menu_id,
-                item_name=item.get('name', {}).get('original', item.get('item_name', '未知項目')),
-                price_small=int(item.get('price', 0)),
-                price_big=int(item.get('price', 0)),
-                translated_desc=item.get('name', {}).get('translated', item.get('translated_name', ''))
-            )
-            db.session.add(ocr_menu_item)
-        
-        print(f"✅ 已儲存 {len(ocr_items)} 個 OCR 菜單項目")
+        # 2. 儲存 OCR 菜單項目（只有在沒有現有OCR菜單ID時才創建）
+        if not existing_ocr_menu_id and ocr_items:
+            print(f"📝 準備創建 {len(ocr_items)} 個 OCR 菜單項目...")
+            
+            for i, item in enumerate(ocr_items):
+                ocr_menu_item_sql = """
+                INSERT INTO ocr_menu_items (ocr_menu_id, item_name, price_big, price_small, translated_desc)
+                VALUES (:ocr_menu_id, :item_name, :price_big, :price_small, :translated_desc)
+                """
+                
+                item_name = item.get('name', {}).get('original', item.get('item_name', '未知項目'))
+                price = int(item.get('price', 0))
+                translated_desc = item.get('name', {}).get('translated', item.get('translated_name', ''))
+                ocr_menu_item_params = {
+                    "ocr_menu_id": ocr_menu_id,
+                    "item_name": item_name,
+                    "price_big": price,
+                    "price_small": price,
+                    "translated_desc": translated_desc
+                }
+                
+                logging.info(f"Executing OCR Menu Item {i+1} SQL: {ocr_menu_item_sql}")
+                logging.info(f"With parameters: {ocr_menu_item_params}")
+                
+                db.session.execute(text(ocr_menu_item_sql), ocr_menu_item_params)
+            
+            db.session.commit()
+            print(f"✅ 已儲存 {len(ocr_items)} 個 OCR 菜單項目")
         
         # 3. 建立訂單摘要記錄
-        order_summary = OrderSummary(
-            order_id=order_id,
-            ocr_menu_id=ocr_menu.ocr_menu_id,
-            chinese_summary=chinese_summary,
-            user_language_summary=user_language_summary,
-            user_language=user_language,
-            total_amount=total_amount
-        )
-        db.session.add(order_summary)
-        db.session.flush()  # 獲取 summary_id
+        print(f"📝 準備創建訂單摘要記錄...")
         
-        print(f"✅ 已建立訂單摘要記錄: {order_summary.summary_id}")
+        order_summary_sql = """
+        INSERT INTO order_summaries (order_id, ocr_menu_id, chinese_summary, user_language_summary, user_language, total_amount, created_at)
+        VALUES (:order_id, :ocr_menu_id, :chinese_summary, :user_language_summary, :user_language, :total_amount, :created_at)
+        """
+        order_summary_params = {
+            "order_id": order_id,
+            "ocr_menu_id": ocr_menu_id,
+            "chinese_summary": chinese_summary,
+            "user_language_summary": user_language_summary,
+            "user_language": user_language,
+            "total_amount": total_amount,
+            "created_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
         
-        # 4. 提交所有變更
+        logging.info(f"Executing Order Summary SQL: {order_summary_sql}")
+        logging.info(f"With parameters: {order_summary_params}")
+        
+        # 使用原生SQL執行
+        result = db.session.execute(text(order_summary_sql), order_summary_params)
         db.session.commit()
         
+        # 獲取插入的ID
+        summary_id_result = db.session.execute(text("SELECT LAST_INSERT_ID() as id"))
+        summary_id = summary_id_result.fetchone()[0]
+        
+        print(f"✅ 已建立訂單摘要記錄: {summary_id}")
+        
+        # 4. 提交所有變更
         print(f"🎉 成功儲存 OCR 菜單和訂單摘要到資料庫")
-        print(f"   OCR 菜單 ID: {ocr_menu.ocr_menu_id}")
-        print(f"   訂單摘要 ID: {order_summary.summary_id}")
+        print(f"   OCR 菜單 ID: {ocr_menu_id}")
+        print(f"   訂單摘要 ID: {summary_id}")
         
         return {
             'success': True,
-            'ocr_menu_id': ocr_menu.ocr_menu_id,
-            'summary_id': order_summary.summary_id,
+            'ocr_menu_id': ocr_menu_id,
+            'summary_id': summary_id,
             'message': 'OCR 菜單和訂單摘要已成功儲存到資料庫'
         }
         
     except Exception as e:
         print(f"❌ 儲存 OCR 菜單和訂單摘要到資料庫失敗: {e}")
-        db.session.rollback()
+        print(f"錯誤類型: {type(e).__name__}")
+        import traceback
+        traceback.print_exc()
+        
+        try:
+            db.session.rollback()
+            print("✅ 資料庫回滾成功")
+        except Exception as rollback_error:
+            print(f"❌ 資料庫回滾失敗: {rollback_error}")
         
         return {
             'success': False,

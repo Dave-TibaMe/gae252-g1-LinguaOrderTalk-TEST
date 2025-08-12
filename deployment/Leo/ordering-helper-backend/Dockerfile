@@ -53,14 +53,20 @@ COPY . .
 # 建立語音檔案目錄
 RUN mkdir -p /tmp/voices && chmod 755 /tmp/voices
 
-# 設定環境變數
-ENV FLASK_APP=run.py
-ENV FLASK_ENV=production
+# 設定啟動腳本權限
+RUN chmod +x startup.sh startup_simple.sh
+
+# 設定環境變數 - 移除可能衝突的變數
 ENV PYTHONPATH=/app
 ENV PYTHONWARNINGS=ignore
+ENV PORT=8080
 
-# 暴露端口
+# 暴露端口 - 確保 Cloud Run 能正確識別
 EXPOSE 8080
 
-# 啟動命令 - 優化記憶體使用，減少 worker 數量，增加超時時間
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "--timeout", "300", "--graceful-timeout", "60", "--max-requests", "500", "--max-requests-jitter", "50", "--preload", "--worker-class", "sync", "run:app"] 
+# 健康檢查
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:${PORT:-8080}/health || exit 1
+
+# 使用簡化啟動腳本
+CMD ["./startup_simple.sh"] 
