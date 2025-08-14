@@ -10,3 +10,4 @@ liff網頁以及後端flask
     (7) LINE_CHANNEL_ACCESS_TOKEN：  
     (8) LINE_CHANNEL_SECRET：
     (9) GEMINI_API_KEY：
+3.  後端flask的urls.py換成自己的url
