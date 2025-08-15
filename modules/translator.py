@@ -49,7 +49,7 @@ class ReviewTranslator:
     def _load_languages(self):
         """從資料庫載入語言設定"""
         try:
-            query = "SELECT lang_code, lang_name FROM languages"
+            query = "SELECT translation_lang_code lang_code, lang_name FROM languages"
             self.cursor.execute(query)
             languages = self.cursor.fetchall()
             

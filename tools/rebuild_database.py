@@ -58,22 +58,24 @@ def execute_sql_from_file(sql_file_path, db_config):
 
         # 從 order_menu.sql 中提取所有 CREATE TABLE 的表格名稱
         tables_to_drop = [
-            'user_actions',
-            'store_translations',
-            'order_items',
-            'orders',
+            'account',
+            'crawl_logs',
+            'gemini_processing',
+            'languages',
+            'menu_crawls',
+            'menu_items',
+            'menu_templates',
+            'menu_translations',
+            'menus',
             'ocr_menu_items',
             'ocr_menus',
-            'menu_translations',
-            'menu_items',
-            'menu_crawls',
-            'menus',
-            'users',
+            'order_items',
+            'orders',
+            'store_translations',
             'stores',
-            'menu_templates',
-            'languages',
-            'crawl_logs',
-            'reviews'
+            'reviews',
+            'user_actions',
+            'users'
         ]
 
         print("正在嘗試刪除所有現有表格 (如果存在)...")

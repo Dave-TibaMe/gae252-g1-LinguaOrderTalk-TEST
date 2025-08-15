@@ -155,7 +155,7 @@ class DatabaseManager:
             if result['count'] == 0:
                 create_languages_query = """
                     CREATE TABLE languages (
-                        lang_code VARCHAR(10) UNIQUE NOT NULL,
+                        translation_lang_code VARCHAR(10) UNIQUE NOT NULL,
                         lang_name VARCHAR(100) NOT NULL
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin
                 """
@@ -225,6 +225,7 @@ class DatabaseManager:
                 FROM stores s
                 LEFT JOIN crawl_logs cl ON s.store_id = cl.store_id
                 WHERE s.place_id IS NOT NULL AND s.place_id != ''
+                AND s.place_id = 'ChIJdWk3iYerQjQRF1p1og3XSZA'
                 ORDER BY s.store_id
             """
             self.cursor.execute(query)
@@ -465,7 +466,7 @@ class DatabaseManager:
         """取得所有啟用的語言"""
         try:
             query = """
-                SELECT lang_code, lang_name 
+                SELECT translation_lang_code lang_code, lang_name 
                 FROM languages 
             """
             self.cursor.execute(query)

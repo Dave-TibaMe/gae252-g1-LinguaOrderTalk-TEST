@@ -294,6 +294,96 @@ ALTER TABLE `users`
 
 ALTER TABLE `user_actions`
   ADD CONSTRAINT `user_actions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
+
+
+
+CREATE TABLE `crawl_logs` (
+  `log_id` int NOT NULL AUTO_INCREMENT COMMENT '日誌 ID',
+  `store_id` int NOT NULL COMMENT '對應店家 ID',
+  `last_crawl_time` datetime NOT NULL COMMENT '最後抓取時間',
+  `reviews_count` int DEFAULT '0' COMMENT '本次抓取評論數量',
+  `status` varchar(20) COLLATE utf8mb4_bin DEFAULT 'success' COMMENT '抓取狀態',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '建立時間',
+  PRIMARY KEY (`log_id`),
+  UNIQUE KEY `uk_store_id` (`store_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='爬蟲抓取日誌表';
+
+
+CREATE TABLE `reviews` (
+  `review_id` int NOT NULL AUTO_INCREMENT COMMENT '評論 ID',
+  `store_id` int NOT NULL COMMENT '對應店家 ID',
+  `place_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'Google Place ID',
+  `review_data` json NOT NULL COMMENT 'Google評論完整JSON資料',
+  `review_time` datetime NOT NULL COMMENT '評論時間',
+  `rating` int DEFAULT NULL COMMENT '評分 1-5',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '資料建立時間',
+  PRIMARY KEY (`review_id`),
+  KEY `idx_store_id` (`store_id`),
+  KEY `idx_place_id` (`place_id`),
+  KEY `idx_review_time` (`review_time`)
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='Google評論資料表';
+
+
+CREATE TABLE `gemini_processing` (
+  `processing_id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` bigint NOT NULL,
+  `store_id` int NOT NULL,
+  `image_url` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ocr_result` text COLLATE utf8mb4_unicode_ci,
+  `structured_menu` text COLLATE utf8mb4_unicode_ci,
+  `status` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT 'processing',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`processing_id`),
+  KEY `user_id` (`user_id`),
+  KEY `store_id` (`store_id`),
+  CONSTRAINT `gemini_processing_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `gemini_processing_ibfk_2` FOREIGN KEY (`store_id`) REFERENCES `stores` (`store_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- 步驟一：暫時移除所有依賴 user_id 的外鍵
+ALTER TABLE ocr_menus DROP FOREIGN KEY ocr_menus_ibfk_1;
+ALTER TABLE orders DROP FOREIGN KEY orders_ibfk_1;
+ALTER TABLE user_actions DROP FOREIGN KEY user_actions_ibfk_1;
+
+-- 步驟二：執行我們的最終目標，設定 user_id 自動增長
+ALTER TABLE users MODIFY user_id BIGINT NOT NULL AUTO_INCREMENT;
+
+-- 步驟三：將所有外鍵重新加回去
+ALTER TABLE ocr_menus ADD CONSTRAINT ocr_menus_ibfk_1 FOREIGN KEY (user_id) REFERENCES users(user_id);
+ALTER TABLE orders ADD CONSTRAINT orders_ibfk_1 FOREIGN KEY (user_id) REFERENCES users(user_id);
+ALTER TABLE user_actions ADD CONSTRAINT user_actions_ibfk_1 FOREIGN KEY (user_id) REFERENCES users(user_id);
+
+-- 步驟一：修改主資料表
+ALTER TABLE languages MODIFY lang_code VARCHAR(10) NOT NULL;
+
+-- 步驟二：修改所有關聯的子資料表
+ALTER TABLE users MODIFY preferred_lang VARCHAR(10) NOT NULL;
+ALTER TABLE menu_translations MODIFY lang_code VARCHAR(10) NOT NULL;
+ALTER TABLE store_translations MODIFY lang_code VARCHAR(10) NOT NULL;
+ALTER TABLE orders MODIFY language_used VARCHAR(10) NULL DEFAULT 'zh'; -- 根據原始定義調整
+
+-- 在user資料表中我需要增加一個state欄位來做判斷
+ALTER TABLE users ADD COLUMN state VARCHAR(50) DEFAULT 'normal';
+
+
+CREATE TABLE `account` (
+  `username` VARCHAR(100) NOT NULL COMMENT '使用者帳號，設為主鍵',
+  `password` VARCHAR(100) NOT NULL COMMENT '加密後的密碼 (例如 MD5 或 SHA-256)',
+  `role` TINYINT NOT NULL COMMENT '使用者角色 (例如: 1=管理員, 2=一般使用者)',
+  `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '資料建立時間',
+  `update_time` DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '資料最後更新時間',
+  PRIMARY KEY (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='使用者帳號資料表';
+
+
+-- 新增一筆管理員帳號資料
+/*
+INSERT INTO `account` (`username`, `password`, `role`)
+VALUES
+('admin', '482c811da5d5b4bc6d497ffa98491e38', 1);
+*/
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

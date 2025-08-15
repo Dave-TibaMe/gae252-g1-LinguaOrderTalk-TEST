@@ -1242,3 +1242,260 @@ ValueError: 設定檔缺少以下區塊: serpapi, gemini, google_translate
 2025-08-05 12:02:54,799 - main - INFO - === 所有店家處理完成 ===
 2025-08-05 12:02:54,810 - database - INFO - 資料庫連接已關閉
 2025-08-05 12:02:54,826 - translator - INFO - 翻譯器資料庫連接已關閉
+2025-08-13 16:30:55,739 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk-TEST
+2025-08-13 16:30:55,740 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk-TEST\config.ini
+2025-08-13 16:30:55,741 - main - INFO - 設定檔是否存在: True
+2025-08-13 16:30:55,742 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-13 16:30:55,742 - main - INFO - 資料庫主機: 35.201.153.17
+2025-08-13 16:30:55,742 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-13 16:30:55,743 - main - INFO - 正在初始化系統模組...
+2025-08-13 16:30:55,743 - database - INFO - DatabaseManager 初始化成功
+2025-08-13 16:30:55,963 - translator - INFO - 翻譯器資料庫連接成功
+2025-08-13 16:30:55,974 - translator - ERROR - 載入語言設定失敗: 1054 (42S22): Unknown column 'lang_code' in 'field list'
+2025-08-13 16:30:55,975 - main - INFO - 系統模組初始化完成
+2025-08-13 16:30:55,976 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-13 16:30:55,976 - main - INFO - === 開始測試API連接 ===
+2025-08-13 16:31:04,006 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-13 16:31:04,008 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-13 16:31:04,011 - main - INFO - 所有API連接測試通過
+2025-08-13 16:31:04,012 - database - INFO - 正在連接資料庫...
+2025-08-13 16:31:04,181 - database - INFO - 資料庫連接成功，MySQL 版本: 8.0.41-google
+2025-08-13 16:31:04,270 - database - INFO - 取得 1 家店家資訊
+2025-08-13 16:31:04,270 - main - INFO - 開始處理 1 家店家
+2025-08-13 16:31:04,271 - main - INFO - 開始處理店家: 聚馥園餐廳 (ID: 48)
+2025-08-13 16:31:04,271 - main - INFO - 首次爬取該店家：將從365天前開始抓取評論
+2025-08-13 16:31:04,271 - crawler - INFO - 開始爬取 place_id: ChIJT3kS-92rQjQRMox_EZZCP0Q 的評論
+2025-08-13 16:31:04,272 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-13 16:31:04,272 - crawler - INFO - 首次爬取該店家，將抓取 2024-08-13 16:31:04 之後的評論
+2025-08-13 16:31:05,960 - crawler - INFO - API返回 8 則評論
+2025-08-13 16:31:05,963 - crawler - WARNING - 評論 1: 無法解析時間 '19 分鐘前'，預設保留
+2025-08-13 16:31:05,963 - crawler - INFO - 首次爬取，過濾後取得 8 則評論（365天內）
+2025-08-13 16:31:05,966 - database - WARNING - 無法解析時間格式: '19 分鐘前'，使用當前時間
+2025-08-13 16:31:06,166 - database - INFO - 成功儲存 8 則評論
+2025-08-13 16:31:06,215 - database - INFO - 更新店家 48 爬蟲日誌
+2025-08-13 16:31:06,227 - database - INFO - 取得店家 48 的 8 則評論
+2025-08-13 16:31:06,227 - main - INFO - 開始分析店家 聚馥園餐廳 的評論
+2025-08-13 16:31:06,227 - analyzer - INFO - 店家 聚馥園餐廳 找到 2 則可分析的評論
+2025-08-13 16:31:06,227 - analyzer - INFO - 開始分析店家 聚馥園餐廳 的評論
+2025-08-13 16:31:08,395 - analyzer - ERROR - 分析評論時發生錯誤: The `response.text` quick accessor only works for simple (single-`Part`) text responses. This response is not simple text.Use the `result.parts` accessor or the full `result.candidates[index].content.parts` lookup instead.
+2025-08-13 16:31:08,395 - main - WARNING - 店家 聚馥園餐廳 評論分析失敗
+2025-08-13 16:31:08,396 - main - INFO - 店家 聚馥園餐廳 處理完成
+2025-08-13 16:31:10,398 - main - INFO - === 所有店家處理完成 ===
+2025-08-13 16:31:10,408 - database - INFO - 資料庫連接已關閉
+2025-08-13 16:31:10,418 - translator - INFO - 翻譯器資料庫連接已關閉
+2025-08-13 16:53:04,876 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk-TEST
+2025-08-13 16:53:04,876 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk-TEST\config.ini
+2025-08-13 16:53:04,876 - main - INFO - 設定檔是否存在: True
+2025-08-13 16:53:04,878 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-13 16:53:04,878 - main - INFO - 資料庫主機: 35.201.153.17
+2025-08-13 16:53:04,878 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-13 16:53:04,879 - main - INFO - 正在初始化系統模組...
+2025-08-13 16:53:04,879 - database - INFO - DatabaseManager 初始化成功
+2025-08-13 16:53:05,079 - translator - INFO - 翻譯器資料庫連接成功
+2025-08-13 16:53:05,087 - translator - ERROR - 載入語言設定失敗: 1054 (42S22): Unknown column 'lang_code' in 'field list'
+2025-08-13 16:53:05,089 - main - INFO - 系統模組初始化完成
+2025-08-13 16:53:05,090 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-13 16:53:05,094 - main - INFO - === 開始測試API連接 ===
+2025-08-13 16:53:05,629 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-13 16:53:05,630 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-13 16:53:05,633 - main - INFO - 所有API連接測試通過
+2025-08-13 16:53:05,634 - database - INFO - 正在連接資料庫...
+2025-08-13 16:53:05,788 - database - INFO - 資料庫連接成功，MySQL 版本: 8.0.41-google
+2025-08-13 16:53:05,845 - database - INFO - 取得 1 家店家資訊
+2025-08-13 16:53:05,845 - main - INFO - 開始處理 1 家店家
+2025-08-13 16:53:05,846 - main - INFO - 開始處理店家: 聚馥園餐廳 (ID: 48)
+2025-08-13 16:53:05,846 - main - INFO - 從上次爬取時間開始：2025-08-13 08:31:06
+2025-08-13 16:53:05,846 - crawler - INFO - 開始爬取 place_id: ChIJT3kS-92rQjQRMox_EZZCP0Q 的評論
+2025-08-13 16:53:05,846 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-13 16:53:05,847 - crawler - INFO - 上次爬取時間: 2025-08-13 08:31:06
+2025-08-13 16:53:06,275 - crawler - INFO - API返回 8 則評論
+2025-08-13 16:53:06,275 - crawler - WARNING - 評論 1: 無法解析時間 '19 分鐘前'，預設保留
+2025-08-13 16:53:06,276 - crawler - INFO - 過濾後取得 1 則新評論
+2025-08-13 16:53:06,278 - database - WARNING - 無法解析時間格式: '19 分鐘前'，使用當前時間
+2025-08-13 16:53:06,315 - database - INFO - 成功儲存 1 則評論
+2025-08-13 16:53:06,351 - database - INFO - 更新店家 48 爬蟲日誌
+2025-08-13 16:53:06,365 - database - INFO - 取得店家 48 的 9 則評論
+2025-08-13 16:53:06,384 - main - INFO - 開始分析店家 聚馥園餐廳 的評論
+2025-08-13 16:53:06,384 - analyzer - INFO - 店家 聚馥園餐廳 找到 3 則可分析的評論
+2025-08-13 16:53:06,385 - analyzer - INFO - 開始分析店家 聚馥園餐廳 的評論
+2025-08-13 16:53:52,320 - analyzer - INFO - 成功分析店家 聚馥園餐廳 的評論
+2025-08-13 16:53:52,348 - database - INFO - 更新店家 48 評論摘要
+2025-08-13 16:53:52,358 - database - INFO - 取得 22 種語言
+2025-08-13 16:53:52,364 - main - INFO - 開始翻譯店家 聚馥園餐廳 的評論摘要
+2025-08-13 16:53:52,367 - translator - INFO - 開始批量翻譯店家 48 到 3 種語言
+2025-08-13 16:53:52,367 - translator - INFO - 正在翻譯到 English (en)
+2025-08-13 16:53:52,369 - translator - INFO - 開始翻譯評論摘要到 English (en)
+2025-08-13 16:54:20,519 - translator - INFO - 成功翻譯評論摘要到 English
+2025-08-13 16:54:20,597 - translator - INFO - 成功翻譯並儲存到 English
+2025-08-13 16:54:21,598 - translator - INFO - 正在翻譯到 Japanese (ja)
+2025-08-13 16:54:21,599 - translator - INFO - 開始翻譯評論摘要到 Japanese (ja)
+2025-08-13 16:55:04,676 - translator - INFO - 成功翻譯評論摘要到 Japanese
+2025-08-13 16:55:04,711 - translator - INFO - 成功翻譯並儲存到 Japanese
+2025-08-13 16:55:05,718 - translator - INFO - 正在翻譯到 Korean (ko)
+2025-08-13 16:55:05,718 - translator - INFO - 開始翻譯評論摘要到 Korean (ko)
+2025-08-13 16:55:44,855 - translator - INFO - 成功翻譯評論摘要到 Korean
+2025-08-13 16:55:44,890 - translator - INFO - 成功翻譯並儲存到 Korean
+2025-08-13 16:55:45,916 - translator - ERROR - 儲存翻譯到資料庫失敗: 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`gae252g1_db`.`store_translations`, CONSTRAINT `store_translations_ibfk_2` FOREIGN KEY (`language_code`) REFERENCES `languages` (`line_lang_code`))
+2025-08-13 16:55:45,929 - translator - INFO - 批量翻譯完成，成功翻譯 3 種語言
+2025-08-13 16:55:45,962 - database - INFO - 更新店家 48 的 en 翻譯
+2025-08-13 16:55:45,992 - database - INFO - 更新店家 48 的 ja 翻譯
+2025-08-13 16:55:46,028 - database - INFO - 更新店家 48 的 ko 翻譯
+2025-08-13 16:55:46,040 - main - INFO - 店家 聚馥園餐廳 分析和翻譯完成
+2025-08-13 16:55:46,041 - main - INFO - 店家 聚馥園餐廳 處理完成
+2025-08-13 16:55:48,043 - main - INFO - === 所有店家處理完成 ===
+2025-08-13 16:55:48,053 - database - INFO - 資料庫連接已關閉
+2025-08-13 16:55:48,067 - translator - INFO - 翻譯器資料庫連接已關閉
+2025-08-14 17:45:01,666 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk-TEST
+2025-08-14 17:45:01,667 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk-TEST\config.ini
+2025-08-14 17:45:01,668 - main - INFO - 設定檔是否存在: True
+2025-08-14 17:45:01,697 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-14 17:45:01,700 - main - INFO - 資料庫主機: 35.201.153.17
+2025-08-14 17:45:01,703 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-14 17:45:01,704 - main - INFO - 正在初始化系統模組...
+2025-08-14 17:45:01,706 - database - INFO - DatabaseManager 初始化成功
+2025-08-14 17:45:01,845 - translator - INFO - 翻譯器資料庫連接成功
+2025-08-14 17:45:01,849 - translator - ERROR - 載入語言設定失敗: 1054 (42S22): Unknown column 'lang_code' in 'field list'
+2025-08-14 17:45:01,849 - main - INFO - 系統模組初始化完成
+2025-08-14 17:45:01,852 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-14 17:45:01,859 - main - INFO - === 開始測試API連接 ===
+2025-08-14 17:45:05,017 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-14 17:45:05,017 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-14 17:45:05,019 - main - INFO - 所有API連接測試通過
+2025-08-14 17:45:05,020 - database - INFO - 正在連接資料庫...
+2025-08-14 17:45:05,121 - database - INFO - 資料庫連接成功，MySQL 版本: 8.0.41-google
+2025-08-14 17:45:05,202 - database - INFO - 取得 1 家店家資訊
+2025-08-14 17:45:05,228 - main - INFO - 開始處理 1 家店家
+2025-08-14 17:45:05,229 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 28)
+2025-08-14 17:45:05,229 - main - INFO - 首次爬取該店家：將從365天前開始抓取評論
+2025-08-14 17:45:05,229 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-14 17:45:05,229 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-14 17:45:05,230 - crawler - INFO - 首次爬取該店家，將抓取 2024-08-14 17:45:05 之後的評論
+2025-08-14 17:45:06,774 - crawler - INFO - API返回 8 則評論
+2025-08-14 17:45:06,776 - crawler - INFO - 首次爬取，過濾後取得 8 則評論（365天內）
+2025-08-14 17:45:06,870 - database - INFO - 成功儲存 8 則評論
+2025-08-14 17:45:06,891 - database - INFO - 更新店家 28 爬蟲日誌
+2025-08-14 17:45:06,914 - database - INFO - 取得店家 28 的 8 則評論
+2025-08-14 17:45:06,914 - main - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-14 17:45:06,915 - analyzer - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 找到 7 則可分析的評論
+2025-08-14 17:45:06,915 - analyzer - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-14 17:45:08,891 - analyzer - ERROR - 分析評論時發生錯誤: The `response.text` quick accessor only works for simple (single-`Part`) text responses. This response is not simple text.Use the `result.parts` accessor or the full `result.candidates[index].content.parts` lookup instead.
+2025-08-14 17:45:08,892 - main - WARNING - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 評論分析失敗
+2025-08-14 17:45:08,893 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 處理完成
+2025-08-14 17:45:10,104 - main - INFO - === 所有店家處理完成 ===
+2025-08-14 17:45:10,111 - database - INFO - 資料庫連接已關閉
+2025-08-14 17:45:10,125 - translator - INFO - 翻譯器資料庫連接已關閉
+2025-08-14 17:54:46,506 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk-TEST
+2025-08-14 17:54:46,508 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk-TEST\config.ini
+2025-08-14 17:54:46,509 - main - INFO - 設定檔是否存在: True
+2025-08-14 17:54:46,514 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-14 17:54:46,514 - main - INFO - 資料庫主機: 35.201.153.17
+2025-08-14 17:54:46,515 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-14 17:54:46,515 - main - INFO - 正在初始化系統模組...
+2025-08-14 17:54:46,516 - database - INFO - DatabaseManager 初始化成功
+2025-08-14 17:54:46,942 - translator - INFO - 翻譯器資料庫連接成功
+2025-08-14 17:54:46,957 - translator - ERROR - 載入語言設定失敗: 1054 (42S22): Unknown column 'lang_code' in 'field list'
+2025-08-14 17:54:46,958 - main - INFO - 系統模組初始化完成
+2025-08-14 17:54:46,959 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-14 17:54:46,961 - main - INFO - === 開始測試API連接 ===
+2025-08-14 17:54:47,863 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-14 17:54:47,865 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-14 17:54:47,870 - main - INFO - 所有API連接測試通過
+2025-08-14 17:54:47,874 - database - INFO - 正在連接資料庫...
+2025-08-14 17:54:48,169 - database - INFO - 資料庫連接成功，MySQL 版本: 8.0.41-google
+2025-08-14 17:54:48,268 - database - INFO - 取得 1 家店家資訊
+2025-08-14 17:54:48,283 - main - INFO - 開始處理 1 家店家
+2025-08-14 17:54:48,304 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 28)
+2025-08-14 17:54:48,363 - main - INFO - 從上次爬取時間開始：2025-08-14 09:46:10
+2025-08-14 17:54:48,364 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-14 17:54:48,364 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=5
+2025-08-14 17:54:48,365 - crawler - INFO - 上次爬取時間: 2025-08-14 09:46:10
+2025-08-14 17:54:49,186 - crawler - INFO - API返回 8 則評論
+2025-08-14 17:54:49,200 - crawler - INFO - 過濾後取得 0 則新評論
+2025-08-14 17:54:49,236 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 沒有符合條件的評論
+2025-08-14 17:54:49,292 - database - INFO - 更新店家 28 爬蟲日誌
+2025-08-14 17:54:49,297 - main - INFO - 嘗試分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的現有評論
+2025-08-14 17:54:49,313 - database - INFO - 取得店家 28 的 8 則評論
+2025-08-14 17:54:49,314 - main - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-14 17:54:49,315 - analyzer - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 找到 7 則可分析的評論
+2025-08-14 17:54:49,315 - analyzer - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-14 17:55:19,310 - analyzer - INFO - 成功分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-14 17:55:19,356 - database - INFO - 更新店家 28 評論摘要
+2025-08-14 17:55:19,418 - database - INFO - 取得 22 種語言
+2025-08-14 17:55:19,430 - main - INFO - 開始翻譯店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論摘要
+2025-08-14 17:55:19,430 - translator - INFO - 開始批量翻譯店家 28 到 3 種語言
+2025-08-14 17:55:19,431 - translator - INFO - 正在翻譯到 English (en)
+2025-08-14 17:55:19,431 - translator - INFO - 開始翻譯評論摘要到 English (en)
+2025-08-14 17:55:50,841 - translator - INFO - 成功翻譯評論摘要到 English
+2025-08-14 17:55:50,919 - translator - INFO - 成功翻譯並儲存到 English
+2025-08-14 17:55:51,815 - translator - INFO - 正在翻譯到 Japanese (ja)
+2025-08-14 17:55:51,818 - translator - INFO - 開始翻譯評論摘要到 Japanese (ja)
+2025-08-14 17:56:18,691 - translator - INFO - 成功翻譯評論摘要到 Japanese
+2025-08-14 17:56:18,724 - translator - INFO - 成功翻譯並儲存到 Japanese
+2025-08-14 17:56:19,418 - translator - INFO - 正在翻譯到 Korean (ko)
+2025-08-14 17:56:19,422 - translator - INFO - 開始翻譯評論摘要到 Korean (ko)
+2025-08-14 17:56:43,461 - translator - INFO - 成功翻譯評論摘要到 Korean
+2025-08-14 17:56:43,478 - translator - INFO - 成功翻譯並儲存到 Korean
+2025-08-14 17:56:43,992 - translator - ERROR - 儲存翻譯到資料庫失敗: 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`gae252g1_db`.`store_translations`, CONSTRAINT `store_translations_ibfk_2` FOREIGN KEY (`language_code`) REFERENCES `languages` (`line_lang_code`))
+2025-08-14 17:56:44,000 - translator - INFO - 批量翻譯完成，成功翻譯 3 種語言
+2025-08-14 17:56:44,018 - database - INFO - 更新店家 28 的 en 翻譯
+2025-08-14 17:56:44,032 - database - INFO - 更新店家 28 的 ja 翻譯
+2025-08-14 17:56:44,060 - database - INFO - 更新店家 28 的 ko 翻譯
+2025-08-14 17:56:44,068 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 分析和翻譯完成
+2025-08-14 17:56:45,068 - main - INFO - === 所有店家處理完成 ===
+2025-08-14 17:56:45,073 - database - INFO - 資料庫連接已關閉
+2025-08-14 17:56:45,094 - translator - INFO - 翻譯器資料庫連接已關閉
+2025-08-15 15:48:52,686 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk-TEST
+2025-08-15 15:48:52,689 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk-TEST\config.ini
+2025-08-15 15:48:52,689 - main - INFO - 設定檔是否存在: True
+2025-08-15 15:48:52,710 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-15 15:48:52,711 - main - INFO - 資料庫主機: 35.221.209.220
+2025-08-15 15:48:52,712 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-15 15:48:52,712 - main - INFO - 正在初始化系統模組...
+2025-08-15 15:48:52,713 - database - INFO - DatabaseManager 初始化成功
+2025-08-15 15:48:53,228 - translator - INFO - 翻譯器資料庫連接成功
+2025-08-15 15:48:53,274 - translator - ERROR - 載入語言設定失敗: 1054 (42S22): Unknown column 'lang_code' in 'field list'
+2025-08-15 15:48:53,295 - main - INFO - 系統模組初始化完成
+2025-08-15 15:48:53,296 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-15 15:48:53,306 - main - INFO - === 開始測試API連接 ===
+2025-08-15 15:49:02,693 - crawler - ERROR - API連接測試失敗: HTTPSConnectionPool(host='serpapi.com', port=443): Read timed out. (read timeout=10)
+2025-08-15 15:49:02,694 - main - ERROR - SerpAPI 連接測試失敗，請檢查 API Key
+2025-08-15 15:49:02,694 - main - ERROR - API連接測試失敗，程式終止
+2025-08-15 15:52:51,430 - main - INFO - 當前工作目錄: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk-TEST
+2025-08-15 15:52:51,435 - main - INFO - 設定檔路徑: C:\Users\vboxuser\gae252-g1-LinguaOrderTalk-TEST\config.ini
+2025-08-15 15:52:51,437 - main - INFO - 設定檔是否存在: True
+2025-08-15 15:52:51,452 - main - INFO - 成功讀取設定檔: config.ini
+2025-08-15 15:52:51,453 - main - INFO - 資料庫主機: 35.221.209.220
+2025-08-15 15:52:51,453 - main - INFO - 資料庫名稱: gae252g1_db
+2025-08-15 15:52:51,453 - main - INFO - 正在初始化系統模組...
+2025-08-15 15:52:51,454 - database - INFO - DatabaseManager 初始化成功
+2025-08-15 15:52:52,156 - translator - INFO - 翻譯器資料庫連接成功
+2025-08-15 15:52:52,182 - translator - INFO - 成功載入 19 種語言設定
+2025-08-15 15:52:52,186 - main - INFO - 系統模組初始化完成
+2025-08-15 15:52:52,187 - main - INFO - === 開始執行店家Google評論分析系統 ===
+2025-08-15 15:52:52,187 - main - INFO - === 開始測試API連接 ===
+2025-08-15 15:52:53,142 - crawler - INFO - API測試回應狀態碼: 200
+2025-08-15 15:52:53,145 - crawler - INFO - SerpAPI 連接測試成功
+2025-08-15 15:52:53,149 - main - INFO - 所有API連接測試通過
+2025-08-15 15:52:53,149 - database - INFO - 正在連接資料庫...
+2025-08-15 15:52:53,547 - database - INFO - 資料庫連接成功，MySQL 版本: 8.0.41-google
+2025-08-15 15:52:53,707 - database - INFO - 取得 1 家店家資訊
+2025-08-15 15:52:53,711 - main - INFO - 開始處理 1 家店家
+2025-08-15 15:52:53,712 - main - INFO - 開始處理店家: 小螺波 慶城店 - 台灣螺螄粉第一品牌 (ID: 28)
+2025-08-15 15:52:53,712 - main - INFO - 從上次爬取時間開始：2025-08-14 09:55:07
+2025-08-15 15:52:53,713 - crawler - INFO - 開始爬取 place_id: ChIJdWk3iYerQjQRF1p1og3XSZA 的評論
+2025-08-15 15:52:53,714 - crawler - INFO - 請求參數: engine=google_maps_reviews, hl=zh-tW, sort_by=newestFirst, num=10
+2025-08-15 15:52:53,714 - crawler - INFO - 上次爬取時間: 2025-08-14 09:55:07
+2025-08-15 15:52:55,962 - crawler - INFO - API返回 8 則評論
+2025-08-15 15:52:55,972 - crawler - INFO - 過濾後取得 0 則新評論
+2025-08-15 15:52:55,976 - main - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 沒有符合條件的評論
+2025-08-15 15:52:56,071 - database - INFO - 更新店家 28 爬蟲日誌
+2025-08-15 15:52:56,075 - main - INFO - 嘗試分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的現有評論
+2025-08-15 15:52:56,115 - database - INFO - 取得店家 28 的 8 則評論
+2025-08-15 15:52:56,120 - main - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-15 15:52:56,123 - analyzer - INFO - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 找到 7 則可分析的評論
+2025-08-15 15:52:56,124 - analyzer - INFO - 開始分析店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 的評論
+2025-08-15 15:53:00,422 - analyzer - ERROR - 分析評論時發生錯誤: The `response.text` quick accessor only works for simple (single-`Part`) text responses. This response is not simple text.Use the `result.parts` accessor or the full `result.candidates[index].content.parts` lookup instead.
+2025-08-15 15:53:00,422 - main - WARNING - 店家 小螺波 慶城店 - 台灣螺螄粉第一品牌 評論分析失敗
+2025-08-15 15:53:02,424 - main - INFO - === 所有店家處理完成 ===
+2025-08-15 15:53:02,456 - database - INFO - 資料庫連接已關閉
+2025-08-15 15:53:02,489 - translator - INFO - 翻譯器資料庫連接已關閉
