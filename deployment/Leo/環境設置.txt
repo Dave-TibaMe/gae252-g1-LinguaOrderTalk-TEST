@@ -1,0 +1,13 @@
+liff網頁以及後端flask
+1. LIFF_ID 修改位於liff-web的index的第158行。
+2. 後端flask部署時所需的環境變數：
+    (1) AZURE_SPEECH_KEY：    7PyKVIMA15gpcGJIzFQ7eb3EWKN1D6PfusNVxz73tx5aqaVmfl8bJQQJ99BGACL93NaXJ3w3AAAYACOG6WOG
+    (2) AZURE_SPEECH_REGION：  australiaeast
+    (3) DB_USER： gae252g1usr
+    (4) DB_PASSWORD：  gae252g1PSWD!
+    (5) DB_HOST：  35.201.153.17
+    (6) DB_DATABASE： gae252g1_db
+    (7) LINE_CHANNEL_ACCESS_TOKEN：  
+    (8) LINE_CHANNEL_SECRET：
+    (9) GEMINI_API_KEY：
+3.  後端flask的urls.py換成自己的url
