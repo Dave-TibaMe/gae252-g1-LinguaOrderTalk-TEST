@@ -1402,6 +1402,17 @@
         // 圖片壓縮函數 (優化版)
         function compress(imgFile) {
             return new Promise(resolve => {
+                // 立即顯示壓縮狀態
+                const ocrStatus = document.getElementById('ocr-status');
+                const texts = translations[currentLanguage] || translations['zh-TW'];
+                ocrStatus.innerHTML = `
+                    <div class="flex items-center justify-center space-x-2">
+                        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                        <span>正在壓縮圖片...</span>
+                    </div>
+                `;
+                ocrStatus.classList.remove('hidden');
+                
                 const img = new Image();
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
@@ -1487,8 +1498,20 @@
                 if (!response.ok) {
                     const errorData = await response.json();
                     console.error('API 錯誤回應:', errorData);
-                    const texts = translations[currentLanguage] || translations['zh-TW'];
-                    throw new Error(errorData.error || `${texts.systemBusy} (${response.status})`);
+                    
+                    // 檢查是否為 404 錯誤（端點不存在）
+                    if (response.status === 404) {
+                        throw new Error('OCR 功能暫時無法使用，請稍後再試或聯繫客服。');
+                    }
+                    
+                    // 其他錯誤處理
+                    let errorMessage = '上傳失敗';
+                    if (errorData.error) {
+                        errorMessage = errorData.error;
+                    } else if (errorData.message) {
+                        errorMessage = errorData.message;
+                    }
+                    throw new Error(errorMessage);
                 }
                 
                 // 201 Created 也是成功狀態
@@ -1765,6 +1788,8 @@
         }
 
         document.getElementById('submit-order').addEventListener('click', async () => {
+            console.log("Submit button clicked at:", new Date()); // 計時起點
+            
             if (Object.keys(cart).length === 0 || Object.values(cart).every(q => q === 0)) {
                 const texts = translations[currentLanguage] || translations['zh-TW'];
                 alert(texts.emptyCart);
@@ -1879,6 +1904,7 @@
                 }
 
                 console.log('發送訂單 payload:', payload);
+                console.log("About to fetch API at:", new Date()); // 計時終點
 
                 // 4. 發送請求 - 檢查是否為OCR菜單訂單
                 const isOcrOrder = orderItems.some(item => 
