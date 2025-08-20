@@ -10,4 +10,5 @@ liff網頁以及後端flask
     (7) LINE_CHANNEL_ACCESS_TOKEN：  
     (8) LINE_CHANNEL_SECRET：
     (9) GEMINI_API_KEY：
+新增(10) GOOGLE_CLOUD_PROJECT:    solid-heaven-466011-d1
 3.  後端flask的urls.py換成自己的url
