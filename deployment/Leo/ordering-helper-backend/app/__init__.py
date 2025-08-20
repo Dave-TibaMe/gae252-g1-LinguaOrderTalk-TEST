@@ -37,10 +37,10 @@ def create_app():
     
     # 更完整的 CORS 設定
     CORS(app, 
-         origins=allowed_origins, 
+         resources={r"/api/*": {"origins": "*"}},
          methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-         allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
-         supports_credentials=True,
+         allow_headers=["*"],  # 允許所有 headers
+         supports_credentials=False,
          max_age=3600)
     
     # 設定 PORT 配置 - 確保 Cloud Run 能正確綁定端口
